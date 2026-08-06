@@ -1,6 +1,12 @@
 # Faz 2E — Kimlik ve İlerleme Temeli (Tasarım)
 
-Tarih: 2026-08-06 · Durum: **onay bekliyor**
+Tarih: 2026-08-06 · Durum: **uygulandı — Google kimlik bilgileri bekleniyor**
+
+> Kod yazıldı, migration uygulandı, typecheck/lint/build geçiyor. Middleware
+> yönlendirmesi, sunucu tarafı sınır, hata halleri ve açık yönlendirme koruması
+> çalışma anında doğrulandı. **Google OAuth istemcisi oluşturulmadığı için
+> uçtan uca giriş henüz denenmedi** — aşağıdaki "Ön koşul" adımları kullanıcıya
+> ait.
 
 ## Bağlam
 

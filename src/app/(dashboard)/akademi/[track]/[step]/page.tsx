@@ -2,6 +2,7 @@ import { ArrowLeft, Clock } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 import { BentoCard } from "@/components/common/BentoCard";
 import { getStep } from "@/server/services/academy";
 
@@ -13,14 +14,16 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { track, step } = await params;
-  const found = await getStep(track, step);
+  const session = await auth();
+  const found = await getStep(session?.user.id ?? "", track, step);
   if (!found) return { title: "Adım bulunamadı" };
   return { title: found.step.title, description: found.step.summary };
 }
 
 export default async function StepPage({ params }: PageProps) {
   const { track: trackSlug, step: stepSlug } = await params;
-  const found = await getStep(trackSlug, stepSlug);
+  const session = await auth();
+  const found = await getStep(session?.user.id ?? "", trackSlug, stepSlug);
   if (!found) notFound();
 
   const { track, step, contentMd } = found;

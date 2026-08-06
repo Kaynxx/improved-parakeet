@@ -1,19 +1,24 @@
-import { Check, Dot, Loader } from "lucide-react";
+import { BookOpen, Check, Dot, PenLine, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 import type { RoadmapStep, StepStatus } from "@/types";
 
 const STATUS_LABEL: Record<StepStatus, string> = {
-  completed: "Tamamlandı",
-  in_progress: "Devam ediyor",
   not_started: "Başlanmadı",
+  reading: "Okunuyor",
+  answered: "Sorular yanıtlandı",
+  reviewed: "Geri bildirim geldi",
+  mastered: "Tamamlandı",
 };
 
-const STATUS_ICON = {
-  completed: Check,
-  in_progress: Loader,
+/** Her aşamanın kendi ikonu — durum renkten önce şekilden okunsun. */
+const STATUS_ICON: Record<StepStatus, typeof Check> = {
   not_started: Dot,
-} as const;
+  reading: BookOpen,
+  answered: PenLine,
+  reviewed: Sparkles,
+  mastered: Check,
+};
 
 /**
  * Yol haritasının tek düğümü.
@@ -24,8 +29,9 @@ const STATUS_ICON = {
  */
 export function RoadmapNode({ step, isLast = false }: { step: RoadmapStep; isLast?: boolean }) {
   const Icon = STATUS_ICON[step.status];
-  const isDone = step.status === "completed";
-  const isActive = step.status === "in_progress";
+  const isDone = step.status === "mastered";
+  /** Başlanmış ama bitmemiş: üç ara aşamanın hepsi aynı görsel muameleyi görür. */
+  const isActive = !isDone && step.status !== "not_started";
 
   return (
     <li className="relative flex gap-3.5 pb-5 last:pb-0">

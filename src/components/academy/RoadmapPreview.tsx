@@ -12,7 +12,7 @@ const LEVEL_TR = {
 export function RoadmapPreview({ track, limit = 4 }: { track: Track; limit?: number }) {
   // Tamamlanmışların hepsini değil, bağlamı verecek kadarını göster: son bir
   // tamamlanan + devam eden + sıradakiler.
-  const firstUnfinished = track.steps.findIndex((step) => step.status !== "completed");
+  const firstUnfinished = track.steps.findIndex((step) => step.status !== "mastered");
   const start = Math.max(0, (firstUnfinished === -1 ? track.steps.length : firstUnfinished) - 1);
   const visible = track.steps.slice(start, start + limit);
 

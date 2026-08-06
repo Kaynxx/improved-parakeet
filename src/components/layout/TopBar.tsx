@@ -1,14 +1,15 @@
 import { Bell, Search } from "lucide-react";
+import { UserMenu } from "@/components/auth/UserMenu";
+import type { SessionUser } from "@/types";
 
 /**
  * Sabit kabuk. İçerik altından aktığı için saydam; alt kenarında çizgi yerine
  * `scroll-edge` solması var — çizgi içeriğin bitip bitmediğine bakmadan durur
  * ve sayfayı boş yere böler.
  *
- * Arama ve bildirim hâlâ kabuk. Auth bağlanınca sağdaki düğme oturum menüsüne
- * dönüşecek; o zaman değişecek tek şey harfin yerine kullanıcının adı olacak.
+ * Arama ve bildirim hâlâ kabuk; sağdaki oturum menüsü artık gerçek.
  */
-export function TopBar() {
+export function TopBar({ user }: { user: SessionUser }) {
   return (
     <header className="chrome scroll-edge sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 px-4 sm:px-7">
       <label className="relative flex min-w-0 flex-1 items-center sm:max-w-xs">
@@ -35,13 +36,7 @@ export function TopBar() {
           <Bell className="size-[18px]" strokeWidth={1.75} aria-hidden="true" />
           <span className="sr-only">Bildirimler</span>
         </button>
-        <button
-          type="button"
-          className="press flex size-10 items-center justify-center rounded-[var(--radius-inner)] bg-ink text-[13px] font-semibold text-paper hover:bg-accent"
-        >
-          <span aria-hidden="true">K</span>
-          <span className="sr-only">Hesap</span>
-        </button>
+        <UserMenu name={user.name} email={user.email} image={user.image} />
       </div>
     </header>
   );

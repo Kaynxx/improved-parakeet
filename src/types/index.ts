@@ -120,7 +120,23 @@ export interface SentimentSummary {
 // --- Akademi --------------------------------------------------------------
 
 export type TrackLevel = "beginner" | "intermediate" | "advanced";
-export type StepStatus = "not_started" | "in_progress" | "completed";
+
+/**
+ * Beş aşama, her biri **gözlenebilir bir olaya** bağlı — "anladım" gibi bir
+ * hisse değil. `answered` ve sonrası 2F'de (sorular + AI değerlendirmesi)
+ * yazılmaya başlar; 2E yalnız okuma yolunu kurar.
+ */
+export type StepStatus =
+  /** Hiç açılmadı. */
+  | "not_started"
+  /** Ders açıldı. */
+  | "reading"
+  /** Sorular dolduruldu. */
+  | "answered"
+  /** AI geri bildirimi geldi. */
+  | "reviewed"
+  /** Ortalama skor ≥ 70. */
+  | "mastered";
 
 export interface RoadmapStep {
   id: string;
@@ -166,4 +182,17 @@ export interface TickerItem {
   label: string;
   headline: string;
   isBreaking: boolean;
+}
+
+// --- Kimlik ---------------------------------------------------------------
+
+/**
+ * Kabuğun ihtiyaç duyduğu kullanıcı alanları. Auth.js'in `Session["user"]`
+ * tipini bileşenlere sızdırmamak için ayrı: bileşenler Auth.js'i tanımaz,
+ * sağlayıcı değişirse burada tek bir eşleme güncellenir.
+ */
+export interface SessionUser {
+  name: string | null;
+  email: string;
+  image: string | null;
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { auth } from "@/auth";
 import { ProgressRing } from "@/components/academy/ProgressRing";
 import { RoadmapNode } from "@/components/academy/RoadmapNode";
 import { VideoCard } from "@/components/academy/VideoCard";
@@ -18,7 +19,10 @@ const LEVEL_TR = {
 } as const;
 
 export default async function AkademiPage() {
-  const [tracks, video] = await Promise.all([getTracks(), getDailyVideo()]);
+  const session = await auth();
+  const userId = session?.user.id ?? "";
+
+  const [tracks, video] = await Promise.all([getTracks(userId), getDailyVideo()]);
 
   const totalSteps = tracks.reduce((sum, track) => sum + track.totalSteps, 0);
   const completedSteps = tracks.reduce((sum, track) => sum + track.completedSteps, 0);

@@ -1,20 +1,20 @@
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
+import { findProgressByUser } from "@/lib/db/queries/progress";
 import { stepPrerequisites, steps, tracks } from "@/lib/db/schema";
 import type { RoadmapStep, Track } from "@/types";
 
 /**
- * 2A'da adım durumu kullanıcıya bağlı değil: `user_progress` tablosu `users`'a
- * bağlı ve auth 2E'de geliyor. O yüzden her adım `not_started` döner ve
- * ilerleme halkası %0 gösterir. 2E'de burada `user_progress` join'i açılacak.
+ * `userId` zorunlu — bu sorgu artık her zaman bir kullanıcıya ait. Kaydı
+ * olmayan adım `not_started` sayılır, yani ilerleme tablosu boşken davranış
+ * 2A ile birebir aynı kalıyor.
  */
-const STATUS_UNTIL_AUTH = "not_started" as const;
-
-export async function findTracks(): Promise<Track[]> {
-  const [trackRows, stepRows, prereqRows] = await Promise.all([
+export async function findTracks(userId: string): Promise<Track[]> {
+  const [trackRows, stepRows, prereqRows, progress] = await Promise.all([
     getDb().select().from(tracks).orderBy(asc(tracks.orderIndex)),
     getDb().select().from(steps).orderBy(asc(steps.orderIndex)),
     getDb().select().from(stepPrerequisites),
+    findProgressByUser(userId),
   ]);
 
   const prereqsByStep = new Map<string, string[]>();
@@ -41,7 +41,7 @@ export async function findTracks(): Promise<Track[]> {
       estimatedMin: row.estimatedMin,
       orderIndex: row.orderIndex,
       prerequisiteIds: prereqsByStep.get(row.id) ?? [],
-      status: STATUS_UNTIL_AUTH,
+      status: progress.get(row.id) ?? "not_started",
     });
     stepsByTrack.set(row.trackId, list);
   }
@@ -55,14 +55,17 @@ export async function findTracks(): Promise<Track[]> {
       description: row.description,
       level: row.level,
       steps: trackSteps,
-      completedSteps: trackSteps.filter((step) => step.status === "completed").length,
+      // Yalnız `mastered` sayılır. Ara aşamalara ağırlık vermek (her biri %25)
+      // 2F'de, gerçek veri akmaya başlayınca eklenecek — boş tabloda
+      // ağırlıklandırma görünmez, dolayısıyla şimdi yazmak doğrulanamaz olurdu.
+      completedSteps: trackSteps.filter((step) => step.status === "mastered").length,
       totalSteps: trackSteps.length,
     };
   });
 }
 
-export async function findTrackBySlug(slug: string): Promise<Track | null> {
-  const all = await findTracks();
+export async function findTrackBySlug(userId: string, slug: string): Promise<Track | null> {
+  const all = await findTracks(userId);
   return all.find((track) => track.slug === slug) ?? null;
 }
 

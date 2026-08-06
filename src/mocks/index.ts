@@ -2,9 +2,9 @@
  * Henüz kendi dilimi gelmemiş modüllerin verisi.
  *
  * **Küçülüyor, büyümüyor.** 2A akademiyi, 2B haberleri gerçek veriye taşıdı;
- * makale ve ticker-şeridi mock'ları o noktada silindi. Kalanlar:
- * topluluk (2C), video (2D), piyasa (2F) ve akademi parçaları — sonuncusu
- * yalnız `getActiveTrack()` yardımcısı için duruyor.
+ * makale ve ticker-şeridi mock'ları o noktada silindi. 2E ilerlemeyi
+ * `user_progress`'e bağlayınca akademi parçaları da buradan çıktı.
+ * Kalanlar: topluluk (2C), video (2D), piyasa (2F).
  *
  * Burada hiçbir ağ çağrısı yok — modül tamamen statiktir.
  */
@@ -16,7 +16,6 @@ import type {
   SentimentSummary,
   Ticker,
   TickerSentiment,
-  Track,
   VideoSuggestion,
 } from "@/types";
 
@@ -297,209 +296,6 @@ export const tickerSentiments: TickerSentiment[] = [
   },
 ];
 
-// --- Akademi --------------------------------------------------------------
-
-export const tracks: Track[] = [
-  {
-    id: "trk-1",
-    slug: "temeller",
-    title: "Temeller",
-    description: "Para, risk ve piyasa mekaniğinin sıfırdan kurulumu.",
-    level: "beginner",
-    completedSteps: 4,
-    totalSteps: 6,
-    steps: [
-      {
-        id: "stp-1",
-        slug: "paranin-zaman-degeri",
-        trackSlug: "temeller",
-        title: "Paranın zaman değeri",
-        summary: "Bugünkü 100 lira neden yarınki 100 liradan değerli?",
-        estimatedMin: 12,
-        orderIndex: 1,
-        prerequisiteIds: [],
-        status: "completed",
-      },
-      {
-        id: "stp-2",
-        slug: "bilesik-getiri",
-        trackSlug: "temeller",
-        title: "Bileşik getiri",
-        summary: "Zamanın en güçlü finansal kaldıraç olmasının matematiği.",
-        estimatedMin: 15,
-        orderIndex: 2,
-        prerequisiteIds: ["stp-1"],
-        status: "completed",
-      },
-      {
-        id: "stp-3",
-        slug: "risk-ve-getiri",
-        trackSlug: "temeller",
-        title: "Risk ve getiri ilişkisi",
-        summary: "Yüksek getiri neden bedava gelmez.",
-        estimatedMin: 18,
-        orderIndex: 3,
-        prerequisiteIds: ["stp-2"],
-        status: "completed",
-      },
-      {
-        id: "stp-4",
-        slug: "varlik-siniflari",
-        trackSlug: "temeller",
-        title: "Varlık sınıfları",
-        summary: "Hisse, tahvil, emtia, kripto — her biri hangi işi yapar?",
-        estimatedMin: 20,
-        orderIndex: 4,
-        prerequisiteIds: ["stp-3"],
-        status: "completed",
-      },
-      {
-        id: "stp-5",
-        slug: "portfoy-cesitlendirme",
-        trackSlug: "temeller",
-        title: "Portföy çeşitlendirme",
-        summary: "Korelasyonun tek bedava öğle yemeği olmasının nedeni.",
-        estimatedMin: 22,
-        orderIndex: 5,
-        prerequisiteIds: ["stp-4"],
-        status: "in_progress",
-      },
-      {
-        id: "stp-6",
-        slug: "enflasyon-ve-reel-getiri",
-        trackSlug: "temeller",
-        title: "Enflasyon ve reel getiri",
-        summary: "Nominal kazanç ile gerçek kazancı ayırt etmek.",
-        estimatedMin: 16,
-        orderIndex: 6,
-        prerequisiteIds: ["stp-5"],
-        status: "not_started",
-      },
-    ],
-  },
-  {
-    id: "trk-2",
-    slug: "analiz",
-    title: "Analiz",
-    description: "Bilanço okumaktan değerleme çarpanlarına.",
-    level: "intermediate",
-    completedSteps: 1,
-    totalSteps: 5,
-    steps: [
-      {
-        id: "stp-7",
-        slug: "gelir-tablosu",
-        trackSlug: "analiz",
-        title: "Gelir tablosu okuma",
-        summary: "Ciro ile nakit akışının aynı şey olmadığı yer.",
-        estimatedMin: 25,
-        orderIndex: 1,
-        prerequisiteIds: ["stp-4"],
-        status: "completed",
-      },
-      {
-        id: "stp-8",
-        slug: "bilanco",
-        trackSlug: "analiz",
-        title: "Bilanço ve borçluluk",
-        summary: "Kaldıracın şirketi nasıl kırılgan hale getirdiği.",
-        estimatedMin: 28,
-        orderIndex: 2,
-        prerequisiteIds: ["stp-7"],
-        status: "in_progress",
-      },
-      {
-        id: "stp-9",
-        slug: "degerleme-carpanlari",
-        trackSlug: "analiz",
-        title: "Değerleme çarpanları",
-        summary: "F/K, PD/DD ve bunların yanıltıcı olduğu durumlar.",
-        estimatedMin: 30,
-        orderIndex: 3,
-        prerequisiteIds: ["stp-8"],
-        status: "not_started",
-      },
-      {
-        id: "stp-10",
-        slug: "nakit-akisi-iskontosu",
-        trackSlug: "analiz",
-        title: "İndirgenmiş nakit akışı",
-        summary: "Varsayımların sonucu nasıl belirlediğini görmek.",
-        estimatedMin: 35,
-        orderIndex: 4,
-        prerequisiteIds: ["stp-9"],
-        status: "not_started",
-      },
-      {
-        id: "stp-11",
-        slug: "sektor-karsilastirma",
-        trackSlug: "analiz",
-        title: "Sektör karşılaştırması",
-        summary: "Bir çarpanın yüksek mi ucuz mu olduğuna karar vermek.",
-        estimatedMin: 24,
-        orderIndex: 5,
-        prerequisiteIds: ["stp-9"],
-        status: "not_started",
-      },
-    ],
-  },
-  {
-    id: "trk-3",
-    slug: "davranis",
-    title: "Davranışsal Finans",
-    description: "En pahalı hataların kaynağı: yatırımcının kendisi.",
-    level: "advanced",
-    completedSteps: 0,
-    totalSteps: 4,
-    steps: [
-      {
-        id: "stp-12",
-        slug: "kayip-kacinma",
-        trackSlug: "davranis",
-        title: "Kayıptan kaçınma",
-        summary: "Zararı kesmenin neden bu kadar zor olduğu.",
-        estimatedMin: 18,
-        orderIndex: 1,
-        prerequisiteIds: ["stp-5"],
-        status: "not_started",
-      },
-      {
-        id: "stp-13",
-        slug: "onyargi-dogrulama",
-        trackSlug: "davranis",
-        title: "Doğrulama önyargısı",
-        summary: "Tezini destekleyen yorumları aramanın maliyeti.",
-        estimatedMin: 16,
-        orderIndex: 2,
-        prerequisiteIds: ["stp-12"],
-        status: "not_started",
-      },
-      {
-        id: "stp-14",
-        slug: "surunun-etkisi",
-        trackSlug: "davranis",
-        title: "Sürü davranışı",
-        summary: "Topluluk duyarlılığını sinyal sanmanın tuzağı.",
-        estimatedMin: 20,
-        orderIndex: 3,
-        prerequisiteIds: ["stp-13"],
-        status: "not_started",
-      },
-      {
-        id: "stp-15",
-        slug: "yatirim-gunlugu",
-        trackSlug: "davranis",
-        title: "Yatırım günlüğü tutmak",
-        summary: "Kararı sonuçtan ayırmanın tek pratik yolu.",
-        estimatedMin: 14,
-        orderIndex: 4,
-        prerequisiteIds: ["stp-14"],
-        status: "not_started",
-      },
-    ],
-  },
-];
-
 export const dailyVideo: VideoSuggestion = {
   id: "vid-1",
   youtubeId: "mock-video-id",
@@ -511,13 +307,3 @@ export const dailyVideo: VideoSuggestion = {
   stepSlug: "portfoy-cesitlendirme",
   stepTitle: "Portföy çeşitlendirme",
 };
-
-// --- Türetilmiş yardımcılar ----------------------------------------------
-
-export function getActiveTrack(): Track {
-  const active = tracks.find(
-    (track) => track.completedSteps > 0 && track.completedSteps < track.totalSteps,
-  );
-  // tracks dizisi boş olamaz; ilk parça daima mevcut.
-  return active ?? (tracks[0] as Track);
-}

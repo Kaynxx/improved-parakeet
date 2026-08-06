@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { auth } from "@/auth";
 import { RoadmapPreview } from "@/components/academy/RoadmapPreview";
 import { VideoCard } from "@/components/academy/VideoCard";
 import { BentoCard } from "@/components/common/BentoCard";
@@ -39,10 +40,14 @@ function MoreLink({
 }
 
 export default async function DashboardPage() {
+  // Layout oturumu zaten doğruladı; burada yalnız kimliği okuyoruz.
+  const session = await auth();
+  const userId = session?.user.id ?? "";
+
   const [quotes, articles, track, summary, trending, video] = await Promise.all([
     getMarketOverview(),
     getDiverseArticles(6),
-    getActiveTrack(),
+    getActiveTrack(userId),
     getSentimentSummary(),
     getTrendingTickers(6),
     getDailyVideo(),

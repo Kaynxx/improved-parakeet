@@ -191,3 +191,98 @@ export const stepPrerequisites = pgTable(
   },
   (table) => [primaryKey({ columns: [table.stepId, table.prerequisiteStepId] })],
 );
+
+// --- Kimlik (2E) ----------------------------------------------------------
+/**
+ * Dört tablonun **şekli Auth.js Drizzle adapter'ı tarafından dayatılıyor** —
+ * sütun adları ve tipleri adapter'ın beklediğiyle birebir aynı olmak zorunda.
+ * Buradaki isimlendirme projenin geri kalanından (camelCase alan → snake_case
+ * sütun) sapıyorsa sebebi bu; adapter `refresh_token` gibi adları aynen arıyor.
+ */
+
+export const users = pgTable("user", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").notNull().unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date", withTimezone: true }),
+  image: text("image"),
+});
+
+export const accounts = pgTable(
+  "account",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<"oauth" | "oidc" | "email" | "webauthn">().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (table) => [primaryKey({ columns: [table.provider, table.providerAccountId] })],
+);
+
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
+});
+
+/**
+ * **Hiç dolmayacak.** Yalnız Google OAuth kullanıyoruz; bu tablo e-posta ile
+ * giriş (magic link) içindir. Yine de duruyor çünkü `@auth/drizzle-adapter`'ın
+ * tip sözleşmesi onu zorunlu kılıyor — vermezsek adapter derlenmiyor.
+ */
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.identifier, table.token] })],
+);
+
+// --- Akademi ilerlemesi (2E) ----------------------------------------------
+/**
+ * Beş aşama, ve her biri **gözlenebilir bir olaya** bağlı — "anladım" gibi bir
+ * hisse değil:
+ *   reading   → ders açıldı
+ *   answered  → sorular dolduruldu
+ *   reviewed  → AI geri bildirimi geldi
+ *   mastered  → ortalama skor ≥ 70
+ * `answered` ve sonrası 2F'de (sorular + değerlendirme) yazılmaya başlar;
+ * 2E yalnız tabloyu ve okuma yolunu kurar.
+ */
+export const stepStatus = pgEnum("step_status", [
+  "not_started",
+  "reading",
+  "answered",
+  "reviewed",
+  "mastered",
+]);
+
+export const userProgress = pgTable(
+  "user_progress",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    stepId: uuid("step_id")
+      .notNull()
+      .references(() => steps.id, { onDelete: "cascade" }),
+    status: stepStatus("status").notNull().default("not_started"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.stepId] })],
+);
