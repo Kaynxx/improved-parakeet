@@ -1,33 +1,31 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 
 /**
- * **Bu bir güvenlik sınırı DEĞİL.**
+ * **Artık gerçek bir güvenlik kontrolü.**
  *
- * Yalnız oturum çerezinin *varlığına* bakar, geçerliliğine değil — Edge
- * runtime'da Postgres'e sorgu atılamadığı için veritabanı oturumu burada
- * doğrulanamaz. Sahte bir çerezle buradan geçilebilir ve bunun bir önemi yok:
- * asıl sınır `(dashboard)/layout.tsx`'teki `auth()` çağrısı, o da oturumu
- * veritabanından doğruluyor.
+ * Veritabanı oturumundayken middleware yalnız çerezin varlığına bakabiliyordu —
+ * Edge'de Postgres'e sorgu atılamadığı için oturumu doğrulayamıyordu. JWT'ye
+ * geçince bu kısıt kalktı: token imzası Edge'de doğrulanabiliyor, dolayısıyla
+ * sahte bir çerez buradan geçemez.
  *
- * Middleware'in işi korumalı sayfanın boş render edilip sonra atılmasını
- * önlemek: çerez yoksa sunucu hiç çalışmadan `/giris`'e yönlendiriyoruz.
+ * `(dashboard)/layout.tsx`'teki `auth()` çağrısı yine de duruyor: kullanıcının
+ * kimliğini okumak için zaten gerekiyor ve tek bir katmana güvenmemek ucuz bir
+ * sigorta.
  */
-const SESSION_COOKIES = ["authjs.session-token", "__Secure-authjs.session-token"] as const;
+const { auth } = NextAuth(authConfig);
 
-export function middleware(request: NextRequest) {
-  const hasSessionCookie = SESSION_COOKIES.some((name) => request.cookies.has(name));
-  if (hasSessionCookie) return NextResponse.next();
+export default auth((request) => {
+  if (request.auth) return;
 
-  const url = new URL("/giris", request.url);
-  // Giriş sonrası kullanıcıyı gitmek istediği yere döndürmek için. Yalnız yol
-  // + sorgu taşınır; tam URL taşınsaydı `donus` parametresi açık yönlendirme
-  // (open redirect) taşıyıcısına dönüşürdü.
+  const url = new URL("/giris", request.nextUrl.origin);
+  // Yalnız yol + sorgu taşınır; tam URL taşınsaydı `donus` parametresi açık
+  // yönlendirme (open redirect) taşıyıcısına dönüşürdü.
   const wanted = `${request.nextUrl.pathname}${request.nextUrl.search}`;
   if (wanted !== "/") url.searchParams.set("donus", wanted);
 
-  return NextResponse.redirect(url);
-}
+  return Response.redirect(url);
+});
 
 export const config = {
   /**

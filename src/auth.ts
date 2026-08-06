@@ -1,34 +1,48 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { verify } from "@node-rs/argon2";
+import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "@/auth.config";
 import { getDb } from "@/lib/db";
-import { accounts, sessions, users, verificationTokens } from "@/lib/db/schema";
+import { users } from "@/lib/db/schema";
 
 /**
- * Tam yapılandırma: adapter + **veritabanı** oturumu. Yalnız Node runtime'dan
- * import edilir (layout, route handler, server action) — middleware'den ASLA.
- *
- * Oturum stratejisi neden JWT değil: JWT sunucudan iptal edilemez, süresi
- * dolana kadar geçerlidir. `user_progress` zaten veritabanında olduğu için
- * oturum adına ikinci bir doğruluk kaynağı kurmanın karşılığı yok.
- *
- * Bedeli: middleware oturumu doğrulayamaz. Bu yüzden güvenlik sınırı
- * middleware değil, `(dashboard)/layout.tsx`'teki `auth()` çağrısı.
+ * Tam yapılandırma: şifre doğrulayan Credentials sağlayıcısı. Yalnız Node
+ * runtime'dan yüklenir (sayfa, layout, route handler, server action) —
+ * middleware'den ASLA, çünkü hem Postgres hem argon2 Edge'de çalışmaz.
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: DrizzleAdapter(getDb(), {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }),
-  session: { strategy: "database" },
-  callbacks: {
-    /** Oturumdaki `user.id` varsayılan tiplerde yok; sayfaların ihtiyacı var. */
-    session({ session, user }) {
-      session.user.id = user.id;
-      return session;
-    },
-  },
+  providers: [
+    Credentials({
+      credentials: {
+        email: { label: "E-posta", type: "email" },
+        password: { label: "Şifre", type: "password" },
+      },
+      async authorize(credentials) {
+        const email = credentials?.email;
+        const password = credentials?.password;
+        if (typeof email !== "string" || typeof password !== "string") return null;
+
+        const rows = await getDb()
+          .select()
+          .from(users)
+          .where(eq(users.email, email.trim().toLocaleLowerCase("tr-TR")))
+          .limit(1);
+
+        const user = rows[0];
+        /**
+         * Kullanıcı yoksa da şifre yanlışsa da **aynı** sonucu döndürüyoruz.
+         * Ayırmak, kayıtlı e-postaları saldırgana sayan bir uç nokta üretirdi
+         * (hesap sayımı / account enumeration).
+         */
+        if (!user) return null;
+
+        const ok = await verify(user.passwordHash, password);
+        if (!ok) return null;
+
+        return { id: user.id, name: user.name, email: user.email, image: user.image };
+      },
+    }),
+  ],
 });

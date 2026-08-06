@@ -1,23 +1,9 @@
 import type { Metadata, Route } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { GoogleButton } from "@/components/auth/GoogleButton";
+import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = { title: "Giriş" };
-
-/**
- * Auth.js hata kodları. Her mesaj ne olduğunu VE ne yapılacağını söyler —
- * "bir şeyler ters gitti" okuru hiçbir yere götürmüyor.
- */
-const HATA: Record<string, string> = {
-  OAuthAccountNotLinked:
-    "Bu e-posta adresi başka bir yöntemle kayıtlı. İlk kullandığın yöntemle giriş yap.",
-  AccessDenied: "Google erişim isteğini reddettin. Devam etmek için izin vermen gerekiyor.",
-  // TODO(deployment): üretimde ortam değişkeni adı sızdırılmamalı. Deployment
-  // kararı verilince bu mesaj genelleştirilecek.
-  Configuration: "Sunucu yapılandırması eksik. AUTH_GOOGLE_ID ve AUTH_GOOGLE_SECRET tanımlı mı?",
-  Verification: "Bağlantının süresi dolmuş. Yeniden dene.",
-};
 
 /** Açık yönlendirme koruması: yalnız site içi göreli yollar kabul edilir. */
 function guvenliDonus(raw: string | undefined): string {
@@ -30,9 +16,9 @@ function guvenliDonus(raw: string | undefined): string {
 export default async function GirisPage({
   searchParams,
 }: {
-  searchParams: Promise<{ donus?: string; error?: string }>;
+  searchParams: Promise<{ donus?: string }>;
 }) {
-  const { donus, error } = await searchParams;
+  const { donus } = await searchParams;
   const hedef = guvenliDonus(donus);
 
   // Giriş yapmış kullanıcı giriş sayfasını görmemeli.
@@ -40,8 +26,6 @@ export default async function GirisPage({
   // `typedRoutes` derleme anında sabit yol bekliyor; burada yol çalışma anında
   // türüyor. `guvenliDonus` onu zaten site içi göreli bir yola daralttı.
   if (session?.user) redirect(hedef as Route);
-
-  const mesaj = error ? (HATA[error] ?? "Giriş tamamlanamadı. Tekrar dene.") : null;
 
   return (
     <div className="w-full max-w-[26rem]">
@@ -69,22 +53,10 @@ export default async function GirisPage({
           Panelini ve akademi ilerlemeni görmek için giriş yap.
         </p>
 
-        {mesaj ? (
-          <p
-            role="alert"
-            className="mt-5 rounded-[var(--radius-inner)] bg-down-soft px-4 py-3 text-[13px] leading-relaxed text-down"
-          >
-            {mesaj}
-          </p>
-        ) : null}
+        <LoginForm donus={hedef} />
 
-        <div className="mt-7">
-          <GoogleButton donus={hedef} />
-        </div>
-
-        <p className="mt-5 text-[12px] leading-relaxed text-ink-faint">
-          Giriş yaptığında adın, e-postan ve profil görselin hesabına kaydedilir. Akademi ilerlemen
-          bu hesaba bağlanır.
+        <p className="mt-6 text-[12px] leading-relaxed text-ink-faint">
+          Hesap açmak için terminalde <span className="meta">npm run user:create</span> çalıştır.
         </p>
       </div>
     </div>

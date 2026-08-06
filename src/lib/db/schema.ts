@@ -194,64 +194,27 @@ export const stepPrerequisites = pgTable(
 
 // --- Kimlik (2E) ----------------------------------------------------------
 /**
- * Dört tablonun **şekli Auth.js Drizzle adapter'ı tarafından dayatılıyor** —
- * sütun adları ve tipleri adapter'ın beklediğiyle birebir aynı olmak zorunda.
- * Buradaki isimlendirme projenin geri kalanından (camelCase alan → snake_case
- * sütun) sapıyorsa sebebi bu; adapter `refresh_token` gibi adları aynen arıyor.
+ * **Tek tablo.** Giriş e-posta + şifre ile; Auth.js'in `account` / `session` /
+ * `verificationToken` tabloları OAuth ve veritabanı oturumu içindi, ikisi de
+ * kullanılmıyor. Şifreli giriş (Credentials provider) Auth.js'te **yalnız JWT
+ * oturumuyla** çalışıyor, dolayısıyla oturum sunucuda saklanmıyor ve adapter'a
+ * hiç ihtiyaç yok.
+ *
+ * Bedeli: oturum sunucudan iptal edilemez, süresi dolana kadar geçerli.
+ * Faydası: JWT Edge'de doğrulanabildiği için middleware artık gerçek bir
+ * güvenlik kontrolü yapabiliyor.
  */
-
 export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
   email: text("email").notNull().unique(),
-  emailVerified: timestamp("emailVerified", { mode: "date", withTimezone: true }),
+  /** argon2id özeti. **Şifrenin kendisi hiçbir yerde saklanmaz.** */
+  passwordHash: text("password_hash").notNull(),
   image: text("image"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
-
-export const accounts = pgTable(
-  "account",
-  {
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<"oauth" | "oidc" | "email" | "webauthn">().notNull(),
-    provider: text("provider").notNull(),
-    providerAccountId: text("providerAccountId").notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
-    scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
-  },
-  (table) => [primaryKey({ columns: [table.provider, table.providerAccountId] })],
-);
-
-export const sessions = pgTable("session", {
-  sessionToken: text("sessionToken").primaryKey(),
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
-});
-
-/**
- * **Hiç dolmayacak.** Yalnız Google OAuth kullanıyoruz; bu tablo e-posta ile
- * giriş (magic link) içindir. Yine de duruyor çünkü `@auth/drizzle-adapter`'ın
- * tip sözleşmesi onu zorunlu kılıyor — vermezsek adapter derlenmiyor.
- */
-export const verificationTokens = pgTable(
-  "verificationToken",
-  {
-    identifier: text("identifier").notNull(),
-    token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
-  },
-  (table) => [primaryKey({ columns: [table.identifier, table.token] })],
-);
 
 // --- Akademi ilerlemesi (2E) ----------------------------------------------
 /**
