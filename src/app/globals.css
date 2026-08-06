@@ -1,0 +1,404 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   MÜREKKEP — Finans Programı görsel sistemi
+
+   Yön: koyu cam terminal değil, **aydınlık günlük bülten.** Panelin okuru
+   profesyonel bir trader değil, öğrenen bir yatırımcı; ürün izlenen bir ekran
+   değil, okunan bir sayfa. Bütün kararlar bu cümleden türüyor.
+
+   Üç malzeme var ve karışmazlar:
+     · kâğıt   — uygulamanın zemini. Beyaz DEĞİL; hafif sıcak gri.
+     · kart    — kâğıdın üstünde duran, ondan AÇIK yüzey. Işığı o taşır.
+     · cam     — yalnız sabit kabuk (üst bar, kenar çubuğu, şerit). İçerik altından akar.
+   ========================================================================== */
+
+@theme {
+  /* --- Zemin ------------------------------------------------------------
+     Kâğıt beyaz olsaydı kart onun üstünde ancak gölgeyle ayrılabilirdi ve
+     gölge tek başına zayıf bir ayraçtır. Zemin bir kademe koyu olunca kart
+     kendi parlaklığıyla ayrılıyor — ayrımı ışık yapıyor, çizgi değil. */
+  --color-paper: #eae8e3;
+  --color-paper-deep: #ded9d2;
+
+  --color-card: #fcfbf9;
+  /* Kartın İÇİNDEKİ kutu. Kart açıksa iç kutu koyu olmak zorunda: aksi halde
+     iç içe iki açık yüzey birbirinden ayrılmaz. */
+  --color-sunken: #f1efea;
+
+  /* --- Mürekkep: üç kademe, üçü de AA geçer -----------------------------
+     ink-faint bilerek #6C7180 değil #636875: çıplak kâğıdın (#EAE8E3) üstüne
+     düştüğünde 4.5'i tutması gerekiyordu, kartın üstüne değil. Metnin en zayıf
+     kademesi en zayıf zeminde ölçülür. */
+  --color-ink: #191b21;
+  --color-ink-muted: #4a4f5a;
+  --color-ink-faint: #636875;
+
+  /* --- Çizgiler ---------------------------------------------------------
+     Kâğıt sisteminde kenarlık ikincil: ayrımı gölge ve parlaklık yapıyor.
+     Çizgi yalnız gerçek bir ayrım varken (satır arası, sütun başı) çıkar. */
+  --color-rule: rgb(25 27 33 / 0.09);
+  --color-rule-strong: rgb(25 27 33 / 0.18);
+
+  /* --- Aksan: derin ultramarin -----------------------------------------
+     Yeşil ve kırmızı veriye ait — yön onların işi. Aksan bu yüzden ÜÇÜNCÜ bir
+     hue olmak zorunda. Eski panel bunu beyaz aksanla çözüyordu; çözmüyordu,
+     yalnız rengi tamamen kaldırıyordu ve arayüz karaktersiz kalıyordu. */
+  --color-accent: #2436c4;
+  --color-accent-soft: rgb(36 54 196 / 0.09);
+  --color-accent-line: rgb(36 54 196 / 0.28);
+
+  /* --- Semantik: SADECE piyasa yönü -------------------------------------
+     Renk hiçbir yerde tek taşıyıcı değil; her yerde ok + işaretli sayı eşlik
+     eder. Bu yüzden ton seçimi renk körlüğü ayrımına değil, açık zeminde
+     kontrast oranına göre optimize edildi. */
+  --color-up: #0b6b49;
+  --color-down: #c42b1c;
+  --color-flat: #767b87;
+  --color-up-soft: rgb(11 107 73 / 0.1);
+  --color-down-soft: rgb(196 43 28 / 0.1);
+
+  /* --- Tipografi: üç ses, üç iş ----------------------------------------
+     display → arayüz, başlık VE sayılar. Sayıyı mono'ya vermek terminal
+       klişesi; tabular-nums açılmış bir grotesk, gazetenin piyasa sayfası
+       gibi okunuyor ve daha iyi hizalanıyor.
+     text    → yalnız uzun okuma (haber gövdesi, ders metni). Serif.
+     mono    → yalnız etiket ve üstbilgi. Veri değil, verinin ADI. */
+  --font-display: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-text: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-display);
+
+  /* --- Yarıçap ----------------------------------------------------------
+     Kâğıt kesilir, kavislenmez — ama ekranda 0 yarıçap gölgeyi sertleştirip
+     kartı "yapıştırılmış" gösteriyor. 14px kartı fiziksel bir nesne yapacak
+     kadar, süse kaçmayacak kadar. */
+  --radius-card: 14px;
+  --radius-inner: 9px;
+  --radius-chip: 6px;
+
+  /* --- Gölge: yüzey ne kadar büyükse o kadar kalın -----------------------
+     Üç katman: teması (1px), yakın gölge, uzak gölge. Tek kutulu gölge
+     "drop shadow" gibi görünür; katmanlı olan malzeme gibi. */
+  --shadow-card:
+    0 0 0 1px rgb(25 27 33 / 0.04), 0 1px 2px -1px rgb(25 27 33 / 0.1),
+    0 6px 16px -8px rgb(25 27 33 / 0.14);
+  --shadow-lift:
+    0 0 0 1px rgb(25 27 33 / 0.05), 0 2px 4px -2px rgb(25 27 33 / 0.1),
+    0 14px 28px -12px rgb(25 27 33 / 0.2);
+  --shadow-chrome: 0 1px 0 0 rgb(25 27 33 / 0.06), 0 8px 24px -16px rgb(25 27 33 / 0.35);
+
+  /* --- Hareket ----------------------------------------------------------
+     İki eğri yeter. `--ease-settle` kritik sönümlü bir yayın yaklaşımı:
+     hızlı çıkar, taşmadan oturur. `--ease-press` basışın anlık geri dönüşü. */
+  --ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-press: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --animate-ticker: ticker 64s linear infinite;
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Kart açılışı: 8px yükselme + opaklık. Kayma mesafesi bilerek küçük —
+   büyük mesafeler sayfayı "animasyonlu" gösterir, küçük olanlar yalnız
+   yerleşiyormuş hissi verir. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* İmza: günün çizgisi soldan sağa çizilir. `pathLength="1"` sayesinde
+   uzunluk normalize; gerçek yol uzunluğunu bilmeye gerek yok. */
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    /* Grotesk küçük puntolarda ince kalıyor; antialiasing kapalı bırakılırsa
+       Windows'ta gövde metni sıçrıyor. */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* --- Tracking boyuta bağlıdır, sabit değil ---------------------------
+     Harf aralığı büyüdükçe negatife gider. Tek bir `letter-spacing` değeri
+     bir yerde mutlaka yanlıştır; o yüzden ölçek kademeleri kendi aralığını
+     taşıyor. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  /* --- Sayı ------------------------------------------------------------
+     Fiyat kolonları zıplamasın diye sabit genişlikli rakam; ama yüz mono
+     değil — display. Finansal sayı burada bir ölçüm değil, manşet. */
+  .figure {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+
+  /* --- Etiket ----------------------------------------------------------
+     Mono'nun panelde tek işi bu: bir şeyin ADINI söylemek. Değerin kendisi
+     asla mono değil. Kural öğrenilebilir olduğu için arayüzde "bu bir başlık
+     mı yoksa ölçüm mü" sorusu okumadan cevaplanıyor. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    /* `1` DEĞİL. Etiketler büyük harfe çevriliyor ve Türkçede Ö Ü İ Ğ'nin
+       işareti büyük harfin üstünde duruyor. Satır kutusu harf yüksekliğine
+       eşitlenince bu işaretler kutunun dışında kalıyor ve etiket `truncate`
+       (overflow:hidden) ile birleştiği her yerde kırpılıyordu: "ÖNE" ekranda
+       "ONE" oluyordu. Ç kurtuluyordu çünkü sedilla tabanın ALTINDA. */
+    line-height: 1.45;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  /* Zaman damgası, sembol kodu, sayaç — mono ama etiket değil, büyük harf değil. */
+  .meta {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    letter-spacing: 0.01em;
+  }
+
+  /* --- Okuma ------------------------------------------------------------
+     Serif yalnız burada. Uzun metnin ölçüsü 66ch, satır arası 1.7 — ekrandan
+     okunan gövde için basılı kitaptan daha açık olmalı. */
+  .reading {
+    font-family: var(--font-text);
+    font-size: 1.0625rem;
+    line-height: 1.72;
+    letter-spacing: 0.005em;
+    color: var(--color-ink);
+  }
+
+  /* --- Kart -------------------------------------------------------------
+     Kâğıdın üstünde duran açık yüzey. Kenarlık yok; ayrımı gölgenin ilk
+     katmanındaki 1px teması yapıyor. */
+  .card {
+    background-color: var(--color-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* --- Cam: YALNIZ sabit kabuk -----------------------------------------
+     İçerik altından aktığı için kabuk saydam. Kart camdan yapılmaz —
+     iki saydam yüzeyi üst üste koymak okunabilirliği çökertir. */
+  .chrome {
+    background-color: rgb(234 232 227 / 0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: var(--shadow-chrome);
+  }
+
+  /* --- Kayan kenar ------------------------------------------------------
+     Sabit kabuğun altında 1px çizgi yerine kısa bir solma. Çizgi içerik
+     olmadığı yerde de durur ve sayfayı böler; solma yalnız içerik gerçekten
+     altından geçerken görünür. */
+  .scroll-edge::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    height: 20px;
+    background: linear-gradient(to bottom, rgb(234 232 227 / 0.9), transparent);
+    pointer-events: none;
+  }
+
+  /* --- Basış ------------------------------------------------------------
+     Geri bildirim tıklamada değil BASIŞTA. `:active` pointer-down'da tetiklenir;
+     `click` beklemek arayüzü ölü gösterir. */
+  .press {
+    transition:
+      transform 140ms var(--ease-press),
+      box-shadow 200ms var(--ease-settle),
+      background-color 160ms var(--ease-press),
+      color 160ms var(--ease-press);
+  }
+
+  .press:active {
+    transform: scale(0.978);
+  }
+}
+
+@layer utilities {
+  .rise {
+    animation: rise 520ms var(--ease-settle) both;
+  }
+
+  /* Sayfa yerleşimi tek seferde değil, sırayla oturur. Gecikme bileşenin
+     kendisinde değil kapsayıcıda: kartlar hangi sırada olduklarını bilmek
+     zorunda kalmasın diye. 40ms yeterince kısa — daha uzunu sayfayı yavaş
+     gösterir, daha kısası sırayı okunmaz kılar. */
+  .stagger > * {
+    animation: rise 520ms var(--ease-settle) both;
+  }
+
+  .stagger > *:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .stagger > *:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .stagger > *:nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .stagger > *:nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .stagger > *:nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .stagger > *:nth-child(n + 6) {
+    animation-delay: 200ms;
+  }
+
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 1100ms var(--ease-settle) 120ms forwards;
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(25 27 33 / 0.18) transparent;
+  }
+
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(25 27 33 / 0.16);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(25 27 33 / 0.28);
+  }
+
+  .ticker-track {
+    animation: var(--animate-ticker);
+  }
+
+  .ticker:hover .ticker-track,
+  .ticker:focus-within .ticker-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Katmansız (unlayered) — bilerek `@layer` dışında. Katmanlı kurallar
+   katmansızlara her zaman yenilir; Tailwind'in `outline-*` utility'leri
+   odak halkasının rengini currentColor'a düşürüyordu. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+  /* Odak göstergesi gecikmeli belirmemeli — Tailwind'in `transition-colors`
+     listesi `outline-color`'ı da kapsadığı için burada geçiş kapatılır. */
+  transition-property: none;
+}
+
+/* --- Erişilebilirlik: üç bağımsız sinyal --------------------------------- */
+
+/* Saydamlıktan rahatsız olan kullanıcı için cam kapanır; kabuk opak olur. */
+@media (prefers-reduced-transparency: reduce) {
+  .chrome {
+    background-color: #edebe6;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Yüksek kontrast: gölgeyle ayrım yerine tanımlı kenarlık. */
+@media (prefers-contrast: more) {
+  .card {
+    box-shadow: none;
+    border: 1px solid var(--color-ink-muted);
+  }
+
+  .chrome {
+    background-color: #edebe6;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid var(--color-ink-muted);
+  }
+}
+
+/* Hareket azaltma "geri bildirim yok" demek değil: kayma ve çizim gider,
+   opaklık kalır. Anlamayı KOLAYLAŞTIRAN geçiş korunur. */
+@media (prefers-reduced-motion: reduce) {
+  /* biome-ignore-start lint/complexity/noImportantStyles: erişilebilirlik tercihi her şeyi ezmeli */
+  .rise,
+  .stagger > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .draw {
+    animation: none !important;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .press:active {
+    transform: none !important;
+  }
+
+  /* Süpürge kural: yukarıda tek tek ele alınmayan her animasyon ve geçiş.
+     Özgüllüğü (0,0,0) ve `.stagger > *`'dan sonra geliyor — normalde bu bir
+     sıralama hatası olurdu, ama buradaki her bildirim `!important` taşıdığı
+     için özgüllük hiç devreye girmiyor. */
+  /* biome-ignore-start lint/style/noDescendingSpecificity: her bildirim !important, özgüllük devre dışı */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* biome-ignore-end lint/style/noDescendingSpecificity: her bildirim !important, özgüllük devre dışı */
+  /* biome-ignore-end lint/complexity/noImportantStyles: erişilebilirlik tercihi her şeyi ezmeli */
+}
