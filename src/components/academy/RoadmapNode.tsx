@@ -66,7 +66,7 @@ export function RoadmapNode({ step, isLast = false }: { step: RoadmapStep; isLas
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
           <Link
-            href={{ pathname: `/akademi/${step.trackSlug}/${step.slug}` }}
+            href={{ pathname: `/akademi/${step.weekSlug}/${step.slug}` }}
             className={cn(
               "text-[14.5px] font-semibold tracking-[-0.01em] transition-colors hover:text-accent",
               isDone ? "text-ink-muted" : "text-ink",

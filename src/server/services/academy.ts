@@ -1,41 +1,53 @@
 /**
  * Akademi servisi — kaynak: **Postgres**.
  *
- * İçerik (parçalar, adımlar, ön koşul DAG'ı) ve artık adım DURUMU da
- * veritabanından geliyor: `user_progress` 2E'de eklendi.
+ * Hafta ve ders içeriği `content/akademi/` altındaki markdown dosyalarından
+ * seed ile veritabanına iner; bu katman yalnız okur.
  *
  * **`userId` neden parametre, servis neden `auth()` çağırmıyor:** Faz 1'de
  * kurulan sınır kuralı — servisler bağlam değil veri alır. Böylece hem test
- * edilebilir kalıyorlar hem de Auth.js'e bağlanmıyorlar; sağlayıcı değişse
- * bu dosya değişmez. Sayfa oturumu `(dashboard)/layout.tsx` sayesinde zaten
- * biliyor, bir kez okuyup aşağı geçiriyor.
+ * edilebilir kalıyorlar hem de Auth.js'e bağlanmıyorlar.
  */
 
 import { findStepContent, findTrackBySlug, findTracks } from "@/lib/db/queries/academy";
-import type { RoadmapStep, Track } from "@/types";
+import { findLessonPrompts, findLessonSources } from "@/lib/db/queries/lesson";
+import type { LessonSource, PromptWithAnswer, RoadmapStep, Track } from "@/types";
 
 export function getTracks(userId: string): Promise<Track[]> {
   return findTracks(userId);
 }
 
-/** Panelde gösterilecek parça: ilerlemesi başlamış ilki, yoksa ilk parça. */
+/** Panelde gösterilecek hafta: ilerlemesi başlamış ilki, yoksa ilk hafta. */
 export async function getActiveTrack(userId: string): Promise<Track | null> {
-  const tracks = await getTracks(userId);
-  const started = tracks.find(
-    (track) => track.completedSteps > 0 && track.completedSteps < track.totalSteps,
+  const weeks = await getTracks(userId);
+  const started = weeks.find(
+    (week) => week.completedSteps > 0 && week.completedSteps < week.totalSteps,
   );
-  return started ?? tracks[0] ?? null;
+  return started ?? weeks[0] ?? null;
+}
+
+export interface LessonView {
+  track: Track;
+  step: RoadmapStep;
+  contentMd: string | null;
+  sources: LessonSource[];
+  prompts: PromptWithAnswer[];
 }
 
 export async function getStep(
   userId: string,
-  trackSlug: string,
-  stepSlug: string,
-): Promise<{ track: Track; step: RoadmapStep; contentMd: string | null } | null> {
-  const track = await findTrackBySlug(userId, trackSlug);
-  const step = track?.steps.find((item) => item.slug === stepSlug);
+  weekSlug: string,
+  lessonSlug: string,
+): Promise<LessonView | null> {
+  const track = await findTrackBySlug(userId, weekSlug);
+  const step = track?.steps.find((item) => item.slug === lessonSlug);
   if (!track || !step) return null;
 
-  const content = await findStepContent(trackSlug, stepSlug);
-  return { track, step, contentMd: content?.contentMd ?? null };
+  const [content, sources, prompts] = await Promise.all([
+    findStepContent(weekSlug, lessonSlug),
+    findLessonSources(step.id),
+    findLessonPrompts(step.id, userId),
+  ]);
+
+  return { track, step, contentMd: content?.contentMd ?? null, sources, prompts };
 }

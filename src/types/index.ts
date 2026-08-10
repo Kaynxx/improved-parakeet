@@ -141,12 +141,12 @@ export type StepStatus =
 export interface RoadmapStep {
   id: string;
   slug: string;
-  trackSlug: string;
+  weekSlug: string;
   title: string;
   summary: string;
   estimatedMin: number;
   orderIndex: number;
-  /** DAG kenarları: bu adım açılmadan önce tamamlanması gerekenler. */
+  /** DAG kenarları: bu ders açılmadan önce tamamlanması gerekenler. */
   prerequisiteIds: string[];
   status: StepStatus;
 }
@@ -160,6 +160,60 @@ export interface Track {
   steps: RoadmapStep[];
   completedSteps: number;
   totalSteps: number;
+}
+
+// --- Destekleyici kaynaklar -----------------------------------------------
+
+export type SourceKind = "video" | "article" | "discussion";
+export type SourceLevel = "orta" | "ileri" | "uzman";
+
+export interface LessonSource {
+  id: string;
+  kind: SourceKind;
+  title: string;
+  url: string;
+  provider: string | null;
+  /**
+   * Doluysa video kendi sayfamızda gömülü oynatılır; boşsa yalnız bağlantı
+   * verilir. YouTube dışı video kaynakları için null kalır.
+   */
+  youtubeId: string | null;
+  durationLabel: string | null;
+  level: SourceLevel;
+  summary: string;
+}
+
+// --- Sorular ve cevaplar ---------------------------------------------------
+
+export type PromptKind = "acik" | "sayisal" | "tahmin";
+
+export interface LessonPrompt {
+  id: string;
+  key: string;
+  kind: PromptKind;
+  points: number;
+  promptMd: string;
+  /** `acik` sorularda dolu; AI değerlendirmesinin tek dayanağı. */
+  rubricMd: string | null;
+  expectedNumeric: string | null;
+  tolerance: string | null;
+}
+
+export interface AnswerFeedback {
+  model: string;
+  score: number;
+  strengths: string[];
+  gaps: string[];
+  feedbackMd: string;
+  followUp: string | null;
+  createdAt: string;
+}
+
+/** Bir sorunun kullanıcıya görünen tam hali: soru + cevabı + değerlendirmesi. */
+export interface PromptWithAnswer {
+  prompt: LessonPrompt;
+  answer: { id: string; body: string; updatedAt: string } | null;
+  feedback: AnswerFeedback | null;
 }
 
 export interface VideoSuggestion {
