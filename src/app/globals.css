@@ -155,6 +155,99 @@
     color: var(--color-ink);
   }
 
+  /* Ders gövdesi: `renderMarkdown` çıktısı. Sanitize katmanı yalnız şu
+     etiketlere izin verdiği için liste burada bitiyor — h1 kasten yok, sayfa
+     başlığı zaten h1 ve ders içinde ikinci bir h1 taslak yapısını bozardı. */
+  .ders-govde > * + * {
+    margin-top: 1.15em;
+  }
+
+  .ders-govde h2 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    margin-top: 2em;
+  }
+
+  .ders-govde h3 {
+    font-size: 1.1rem;
+    line-height: 1.3;
+    font-weight: 600;
+    margin-top: 1.6em;
+  }
+
+  .ders-govde ul,
+  .ders-govde ol {
+    padding-left: 1.4em;
+  }
+
+  .ders-govde ul {
+    list-style: disc;
+  }
+
+  .ders-govde ol {
+    list-style: decimal;
+  }
+
+  .ders-govde li + li {
+    margin-top: 0.4em;
+  }
+
+  .ders-govde blockquote {
+    border-left: 2px solid var(--color-accent);
+    padding-left: 1em;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .ders-govde code {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.9em;
+    background-color: var(--color-sunken);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+  }
+
+  .ders-govde pre {
+    background-color: var(--color-sunken);
+    border-radius: var(--radius-inner);
+    padding: 0.9em 1.1em;
+    overflow-x: auto;
+  }
+
+  .ders-govde pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .ders-govde a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Tablo dar ekranda sayfayı yatay kaydırmasın, kendi içinde kaysın. */
+  .ders-govde table {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .ders-govde th,
+  .ders-govde td {
+    border: 1px solid var(--color-rule);
+    padding: 0.45em 0.7em;
+    text-align: left;
+  }
+
+  .ders-govde hr {
+    border: 0;
+    border-top: 1px solid var(--color-rule);
+  }
+
   /* Kart yapılandırması artık double-bezel bileşenlerde inline hallediliyor
      Fakat legacy uyumluluk için: */
   .card {

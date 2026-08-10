@@ -3,30 +3,41 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
+import { SourceList } from "@/components/academy/SourceList";
 import { BentoCard } from "@/components/common/BentoCard";
+import { renderMarkdown } from "@/lib/content/render";
 import { getStep } from "@/server/services/academy";
 
+/**
+ * Ders sayfası.
+ *
+ * **Parametre adları dizin adlarıyla aynı olmak zorunda.** Rota Faz 2B'de
+ * `[track]/[step]` → `[hafta]/[ders]` olarak yeniden adlandırıldığında burası
+ * güncellenmemişti; `params.track` `undefined` geliyor, servis `null` dönüyor
+ * ve her ders 404'e düşüyordu. `params` tipi elle yazıldığı için `tsc` bunu
+ * göremedi — tip, gerçeği değil iddiayı anlatıyordu.
+ */
 interface PageProps {
-  params: Promise<{ track: string; step: string }>;
+  params: Promise<{ hafta: string; ders: string }>;
 }
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { track, step } = await params;
+  const { hafta, ders } = await params;
   const session = await auth();
-  const found = await getStep(session?.user.id ?? "", track, step);
-  if (!found) return { title: "Adım bulunamadı" };
+  const found = await getStep(session?.user.id ?? "", hafta, ders);
+  if (!found) return { title: "Ders bulunamadı" };
   return { title: found.step.title, description: found.step.summary };
 }
 
-export default async function StepPage({ params }: PageProps) {
-  const { track: trackSlug, step: stepSlug } = await params;
+export default async function DersPage({ params }: PageProps) {
+  const { hafta: haftaSlug, ders: dersSlug } = await params;
   const session = await auth();
-  const found = await getStep(session?.user.id ?? "", trackSlug, stepSlug);
+  const found = await getStep(session?.user.id ?? "", haftaSlug, dersSlug);
   if (!found) notFound();
 
-  const { track, step, contentMd } = found;
+  const { track, step, contentMd, sources } = found;
   const prerequisites = track.steps.filter((item) => step.prerequisiteIds.includes(item.id));
 
   return (
@@ -70,21 +81,26 @@ export default async function StepPage({ params }: PageProps) {
 
       <BentoCard title="İçerik">
         {contentMd ? (
-          // Ders metni uzun okuma — haber gövdesiyle aynı serif yüzey.
-          <div className="flex flex-col gap-5">
-            {contentMd.split("\n\n").map((paragraph) => (
-              <p key={paragraph.slice(0, 40)} className="reading">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+          // Markdown olarak basılır: ders gövdeleri başlık, liste ve tablo
+          // içeriyor. Paragrafa bölüp düz metin basmak `##` ve `-` işaretlerini
+          // ekrana çıplak döküyordu. `renderMarkdown` çıktıyı sanitize eder.
+          <div
+            className="ders-govde reading"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown sanitize-html'den geçiriyor.
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(contentMd) }}
+          />
         ) : (
           <p className="text-[13.5px] leading-relaxed text-ink-faint">
-            Bu adımın ders içeriği henüz yazılmadı. Yol haritasının yapısı ve ilerleme takibi
-            sabitlendi; içerik üretimi ayrı bir iş kalemi.
+            Bu dersin gövdesi henüz yazılmadı.
           </p>
         )}
       </BentoCard>
+
+      {sources.length > 0 ? (
+        <BentoCard title="Kaynaklar">
+          <SourceList sources={sources} />
+        </BentoCard>
+      ) : null}
     </div>
   );
 }
