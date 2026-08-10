@@ -1,0 +1,60 @@
+# Akademi kaynakları — Hafta 1
+
+> Doğrulama notu: Tüm URL'ler WebSearch ve/veya WebFetch ile kontrol edilmiştir. Doğrudan içerik çekilip okunabilen kaynaklar: Cato Institute (Selgin), BIS Papers No 66 (Caruana), mainlymacro.blogspot.com (Wren-Lewis), mahfiegilmez.com. Bazı resmi/kurumsal siteler bot trafiğini 403 ile engelliyor (community-exchange.org, bankofengland.co.uk, cnbc.com, chicagofed.org) — bu URL'lerin gerçekliği her durumda en az iki bağımsız arama sonucuyla (başlık, yazar, yayın tarihi eşleşmesi) teyit edilmiştir, içerik doğrudan okunamadığı açıkça belirtilmiştir. İki PDF (Innes 1913 "What is Money?" ve BIS/CPSS 1997 "Real-Time Gross Settlement Systems") indirilebildi ve dosya varlığı doğrulandı, ancak sıkıştırılmış metin katmanı bu araçla okunamadı; başlık/yazar bilgisi bağımsız aramalarla teyit edildi. Levy Institute Working Paper No. 512'nin yazarı (L. Randall Wray) SSRN ve Levy Institute'ün kendi yayın listesinden teyit edildi, PDF metni okunamadı. Tüm YouTube videolarının başlık/kanal bilgisi oEmbed API ile doğrulanmıştır; süre bilgisi hiçbir ücretsiz araçla alınamadığı için "süre doğrulanamadı" olarak işaretlenmiştir.
+
+## Hafta 1 · Para nedir: yaratım, ölçüm, kurum
+
+### 1.1 Takas efsanesi ve paranın kökeni — Menger'e karşı kredi teorisi
+
+**Video** · [Where Did Money REALLY Come From?](https://www.youtube.com/watch?v=REbrKOjsG2A) · Deficit Owls · süre doğrulanamadı · orta
+David Graeber'in "Debt: The First 5,000 Years" kitabındaki tezini anlattığı bir konuşmanın kaydı (aynı başlık davidgraeber.org'un video arşivinde de listeleniyor). Graeber, standart iktisat ders kitabı anlatısının aksine — takas, sonra para, sonra kredi — tarihsel sıranın tam tersi olduğunu, kredi/borç ilişkilerinin parasal takastan önce geldiğini savunur. İzleyici, "takas efsanesi" iddiasının kaynağını birinci ağızdan duyar ve 1.2'deki makale ile tartışma bölümündeki karşı argümanları değerlendirecek zemini kazanır.
+
+**Makale** · [What Is Money?](https://www.community-exchange.org/docs/what%20is%20money.htm) · A. Mitchell Innes, The Banking Law Journal, Mayıs 1913 · ileri
+Kredi teorisinin kurucu metinlerinden biri: Innes, paranın bir emtia veya takas aracı değil, bir borç kaydı (IOU) olduğunu, madeni paranın da tarihsel olarak bu kredi ilişkisinin bir görünümü olduğunu ileri sürer. Menger'in "para metadan doğar" anlatısına doğrudan meydan okur ve modern post-Keynesyen/MMT kredi teorisinin referans noktasıdır. Not: community-exchange.org bu araçla 403 hatası veriyor; metnin varlığı ve içeriği cooperative-individualism.org'daki PDF kopyası ve ikincil kaynaklar (Wikipedia "Credit theory of money", L.R. Wray'in 2004 tarihli derleme kitabı, SSRN kayıtları) üzerinden bağımsız olarak teyit edildi, sayfa doğrudan okunamadı.
+
+**Tartışma** · [The Myth of the Myth of Barter](https://www.cato.org/blog/myth-myth-barter) · George Selgin, Cato Institute · orta
+Selgin, Graeber'in hem Adam Smith'i hem Menger'i yanlış okuduğunu savunur: Smith ve Menger'in teorisi "yabancılar arası" ticareti açıklar, sıkı topluluk içi kredi/hediye ilişkilerini reddetmez. Menger'in de "değişimsiz ekonomiler"i ve gönüllü transferleri barter'dan önce kabul ettiğini gösterir. Bu metin, tartışmanın nerede gerçek bir anlaşmazlık (parasal değişimin kökeni) ve nerede bir yanlış okuma (Graeber'in Menger'e atfettiği iddialar) olduğunu ayırt etmesi açısından 1.1'in diğer iki kaynağına dengeleyici bir okuma sağlar.
+
+### 1.2 Krediyi banka yaratır: mevduat çarpanı modelinin çöküşü ve Bank of England 2014 tashihi
+
+**Video** · [Money creation in the modern economy - Quarterly Bulletin](https://www.youtube.com/watch?v=CvRAqR2pAgw) · Bank of England · süre doğrulanamadı · orta
+Bank of England'ın resmi kanalından, bankanın altın kasalarında çekilmiş kısa bir tanıtım videosu; 2014 Q1 Quarterly Bulletin makalesiyle eş zamanlı yayınlandı. Bankaların mevduat toplayıp bunun bir kısmını kredi olarak "çoğaltmadığını", tam tersine kredi verirken yeni mevduat (yeni para) yarattığını görsel olarak özetler. İzleyici, ders kitabı "mevduat çarpanı" şemasının merkez bankasının kendisi tarafından neden terk edildiğini ilk elden görür.
+
+**Makale** · [Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy) · McLeay, Radia, Thomas — Bank of England Quarterly Bulletin 2014 Q1 · ileri
+Modern parasal iktisadın en çok atıf alan tashih metinlerinden biri: bankaların aracı kurum olmadığını, mevduatları "ödünç vermediğini", merkez bankası parasını "çarpmadığını", bunun yerine her kredi işleminde eşzamanlı olarak bir alacak (kredi) ve bir yükümlülük (mevduat) yarattığını çift kayıt muhasebesiyle gösterir. Rezervlerin kredi vermenin önkoşulu değil sonucu olduğunu netleştirerek 1.4'teki içsel para arzı tartışmasının temelini atar. Not: bankofengland.co.uk bu araçla 403 hatası veriyor; makalenin varlığı, yazarları ve içeriği çok sayıda bağımsız arama sonucunda (resmi BoE URL'si, Quarterly Bulletin 2014 Q1 PDF'i, akademik atıflar) teyit edildi, sayfa doğrudan okunamadı.
+
+**Tartışma** · [Bank says money multiplier is wrong - should we be shocked?](https://mainlymacro.blogspot.com/2014/03/bank-says-money-multiplier-is-wrong.html) · Simon Wren-Lewis, mainly macro · orta
+Oxford'lu iktisatçı Wren-Lewis, BoE'nin tashihinin uygulamacılar için hiç şaşırtıcı olmadığını, asıl sorunun lisans ders kitaplarının hâlâ eskimiş mevduat çarpanı ve basit tüketim fonksiyonu modellerini öğretmeye devam etmesi olduğunu savunur. Tartışmanın nerede bittiğini gösterir: merkez bankacıları ve akademisyenler arasında mevduat çarpanının yanlışlığı konusunda neredeyse hiç anlaşmazlık yok; asıl cephe, bunun ders kitaplarına ve popüler algıya ne zaman yansıyacağı.
+
+### 1.3 Merkez bankası bilançosunu okumak — emisyon, rezerv, yükümlülük tarafı gerçekte ne der
+
+**Video** · [The Federal Reserve balance sheet explained](https://www.youtube.com/watch?v=GcTGXsO2Ijg) · Ted Erhart, CFP® · süre doğrulanamadı · orta
+Fed bilançosunun varlık tarafında tahvil/menkul kıymet stokunun, yükümlülük tarafında ise banknot ve rezervlerin nasıl yer aldığını sade bir dille anlatan bir tanıtım videosu. Bilançonun büyümesinin ("QE") mekanik olarak nasıl bir varlık takası olduğunu, doğrudan "para basmak" ile eş anlamlı olmadığını gösterir. İzleyici, 1.3'ün asıl kaynağı olan BIS makalesine geçmeden önce bilanço okuryazarlığının temel dilini kazanır.
+
+**Makale** · [Why central bank balance sheets matter](https://www.bis.org/publ/bppdf/bispap66b.pdf) · Jaime Caruana, BIS Papers No 66 · ileri
+BIS Genel Müdürü Caruana, 2008 krizi sonrası merkez bankası bilançolarının nasıl geleneksel faiz politikasının ötesinde bağımsız bir politika aracına dönüştüğünü inceler. Bilançonun büyüklüğünün değil, kompozisyonunun (hangi varlıklar, hangi vadede, hangi karşı taraflarla) taşıdığı sinyal ve risklerin önemini vurgular. Okur, yükümlülük tarafındaki banknot+rezerv toplamının nihai ödeme aracı olduğunu ve bilanço genişlemesinin enflasyonist etkisinin otomatik olmadığını teknik düzeyde kavrar.
+
+**Tartışma** · [Why Quantitative Easing Isn't Printing Money](https://www.cnbc.com/2013/05/23/why-quantitative-easing-isnt-printing-money.html) · CNBC · orta
+QE'nin muhasebe açısından bir varlık takası (rezerv karşılığı tahvil alımı) olduğunu, bankacılık sisteminin dışındaki para arzını doğrudan artırmadığını savunan popüler-basın perspektifi. "Merkez bankası parayı bastı" söyleminin nerede teknik olarak yanlış, nerede tartışmaya açık (rezerv artışının dolaylı etkileri, beklenti kanalı) olduğunu somutlaştırır. Not: cnbc.com bu araçla 403 hatası veriyor; başlık, yazım tarihi (23 Mayıs 2013) ve ana argüman iki bağımsız arama sonucunda doğrudan alıntılarla teyit edildi, sayfa doğrudan okunamadı.
+
+### 1.4 M0/M1/M2/M3 ve para arzının içselliği (endogeneity) — hangi tanım neyi ölçer
+
+**Video** · [Money supply: M0, M1, and M2](https://www.youtube.com/watch?v=_LPh72gx6GE) · Khan Academy · süre doğrulanamadı · orta
+Khan Academy'nin standart ders videosu; M0 (banknot+madeni para), M1 (M0+vadesiz mevduat) ve M2 (M1+vadeli/tasarruf mevduatı) tanımlarını adım adım kurar. Her genişleme adımının likidite spektrumunda nereye oturduğunu gösterir. Okur, 1.4'ün diğer iki kaynağındaki "bu tanımlardan hangisi merkez bankasının kontrolünde" tartışmasına girmeden önce sağlam bir sözlükle başlar.
+
+**Makale** · [Endogenous Money: Structuralist and Horizontalist](https://www.levyinstitute.org/pubs/wp_512.pdf) · L. Randall Wray, Levy Economics Institute Working Paper No. 512 (2007) · ileri
+Post-Keynesyen içsel para teorisinin iki ana kolunu (Basil Moore'un "yatay" arz eğrisi savı ile "yapısalcı" itirazları) karşılaştırır: merkez bankasının para arzını dışsal olarak belirlemediğini, bankaların kredi talebine göre önce kredi verip sonra rezerv aradığını, M1/M2/M3 büyüklüklerinin bu nedenle bir "sonuç" olduğunu savunur. Bu, 1.2'deki BoE tashihinin teorik çerçevesini M1-M3 ölçüm tartışmasına bağlar. Not: PDF sıkıştırılmış olduğu için bu araçla metin okunamadı; yazar, başlık ve yayın tarihi SSRN kaydı ve Levy Institute'ün kendi yayın sayfası üzerinden bağımsız olarak teyit edildi.
+
+**Tartışma** · [Para Arzı Nedir ve Nasıl Ölçülür?](https://www.mahfiegilmez.com/2018/07/para-arz-nedir-ve-nasl-olculur.html) · Mahfi Eğilmez · orta
+Türkiye'nin en çok okunan iktisat bloglarından birinde, eski Hazine Müsteşarı Mahfi Eğilmez, M0'dan M3'e dar ve geniş para arzı tanımlarını Türkiye pratiğiyle anlatır; paranın dolaşım hızındaki değişimin ölçümü nasıl çarpıttığını tartışır. Akademik içsellik tartışmasının Türkçe, TCMB verileri üzerinden okunan pratik karşılığını sunarak haftanın Türkiye bağlantısını kurar.
+
+### 1.5 Ödeme sistemleri ve rezerv dolaşımı: RTGS, gün içi likidite, mutabakat riski
+
+**Video** · [RTGS – The standard in interbank payment traffic](https://www.youtube.com/watch?v=ydTk7s1Vlik) · SIX · süre doğrulanamadı · orta
+İsviçre borsa ve altyapı operatörü SIX'in resmi kanalından, ülkenin SIC (frank) ve euroSIC (euro) RTGS sistemlerini örnek alarak gerçek zamanlı brüt mutabakatın nasıl işlediğini anlatan kurumsal bir tanıtım videosu. Her ödemenin tek tek ve anında, merkez bankası parasıyla nihai olarak mutabakata bağlandığını somut bir altyapı üzerinden gösterir. TCMB'nin EFT-EMKT sisteminin de aynı RTGS mantığıyla çalıştığını anlamak için doğrudan aktarılabilir bir örnek sunar.
+
+**Makale** · [Real-Time Gross Settlement Systems](https://www.bis.org/cpmi/publ/d22.pdf) · Committee on Payment and Settlement Systems (G10 merkez bankaları), BIS, Mart 1997 · ileri
+RTGS sistemlerinin küresel standart hâline gelmesini sağlayan kurucu rapor: gün içi likidite ihtiyacı, kuyruklama (queuing) mekanizmaları, kilitlenme (gridlock) riski ve RTGS'nin net mutabakat sistemlerine kıyasla mutabakat riskini nasıl ortadan kaldırdığını sistematik olarak inceler. Okur, "neden her ödeme anında ve tam karşılığıyla yapılıyor" sorusunun kurumsal kökenini birincil kaynaktan öğrenir. Not: PDF sıkıştırılmış olduğu için bu araçla metin okunamadı; belgenin varlığı iki bağımsız arama sonucunda (bis.org ana barındırma ve cpmi/publ yönlendirme kopyası) ve BIS'in resmi 1997 basın duyurusuyla teyit edildi.
+
+**Tartışma** · [Liquidity, Settlement Risk, and Systemic Stability](https://www.chicagofed.org/publications/speeches/2017/9-08-liquidity-settlement-risks-and-systemic-stability-marshall) · David Marshall, Federal Reserve Bank of Chicago (Eylül 2017 konuşması) · orta
+Chicago Fed'den Marshall, RTGS'nin mutabakat riskini azaltırken gün içi likidite bağımlılığını artırdığını, bu bağımlılığın kriz anında sistemik riski büyütebilecek "iki ucu keskin bir kılıç" olduğunu savunur. Mutabakat riski ile likidite maliyeti arasındaki değiş tokuşun nerede bir mühendislik sorunu (kuyruklama, likidite tasarrufu mekanizmaları), nerede kalıcı bir kırılganlık kaynağı olduğu konusunda görüş ayrılığının sınırını çizer. Not: chicagofed.org bu araçla 403 hatası veriyor; konuşmanın tarihi, konuşmacısı ve ana argümanı iki bağımsız arama sonucunda doğrudan alıntılarla teyit edildi, sayfa doğrudan okunamadı.
