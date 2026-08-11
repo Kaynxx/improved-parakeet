@@ -216,17 +216,28 @@ export interface PromptWithAnswer {
   feedback: AnswerFeedback | null;
 }
 
+/**
+ * Günün video önerisi. Kaynağı **akademi dersleridir** — ayrı bir video tablosu
+ * ya da YouTube Data API yok.
+ *
+ * Alanlar `lesson_sources`'un gerçekten tuttuklarıyla sınırlı. Önceki sürüm
+ * `durationSec`, `publishedAt` ve `thumbnailUrl` taşıyordu; üçünün de karşılığı
+ * yok, çünkü tip mock'un şeklinden türetilmişti. Süre `lesson_sources` tarafında
+ * "42 dk" gibi serbest metin (`durationLabel`) olarak duruyor.
+ */
 export interface VideoSuggestion {
   id: string;
   youtubeId: string;
   title: string;
-  channelTitle: string;
-  thumbnailUrl: string | null;
-  durationSec: number;
-  publishedAt: string;
-  /** Hangi adım için önerildiği — "günlük video" eşleştirmesi. */
-  stepSlug: string;
-  stepTitle: string;
+  /** Kanal / yayıncı adı. Kaynak dosyası vermemişse null. */
+  channelTitle: string | null;
+  durationLabel: string | null;
+  level: SourceLevel;
+  summary: string;
+  /** Videonun ait olduğu ders — kart oraya götürür. */
+  weekSlug: string;
+  lessonSlug: string;
+  lessonTitle: string;
 }
 
 // --- Ticker şeridi --------------------------------------------------------

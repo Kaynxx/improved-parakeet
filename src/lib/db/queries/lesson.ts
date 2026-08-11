@@ -1,7 +1,14 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, ne } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { answerFeedback, lessonAnswers, lessonPrompts, lessonSources } from "@/lib/db/schema";
-import type { LessonSource, PromptWithAnswer } from "@/types";
+import {
+  answerFeedback,
+  lessonAnswers,
+  lessonPrompts,
+  lessonSources,
+  lessons,
+  weeks,
+} from "@/lib/db/schema";
+import type { LessonSource, PromptWithAnswer, VideoSuggestion } from "@/types";
 
 export async function findLessonSources(lessonId: string): Promise<LessonSource[]> {
   const rows = await getDb()
@@ -20,6 +27,55 @@ export async function findLessonSources(lessonId: string): Promise<LessonSource[
     durationLabel: row.durationLabel,
     level: row.level,
     summary: row.summary,
+  }));
+}
+
+/**
+ * Günlük öneriye aday videolar: gömülebilir YouTube kimliği olan ders kaynakları.
+ *
+ * `youtube_id` boşsa aday değil — kart oynatılamayan bir videoyu "günün videosu"
+ * diye sunamaz. Sıralama hafta → ders → kaynak sırası üzerinden **sabit**:
+ * seçim gün indeksine göre yapılıyor ve sıra oynarsa aynı gün içinde farklı
+ * video gelirdi.
+ */
+export async function findVideoSources(): Promise<VideoSuggestion[]> {
+  const rows = await getDb()
+    .select({
+      id: lessonSources.id,
+      youtubeId: lessonSources.youtubeId,
+      title: lessonSources.title,
+      provider: lessonSources.provider,
+      durationLabel: lessonSources.durationLabel,
+      level: lessonSources.level,
+      summary: lessonSources.summary,
+      weekSlug: weeks.slug,
+      lessonSlug: lessons.slug,
+      lessonTitle: lessons.title,
+    })
+    .from(lessonSources)
+    .innerJoin(lessons, eq(lessons.id, lessonSources.lessonId))
+    .innerJoin(weeks, eq(weeks.id, lessons.weekId))
+    .where(
+      and(
+        eq(lessonSources.kind, "video"),
+        isNotNull(lessonSources.youtubeId),
+        ne(lessonSources.youtubeId, ""),
+      ),
+    )
+    .orderBy(asc(weeks.orderIndex), asc(lessons.orderIndex), asc(lessonSources.orderIndex));
+
+  return rows.map((row) => ({
+    id: row.id,
+    // `isNotNull` filtresi garanti ediyor; tip daraltmayı Drizzle yapamıyor.
+    youtubeId: row.youtubeId as string,
+    title: row.title,
+    channelTitle: row.provider,
+    durationLabel: row.durationLabel,
+    level: row.level,
+    summary: row.summary,
+    weekSlug: row.weekSlug,
+    lessonSlug: row.lessonSlug,
+    lessonTitle: row.lessonTitle,
   }));
 }
 

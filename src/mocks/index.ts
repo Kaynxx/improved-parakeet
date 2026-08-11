@@ -3,8 +3,9 @@
  *
  * **Küçülüyor, büyümüyor.** 2A akademiyi, 2B haberleri gerçek veriye taşıdı;
  * makale ve ticker-şeridi mock'ları o noktada silindi. 2E ilerlemeyi
- * `user_progress`'e bağlayınca akademi parçaları da buradan çıktı.
- * Kalanlar: topluluk (2C), video (2D), piyasa (2F).
+ * `user_progress`'e bağlayınca akademi parçaları da buradan çıktı. 2D günün
+ * videosunu ders kaynaklarına bağlayınca `dailyVideo` de gitti.
+ * Kalanlar: topluluk (2C), piyasa (2F).
  *
  * Burada hiçbir ağ çağrısı yok — modül tamamen statiktir.
  */
@@ -16,7 +17,6 @@ import type {
   SentimentSummary,
   Ticker,
   TickerSentiment,
-  VideoSuggestion,
 } from "@/types";
 
 const NOW = Date.now();
@@ -296,14 +296,5 @@ export const tickerSentiments: TickerSentiment[] = [
   },
 ];
 
-export const dailyVideo: VideoSuggestion = {
-  id: "vid-1",
-  youtubeId: "mock-video-id",
-  title: "Why Diversification Is the Only Free Lunch in Investing",
-  channelTitle: "Ben Felix",
-  thumbnailUrl: null,
-  durationSec: 762,
-  publishedAt: ago(2880),
-  stepSlug: "portfoy-cesitlendirme",
-  stepTitle: "Portföy çeşitlendirme",
-};
+// `dailyVideo` mock'u Faz 2D'de silindi: günün videosu artık akademi
+// derslerinin doğrulanmış YouTube kaynaklarından geliyor (`services/video.ts`).
