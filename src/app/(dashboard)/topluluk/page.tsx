@@ -11,6 +11,7 @@ import {
 } from "@/server/services/sentiment";
 
 export const metadata: Metadata = { title: "Topluluk" };
+export const dynamic = "force-dynamic";
 
 export default async function ToplulukPage() {
   const [posts, summary, trending] = await Promise.all([
