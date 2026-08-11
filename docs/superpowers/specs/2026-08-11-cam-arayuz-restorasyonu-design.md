@@ -123,7 +123,9 @@ hedefli sınıf değişiklikleri alırlar.
 
 Saydam `surface` tokenına yanlışlıkla opaklık görevi yüklenmez:
 
-- SentimentMeter ibresinin ayırıcı halkası taban rengine bağlanır.
+- Güncel SentimentMeter'ın merkezden ayrışan çubuk modeli korunur; eski tasarımdaki
+  ibre geri getirilmez. Ölçek zemini `elevated`, merkez çentiği güçlü hairline
+  tokenından beslenir.
 - Sparkline son değer çapası taban rengine bağlanır.
 - NewsTicker kenar maskeleri taban renginden türetilir.
 - Chrome içindeki arama ve benzeri alanlar `inset-panel` kullanır.
