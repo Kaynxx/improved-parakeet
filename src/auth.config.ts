@@ -13,6 +13,19 @@ import type { NextAuthConfig } from "next-auth";
  */
 export const authConfig = {
   providers: [],
+  /**
+   * `next start` NODE_ENV=production ile çalışır ve Auth.js o durumda `Host`
+   * başlığına varsayılan olarak GÜVENMEZ; middleware her istekte
+   * `UntrustedHost` fırlatır, oturumu çözemez ve korumalı rotaların hepsi
+   * "oturum yok" sanılıp /giris'e atılır. Hata yalnız üretim derlemesinde
+   * görünür — `next dev` host'a kendiliğinden güvendiği için geliştirmede
+   * gizli kalır.
+   *
+   * Uygulama tek kullanıcılı ve kendi sunucusunda çalıştığı için Host'a
+   * güvenmek burada doğru karar. Ters vekil (reverse proxy) arkasına
+   * konulursa bu yetmez; `AUTH_URL` ile dış adres sabitlenmelidir.
+   */
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/giris",
