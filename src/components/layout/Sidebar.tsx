@@ -66,7 +66,7 @@ export function Sidebar() {
               {/* Aktiflik renk dışında ikinci bir kanal daha taşır: sol çubuk. */}
               {active ? (
                 <span
-                  className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-accent"
+                  className="absolute inset-y-2 left-0 w-[3px] rounded-[var(--radius-inner)] bg-accent"
                   aria-hidden="true"
                 />
               ) : null}

@@ -25,7 +25,7 @@ export function VideoPlayer({ youtubeId, title, provider, durationLabel }: Video
 
   return (
     <figure className="flex flex-col gap-2.5">
-      <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-inner)] bg-sunken">
+      <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-inner)] bg-elevated">
         {oynatiliyor ? (
           <iframe
             src={`${youtubeEmbedUrl(youtubeId)}&autoplay=1`}
@@ -55,12 +55,12 @@ export function VideoPlayer({ youtubeId, title, provider, durationLabel }: Video
             />
             <span className="absolute inset-0 bg-ink/25 transition-colors duration-200 group-hover:bg-ink/15" />
             <span className="absolute inset-0 flex items-center justify-center">
-              <span className="press flex size-14 items-center justify-center rounded-full bg-paper/95 text-ink shadow-[var(--shadow-lift)]">
+              <span className="press flex size-14 items-center justify-center rounded-full bg-ink/95 text-paper shadow-[var(--shadow-lift)]">
                 <Play className="size-6 translate-x-[2px]" fill="currentColor" aria-hidden="true" />
               </span>
             </span>
             {durationLabel ? (
-              <span className="meta absolute right-2.5 bottom-2.5 rounded-[var(--radius-chip)] bg-ink/85 px-1.5 py-0.5 text-paper">
+              <span className="meta absolute right-2.5 bottom-2.5 rounded-[var(--radius-inner)] bg-ink/85 px-1.5 py-0.5 text-paper">
                 {durationLabel}
               </span>
             ) : null}

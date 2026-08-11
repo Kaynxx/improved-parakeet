@@ -29,7 +29,7 @@ export function RoadmapPreview({ track, limit = 4 }: { track: Track; limit?: num
         </div>
       </div>
 
-      <ol className="flex flex-col border-t border-rule pt-5">
+      <ol className="flex flex-col border-t border-hairline pt-5">
         {visible.map((step, index) => (
           <RoadmapNode key={step.id} step={step} isLast={index === visible.length - 1} />
         ))}

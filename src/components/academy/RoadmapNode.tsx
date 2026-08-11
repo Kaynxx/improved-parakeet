@@ -41,8 +41,8 @@ export function RoadmapNode({ step, isLast = false }: { step: RoadmapStep; isLas
             // `bg-rule` (%9) beyaz kartın üstünde kayboluyordu ve yol haritası
             // düz bir listeye dönüşüyordu. Çizgi burada bağımlılığı taşıyan
             // yapısal öğe — görünmesi gerekiyor.
-            "absolute top-8 bottom-0 left-[14px] w-[2px] rounded-full",
-            isDone ? "bg-accent-line" : "bg-rule-strong",
+            "absolute top-8 bottom-0 left-[14px] w-[2px] rounded-[var(--radius-inner)]",
+            isDone ? "bg-accent-line" : "bg-hairline-strong",
           )}
           aria-hidden="true"
         />
@@ -52,8 +52,8 @@ export function RoadmapNode({ step, isLast = false }: { step: RoadmapStep; isLas
         className={cn(
           "relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full",
           isDone && "bg-accent text-paper",
-          isActive && "bg-card text-accent ring-2 ring-accent",
-          !isDone && !isActive && "bg-sunken text-ink-faint",
+          isActive && "bg-elevated text-accent ring-2 ring-accent",
+          !isDone && !isActive && "bg-elevated text-ink-faint",
         )}
       >
         <Icon

@@ -10,7 +10,7 @@ const LEVEL_LABEL: Record<SourceLevel, string> = {
 };
 
 const LEVEL_STYLE: Record<SourceLevel, string> = {
-  orta: "bg-sunken text-ink-muted",
+  orta: "bg-elevated text-ink-muted",
   ileri: "bg-accent-soft text-accent",
   uzman: "bg-ink text-paper",
 };
@@ -30,9 +30,9 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
     <article>
       <Link
         href={{ pathname: `/akademi/${video.weekSlug}/${video.lessonSlug}` }}
-        className="press group/vid -m-2 flex flex-col gap-3.5 rounded-[var(--radius-inner)] p-2 hover:bg-sunken/70"
+        className="press group/vid -m-2 flex flex-col gap-3.5 rounded-[var(--radius-inner)] p-2 hover:bg-elevated/70"
       >
-        <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-inner)] bg-sunken">
+        <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-inner)] bg-elevated">
           {/* alt="" bilinçli: başlık hemen altta metin olarak duruyor, kapak
               görseli ekran okuyucu için tekrar olurdu. */}
           {/* biome-ignore lint/performance/noImgElement: harici thumbnail, yukarıdaki nota bakın */}
@@ -44,12 +44,12 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
           />
           <span className="absolute inset-0 bg-ink/25 transition-colors duration-200 group-hover/vid:bg-ink/15" />
           <span className="absolute inset-0 flex items-center justify-center">
-            <span className="flex size-12 items-center justify-center rounded-full bg-paper/95 text-ink shadow-[var(--shadow-lift)]">
+            <span className="flex size-12 items-center justify-center rounded-full bg-ink/95 text-paper shadow-[var(--shadow-lift)]">
               <Play className="size-5 translate-x-[1px]" fill="currentColor" aria-hidden="true" />
             </span>
           </span>
           {video.durationLabel ? (
-            <span className="meta absolute right-2 bottom-2 rounded-[var(--radius-chip)] bg-ink/85 px-1.5 py-0.5 text-paper">
+            <span className="meta absolute right-2 bottom-2 rounded-[var(--radius-inner)] bg-ink/85 px-1.5 py-0.5 text-paper">
               {video.durationLabel}
             </span>
           ) : null}
@@ -59,7 +59,7 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span
               className={cn(
-                "shrink-0 rounded-[var(--radius-chip)] px-1.5 py-0.5 text-[10px] font-semibold",
+                "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-[10px] font-semibold",
                 LEVEL_STYLE[video.level],
               )}
             >
@@ -78,7 +78,7 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
           </p>
         </div>
 
-        <p className="rounded-[var(--radius-inner)] bg-sunken px-3.5 py-2.5 text-[12.5px] text-ink-muted">
+        <p className="rounded-[var(--radius-inner)] bg-elevated px-3.5 py-2.5 text-[12.5px] text-ink-muted">
           <span className="text-ink-faint">Şu ders için:</span>{" "}
           <span className="font-semibold text-ink">{video.lessonTitle}</span>
         </p>

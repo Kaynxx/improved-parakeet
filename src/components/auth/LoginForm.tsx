@@ -66,7 +66,7 @@ function Alan({ id, name, type, label, autoComplete, placeholder }: AlanProps) {
         required
         autoComplete={autoComplete}
         placeholder={placeholder}
-        className="h-11 rounded-[var(--radius-inner)] bg-sunken px-3.5 text-[14.5px] text-ink placeholder:text-ink-faint"
+        className="inset-panel h-11 px-3.5 text-[14.5px] text-ink placeholder:text-ink-faint"
       />
     </div>
   );

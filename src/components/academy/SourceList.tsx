@@ -16,7 +16,7 @@ const LEVEL_LABEL: Record<SourceLevel, string> = {
 };
 
 const LEVEL_STYLE: Record<SourceLevel, string> = {
-  orta: "bg-sunken text-ink-muted",
+  orta: "bg-elevated text-ink-muted",
   ileri: "bg-accent-soft text-accent",
   uzman: "bg-ink text-paper",
 };
@@ -63,9 +63,9 @@ export function SourceList({ sources }: { sources: LessonSource[] }) {
                 href={source.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="press group/src -mx-2 flex items-start gap-3 rounded-[var(--radius-inner)] px-2 py-1.5 hover:bg-sunken/70"
+                className="press group/src -mx-2 flex items-start gap-3 rounded-[var(--radius-inner)] px-2 py-1.5 hover:bg-elevated/70"
               >
-                <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-chip)] bg-sunken text-ink-faint">
+                <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-inner)] bg-elevated text-ink-faint">
                   {source.kind === "discussion" ? (
                     <MessagesSquare className="size-4" strokeWidth={1.75} aria-hidden="true" />
                   ) : (
@@ -107,7 +107,7 @@ function Rozet({ level }: { level: SourceLevel }) {
   return (
     <span
       className={cn(
-        "shrink-0 rounded-[var(--radius-chip)] px-1.5 py-0.5 text-[10px] font-semibold",
+        "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-[10px] font-semibold",
         LEVEL_STYLE[level],
       )}
     >

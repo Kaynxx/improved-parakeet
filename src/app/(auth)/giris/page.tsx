@@ -29,7 +29,7 @@ export default async function GirisPage({
 
   return (
     <div className="w-full max-w-[26rem]">
-      <div className="card px-7 py-8 sm:px-9 sm:py-10">
+      <div className="glass px-7 py-8 sm:px-9 sm:py-10">
         <svg
           viewBox="0 0 20 20"
           className="size-7 text-accent"

@@ -32,7 +32,7 @@ export function ProgressRing({ completed, total, size = 56, className }: Progres
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="var(--color-sunken)"
+          stroke="var(--color-elevated)"
           strokeWidth={stroke}
         />
         <circle
