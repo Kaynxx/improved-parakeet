@@ -504,7 +504,11 @@ uzlaştırıldı ve belgeye doğru yansıtıldı. Faz 2C kodu veya diğer ürün
   verdi. Tek minor commit izlenebilirliği bulgusu `37cf426` ile düzeltildi;
   final scoped re-review temiz döndü.
 - Son doğrulamada UTF-8 okuma, yasaklı kalıp taraması, altı fazın meta/hiyerarşi
-  sayımları ve `git diff --check` başarılıydı; değişiklik kapsamı yalnız
+  sayımları ve yeni eklenen kronolojik kaydın satırlarına uygulanan
+  `git diff --check` başarılıydı; yeni kaydın kendi satırlarında whitespace
+  hatası yoktu. Dosya ilk kez izlendiği için `0e4596e` tam-dosya commit
+  kontrolü, mevcut 3. satırdaki Markdown hard-break için iki trailing space
+  uyarısı verdi; bu satır korunarak değişiklik kapsamı yalnız
   `SUREC-GUNLUGU.md` idi. `typecheck` ve `lint` yeniden exit 0 verdi; aynı 12
   CSS uyarısı sürdü.
 - Plan-özel SDD brief/ledger/review paketleri final review sonrasında silindi;
@@ -529,8 +533,11 @@ ajanlara ait başka dosya bu çalışma kapsamında değiştirilmedi.
 **Doğrulama:** İzole çalışma ve review turlarında `Get-Content -Encoding UTF8`,
 `Select-String`, `git diff --check`, `git diff-tree`, `npm run typecheck` ve
 `npm run lint` çalıştırıldı. Sonuçlar: UTF-8 başlık doğru, yasaklı eski kalıp 0,
-diff whitespace hatası 0, typecheck exit 0, lint exit 0 ve 12 mevcut CSS
-uyarısı. Üç izole branch commit'i yalnız `SUREC-GUNLUGU.md` dosyasını değiştirdi.
+yeni eklenen kronolojik kaydın satırlarında whitespace hatası yok, typecheck
+exit 0, lint exit 0 ve 12 mevcut CSS uyarısı. Dosya ilk kez izlendiği için
+`0e4596e` tam-dosya commit kontrolü yalnız mevcut 3. satırdaki Markdown
+hard-break için iki trailing space uyarısı verdi; üç izole branch commit'i
+yalnız `SUREC-GUNLUGU.md` dosyasını değiştirdi.
 
 **Sıradaki adım:** Diğer ajanların Faz 2C ve ilgili eşzamanlı işleri bittikten
 sonra ana günlük ile `codex/surec-gunlugu-plan` branch'i seçici olarak
