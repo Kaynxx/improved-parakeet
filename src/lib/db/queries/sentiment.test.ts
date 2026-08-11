@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import { communities, communityPosts, postTickers, sentimentLabel } from "@/lib/db/schema";
+import { findRecentPosts, findTrendingTickers } from "./sentiment";
 import {
   type ActiveSentimentPost,
   buildSentimentSummary,
   buildTickerSentiments,
   postedAtFromOffset,
 } from "./sentiment.logic";
-import { findRecentPosts, findTrendingTickers } from "./sentiment";
 
 const btc = { symbol: "BTC", name: "Bitcoin", assetType: "crypto" as const };
 const nvda = { symbol: "NVDA", name: "NVIDIA Corp.", assetType: "equity" as const };
