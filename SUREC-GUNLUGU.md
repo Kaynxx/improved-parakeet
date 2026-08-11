@@ -54,9 +54,19 @@ ilişkilendirerek dağınık bilgiyi bağlama dönüştürmeyi hedefler.
 - Günün videosu akademi derslerinin doğrulanmış YouTube kaynaklarından gelir;
   seçim güne göre belirlenimcidir ve 40 videoluk döngüyle ilerler. Kart ilgili
   derse götürür. YouTube Data API bilinçli olarak kullanılmaz.
-- Güncel çalışma odağı Faz 0'dır: doğrulamaları tamamlamak, eski durum
-  belgelerini Git ile eşitlemek ve kullanıcıya ait çalışma ağacı değişikliklerini
-  bu işten ayırmak.
+- **Mock katmanı tamamen kalktı.** `src/mocks/` boş ve kod tabanında tek bir
+  `@/mocks` importu yok. Üç servisin üçü de (`sentiment.ts`, `video.ts`,
+  `market.ts`) Postgres'ten okuyor.
+- Piyasa kartları Finnhub'ın ücretsiz katmanından besleniyor. Beş sembolün
+  dördü ETF vekili (SPY, QQQ, GLD, FXE): endeks değerleri lisanslı veri ve
+  ücretsiz katmanda forex tamamen kapalı. Vekillik arayüzde açıkça yazılıyor.
+  Sağlayıcıda geçmiş seri olmadığı için sparkline'ı worker biriktiriyor —
+  seri boş başlar ve 30 günde dolar.
+- Drizzle migration zinciri onarıldı: yedi migration `0000_baseline.sql`
+  içinde toplandı. `db:migrate` ve `db:generate` otonom/CI ortamında soru
+  sormadan, exit 0 ile çalışıyor.
+- Güncel çalışma odağı Faz 0'ın kalan dokümantasyon işi ile akademi
+  sorularının arayüze bağlanmasıdır.
 
 ## Tamamlanan aşamalar
 
@@ -71,8 +81,10 @@ ilişkilendirerek dağınık bilgiyi bağlama dönüştürmeyi hedefler.
 | 2026-08-11 | Ders rotası düzeltmesi | `[hafta]/[ders]` rota parametreleri servis sorgusuyla eşleştirildi; 404 giderildi (`eeb0e19`). |
 | 2026-08-11 | Süreç günlüğü tasarımı | Yaşayan günlük yapısı ve fazlara ayrılmış yol haritası tasarlandı (`a9b2103`, `2711207`). |
 | 2026-08-11 | Faz 0 — Doğrulama | Migration, idempotent seed, üretim derlemesi ve rota kontrolleri gerçek çıktılarıyla kaydedildi; üretimdeki auth hatası bulunup giderildi (`d6b110b`). |
-| 2026-08-11 | Faz 2C — Topluluk duyarlılığı | Sentiment mock'u Postgres/Drizzle şemasına, dinamik sorgulara ve idempotent seed'e taşındı; `/topluluk` dinamik render ediliyor (`274a663`, `2c5a7bb`, `d074075`, `87b4fe7`, `721c2b3`). |
-| 2026-08-11 | Faz 2D — Günlük video | Panel mock'tan doğrulanmış ders videolarına geçti; YouTube Data API gerekçesiyle kapsam dışı bırakıldı. |
+| 2026-08-11 | Faz 2C — Topluluk duyarlılığı | Sentiment mock'u Postgres/Drizzle şemasına, dinamik sorgulara ve idempotent seed'e taşındı; `/topluluk` dinamik render ediliyor (`4520e57`, `0d97dcc`, `72861b2`, `e8d9bc1`, `3f4bfba`). |
+| 2026-08-11 | Faz 2D — Günlük video | Panel mock'tan doğrulanmış ders videolarına geçti; YouTube Data API gerekçesiyle kapsam dışı bırakıldı (`3c64c45`). |
+| 2026-08-11 | Faz 2F — Piyasa verisi | Fiyatlar Finnhub'a bağlandı; ücretsiz katmanda mum uçları kapalı olduğu için geçmiş worker tarafından biriktiriliyor, endeks/emtia/FX ETF vekiliyle izleniyor (`2d7b753`). |
+| 2026-08-11 | Teknik borç — Drizzle zinciri | Yedi migration `0000_baseline.sql`'de toplandı, snapshot zinciri yeniden üretildi; `generate` artık TTY istemiyor. 2C/2F commit sınırları ayrıştırıldı (`218eaa5`). |
 
 ## Bundan sonra yapılacaklar
 
@@ -174,29 +186,50 @@ Tasarım ve gerekçe: [2026-08-11-faz2d-gunluk-video.md](docs/superpowers/plans/
 
 ### Faz 2F — Gerçek piyasa verisi
 
-**Amaç:** Üst ticker ve piyasa kartlarındaki mock fiyatları seçilmiş bir gerçek
-veri kaynağıyla değiştirmek.
+**Amaç:** Piyasa kartlarındaki mock fiyatları gerçek bir veri kaynağıyla
+değiştirmek.
 
-**Durum:** Planlanmış; sağlayıcı seçilmedi ve `market.ts` mock kullanıyor.
+**Kapsam düzeltmesi:** Fazın özgün amacı "üst ticker ve piyasa kartları"
+diyordu; **üst ticker'da fiyat yok.** `TickerItem` `{id, label, headline,
+isBreaking}` taşıyor ve `getTickerItems` son makalelerden türüyor — zaten
+Postgres'ten gelen gerçek veri. Fazın tek tüketicisi `MarketOverview`.
 
-**Bağımlılıklar:** Veri sağlayıcısı, sembol kapsamı, gecikme toleransı, kota,
-lisans ve saklama politikası kararları.
+**Durum:** **Bitti** (2026-08-11). `market.ts` Postgres'ten okuyor, worker
+Finnhub'dan çekiyor, mock katmanı tamamen kalktı.
+
+**Bağımlılıklar:** `FINNHUB_API_KEY` (ücretsiz). Worker çalışmazsa kartlar boş
+kalır; sayfa kendi çekim yapmaz.
 
 **Konu — Sağlayıcı ve sözleşme**
 
-- [ ] Ücretsiz/ücretli sağlayıcıları kapsam, gecikme, kota ve kullanım hakkına
-  göre karşılaştır.
-- [ ] Fiyat, değişim, sparkline zaman aralığı ve bayat veri davranışını
+- [x] Sağlayıcıları kapsam, gecikme, kota ve kullanım hakkına göre karşılaştır.
+- [x] Fiyat, değişim, sparkline zaman aralığı ve bayat veri davranışını
   kesinleştir.
 
 **Konu — Entegrasyon**
 
-- [ ] Çekim ve önbellekleme modelini seç; migration ve sorgu katmanını ekle.
-- [ ] `market.ts` servisini gerçek veriye geçir ve kota/hata durumlarını doğrula.
+- [x] Çekim modelini seç; migration ve sorgu katmanını ekle.
+- [x] `market.ts` servisini gerçek veriye geçir ve hata durumlarını doğrula.
 
-**Tamamlanma ölçütü:** Piyasa kartları ve ticker seçilmiş kapsamda gerçek,
-zaman damgalı veri gösteriyor; mock importu kalmıyor ve kota aşımı paneli
-bozmuyor.
+**Alınan kararlar**
+
+| Konu | Karar |
+|---|---|
+| Sağlayıcı | Finnhub, ücretsiz katman |
+| Endeks/emtia/FX | ETF vekili — gerçek endeks değerleri lisanslı veri |
+| Sparkline | 30 günlük günlük kapanış, **worker biriktiriyor** |
+| Çekim | Worker + Postgres; request path'inde çekim yok |
+
+Sembol kümesi: `SPY` (S&P 500), `QQQ` (Nasdaq 100), `GLD` (altın), `FXE`
+(EUR/USD) ve `BTC` (`BINANCE:BTCUSDT`). Dördü vekil; vekillik `proxyFor` ile
+arayüze kadar taşınıyor.
+
+**Tamamlanma ölçütü:** Karşılandı — `market.ts` mock import etmiyor, kartlar
+gerçek ve zaman damgalı veri gösteriyor, sağlayıcı hatası paneli düşürmüyor
+(kısmi sonuç yazılıyor, son bilinen veri kalıyor).
+
+Tasarım, ölçüm sonuçları ve bilinen sınırlar:
+[2026-08-11-faz2f-piyasa-verisi.md](docs/superpowers/plans/2026-08-11-faz2f-piyasa-verisi.md)
 
 ### Faz 3 — Ürün bütünlüğü ve kalite
 
@@ -256,8 +289,9 @@ doğrulanmış operasyon akışı var.
 | Konu | Güncel durum | Kapanması için gereken |
 |---|---|---|
 | Canlı Reddit erişimi | Faz 2C'nin Postgres tabanlı belirlenimci simülasyonu tamamlandı; canlı API çekimi bu fazın kapsamında değildi. | Canlı veri istenirse API erişimi, saklama politikası ve worker akışı için ayrı tasarım → plan → uygulama turu. |
-| Piyasa verisi | Sağlayıcı seçilmedi; fiyatlar mock. | Kapsam, kota, gecikme, lisans ve saklama kararı. |
-| Deployment | Uygulama şimdilik localhost-only. | Worker/Postgres'e uygun hedef ve operasyon modeli. |
+| Piyasa sparkline'ı boş başlıyor | Finnhub'ın ücretsiz katmanında mum uçları 403; geçmiş worker tarafından günde bir nokta biriktiriliyor ve 30 günde doluyor. Kart o zamana kadar "Geçmiş birikiyor" yazıyor. | Zaman, ya da geçmiş serisi veren ikinci bir kaynak kararı. |
+| Piyasa vekil sembolleri | Endeks değerleri lisanslı, ücretsiz katmanda forex kapalı; SPX/NDX/XAU/EURUSD yerine SPY/QQQ/GLD/FXE izleniyor. Fiyat ölçekleri asıllarından farklı. | Gerçek endeks/kur değeri istenirse lisanslı sağlayıcı kararı. |
+| Deployment | Uygulama şimdilik localhost-only. | Worker/Postgres'e uygun hedef ve operasyon modeli. Worker artık piyasa için de gerekli: çalışmazsa kartlar boş kalır. |
 | Akademi soruları arayüzde yok | 120 soru ve AI değerlendirme kodu var ama ders sayfası soru basmıyor; `degerlendir.ts` çağrılmıyor. Akademi şu an "okunur" bir ürün. | Soru/cevap arayüzü ve değerlendirmeyi tetikleyen server action için ayrı tasarım → plan → uygulama turu. |
 | Üretim derlemesi ve webpack önbelleği | Kaynak değişikliğinden sonraki `next build` webpack kalıcı önbelleğinde `WasmHash` `TypeError` ile çöküyor; önbellek proje kökündeki 532 junction'ı (`.adal`, `.claude/skills`, `skills/`, `agent/`, `data/`) tarıyor. Temiz `.next` ile derleme geçiyor. | Ajan araç klasörlerini proje kökünden çıkarmak ya da webpack anlık görüntüsünden dışlamak; kalıcı çözüme kadar üretim derlemesi öncesi `.next` silinir. |
 | Durum belgeleri | Bazı Memory Bank dosyaları auth'u bekliyor, akademiyi yazılmamış veya Git'i kurulmamış gösteriyor. | Faz 0 dokümantasyon eşitlemesi. |
@@ -287,6 +321,104 @@ doğrulanmış operasyon akışı var.
   bu kararlar gözden geçirilmeden uygulanmaz.
 
 ## Kronolojik süreç günlüğü
+
+### 2026-08-11 — Teknik borç: Drizzle zinciri ve commit sınırları onarıldı
+
+**Amaç:** `drizzle-kit generate`'i otonom ortamda çalışabilir hale getirmek ve
+2C/2F commit sınırlarındaki karışmayı düzeltmek.
+
+**Sorun 1 — generate TTY istiyordu.** Her çalıştırmada "Interactive prompts
+require a TTY terminal" ile çöküyordu. Kök neden metadata zincirinin 0004'te
+kopması: `0004_snapshot.json` hiç üretilmemiş (0004 elle yazılmıştı) ve
+`0005_snapshot.json` yeniden adlandırma **öncesi** durumu anlatıyordu — hâlâ
+`tracks`/`steps` içeriyor, `weeks`/`lessons`'ı da topluluk tablolarını da
+bilmiyordu. Generator `schema.ts`'i 0003 dönemine ait bir snapshot'la
+karşılaştırıp "tracks silindi mi, weeks'e mi dönüştü?" diye sormak zorunda
+kalıyordu.
+
+**Çözüm:** Yedi migration tek `0000_baseline.sql` içinde toplandı, snapshot
+zinciri `schema.ts`'ten yeniden üretildi. Veritabanı defteri yedi kayıttan tek
+baseline kaydına indirildi; hash drizzle'ın kendi algoritmasıyla (dosya
+içeriğinin sha256'sı) hesaplandığı için `db:migrate` baseline'ı yeniden
+çalıştırmaya kalkmıyor. Eski migration'lar git geçmişinde duruyor — tek
+geliştiricili ve push edilmemiş bir depoda ara adımları korumanın karşılığı
+yoktu.
+
+**Sorun 2 — 2C commit'leri 2F kodunu içeriyordu.** `274a663` (2C şeması)
+`marketQuotes`/`marketDaily` tanımlarını da taşıyordu. Hiçbir şey push
+edilmediği için geçmiş yeniden yazıldı: ayrı bir worktree'de sekiz commit
+replay edildi, piyasa şeması 2C commit'inden çıkarılıp 2F commit'ine taşındı.
+
+**Güvenlik önlemi:** Yeniden yazma öncesi `yedek-onarim-oncesi` etiketi atıldı
+ve sonuçta **ağaç hash'lerinin birebir aynı olduğu** doğrulandı
+(`949be177…`) — yani içerik kayıpsız, yalnız commit sınırları değişti. Çalışma
+ağacına hiç dokunulmadı; dal işaretçisi `reset --soft` ile taşındı.
+
+**Doğrulama:**
+
+- `db:migrate` → exit 0, no-op. `db:generate` → exit 0, "No schema changes",
+  hiç soru sormadan.
+- Mevcut veritabanının yapısı değişmedi (134 kolonluk `information_schema`
+  dökümü birebir aynı); veri duruyor: 135 makale, 40 ders, 120 soru, 70 ön
+  koşul, 4 topluluk, 6 gönderi, 5 piyasa sembolü, 1 kullanıcı.
+- **Sıfırdan kurulan veritabanı sınandı:** boş bir DB'ye yalnız baseline
+  uygulandığında ortaya çıkan yapı mevcut veritabanıyla birebir aynı.
+- `git diff yedek-onarim-oncesi HEAD` → boş.
+
+### 2026-08-11 — Faz 2F: piyasa verisi Finnhub'a bağlandı
+
+**Amaç:** Piyasa kartlarındaki mock fiyatları gerçek veriyle değiştirmek.
+
+**Önce kapsam düzeltildi.** Fazın amaç cümlesi "üst ticker ve piyasa
+kartlarındaki mock fiyatlar" diyordu; üst ticker'da fiyat yok — `TickerItem`
+başlık taşıyor ve zaten haberlerden besleniyor. Gerçek kapsam tek tüketiciydi.
+
+**Sağlayıcı seçimi ölçümle yapıldı, varsayımla değil.** Alpha Vantage'ın 25
+istek/gün kotası 15 dakikalık worker'ın 96 turuna yetmiyordu. Twelve Data'nın
+kotası yeterliydi ama lisans dili "internal non-display usage" — veriyi ekranda
+göstermeyi kapsamayabilir. Finnhub'ın ücretsiz katmanı açıkça "kişisel, ticari
+olmayan kullanım" diyor ve bu uygulama tam olarak öyle.
+
+**Yoklama iki varsayımı çürüttü:**
+
+```
+/quote  SPY, QQQ, GLD, FXE, BINANCE:BTCUSDT   → 200
+/quote  OANDA:EUR_USD                          → 403
+/stock|crypto|forex/candle, /forex/rates       → 403
+```
+
+1. **Mum uçlarının hepsi kapalı.** "30 günlük kapanışı sağlayıcıdan çekeriz"
+   planı geçersizdi. Geçmişi worker biriktiriyor: `market_daily` gün başına tek
+   satır tutuyor, gün içinde kapanış son görülen fiyat demek, gün bitince donuyor.
+   Tur başına satır yazılsaydı günde 96 × 5 satır birikirdi ve sparkline yine
+   günlük seri isterdi.
+2. **Forex tamamen kapalı**, `/quote` bile. EUR/USD de ETF vekiline (`FXE`)
+   düştü. Buna karşılık kripto `/quote`'un çalışması belgelenmemiş bir davranıştı
+   — ölçülmeseydi BTC de kaybedilirdi.
+
+Endeks ve emtia zaten vekildi: gerçek endeks değerleri lisanslı veri, bu yüzden
+SPX→SPY, NDX→QQQ, XAU→GLD. Vekillik `proxyFor` ile arayüze taşınıyor; kart
+"S&P 500" deyip 773 gösterirse yalan söyler, "S&P 500 ETF · S&P 500 yerine"
+diyor.
+
+**Yol boyunca çıkan iki hata:**
+
+- `FXE` şemada `fx` işaretlenmişti ve `priceDigits` dört ondalık basıp
+  "106,5100" gibi kur görüntüsü üretiyordu. FXE bir hisse ETF'i, fiyatı kur
+  değil — `equity` yapıldı. `assetType` ayrıca `TodayBrief`'in manşet varlığı
+  seçiminde kullanılıyor, o yüzden SPY/QQQ `index` kaldı.
+- Sparkline iki noktaya ulaşmadan `null` dönüp kartta açıklamasız boşluk
+  bırakıyordu. Seri birikene kadar "Geçmiş birikiyor" yazıyor.
+
+**Doğrulama:**
+
+- Worker turu 5/5 sembolü yazdı; ikinci tur `market_daily`'yi 5 satırda tuttu
+  (idempotent) ve `fetched_at` güncellendi.
+- format/typecheck/lint exit 0 (yalnız 12 mevcut CSS uyarısı), temiz build 0.
+- Oturumlu panelde beş kart gerçek fiyatla basılıyor (SPY 773,03 · QQQ 720,87 ·
+  GLD 402,54 · BTC 64.340 · FXE 106,51), vekil etiketleri görünüyor, eski mock
+  sembolleri (SPX/NDX/XAU/EURUSD) sıfır.
+- Doğrulama için açılan geçici hesap ve iki geçici betik silindi.
 
 ### 2026-08-11 — Faz 2C: topluluk duyarlılığının Postgres'e taşınması
 
@@ -327,8 +459,10 @@ kesmek; topluluk gönderilerini, anlık özeti ve ticker trendlerini Postgres/Dr
   exit 0 verdi; `/topluluk` rota tablosunda `ƒ Dynamic` göründü. Mevcut
   Auth.js/jose Edge Runtime uyarıları gizlenmedi.
 
-**Commitler:** Şema/migration `274a663`, sorgular `2c5a7bb`, servis/sayfa
-`d074075`, seed/mock temizliği `87b4fe7`, son lint düzeni `721c2b3`.
+**Commitler:** Şema/migration `4520e57`, sorgular `0d97dcc`, servis/sayfa
+`72861b2`, seed/mock temizliği `e8d9bc1`, son lint düzeni `3f4bfba`.
+(Hash'ler teknik borç onarımında geçmiş yeniden yazıldığı için değişti; önceki
+karşılıkları `274a663`, `2c5a7bb`, `d074075`, `87b4fe7`, `721c2b3` idi.)
 
 **Sıradaki adım:** Kullanıcı Faz 2C sonucunu onayladıktan sonra kalan yol haritası
 Faz 0 belge eşitlemesi, Faz 2F piyasa çalışması ve akademi soru/cevap arayüzüdür.
@@ -379,7 +513,7 @@ uzlaştırıldı ve belgeye doğru yansıtıldı. Faz 2C kodu veya diğer ürün
   `SUREC-GUNLUGU.md` izole kopyadan önemli ölçüde ayrıştı. Merge veya PR diğer
   ajanların güncel içeriğini ezebileceği için yapılmadı; en güvenli seçenek olan
   branch'i olduğu gibi koruma seçildi.
-- Bu kaydın kısa tasarımı `7fc296d` commit'iyle
+- Bu kaydın kısa tasarımı `672b433` commit'iyle
   `docs/superpowers/specs/2026-08-11-faz0-sdd-gunluk-kaydi-design.md` dosyasına
   alındı.
 - Uygulama adımları
@@ -389,7 +523,7 @@ uzlaştırıldı ve belgeye doğru yansıtıldı. Faz 2C kodu veya diğer ürün
 
 **Değişen ve üretilen kayıtlar:** İzole branch'te `SUREC-GUNLUGU.md`
 (`2b167ab`, `dba9805`, `37cf426`); ana branch'te günlük kaydı tasarımı
-(`7fc296d`), uygulama planı ve bu ana kronolojik kayıt. Kullanıcıya veya diğer
+(`672b433`), uygulama planı ve bu ana kronolojik kayıt. Kullanıcıya veya diğer
 ajanlara ait başka dosya bu çalışma kapsamında değiştirilmedi.
 
 **Doğrulama:** İzole çalışma ve review turlarında `Get-Content -Encoding UTF8`,
