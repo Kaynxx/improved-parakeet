@@ -517,18 +517,26 @@ uzlaştırıldı ve belgeye doğru yansıtıldı. Faz 2C kodu veya diğer ürün
   `SUREC-GUNLUGU.md` izole kopyadan önemli ölçüde ayrıştı. Merge veya PR diğer
   ajanların güncel içeriğini ezebileceği için yapılmadı; en güvenli seçenek olan
   branch'i olduğu gibi koruma seçildi.
-- Bu kaydın kısa tasarımı `672b433` commit'iyle
+- Bu kaydın kısa tasarımı güncel `672b433` commit'iyle (geçmiş yeniden
+  yazılmadan önceki özgün karşılığı `7fc296d`)
   `docs/superpowers/specs/2026-08-11-faz0-sdd-gunluk-kaydi-design.md` dosyasına
   alındı.
 - Uygulama adımları
   `docs/superpowers/plans/2026-08-11-faz0-sdd-gunluk-kaydi.md` dosyasına
   yazıldı; kullanıcı uygulama yöntemi olarak fresh implementer ve bağımsız
   review içeren Subagent-Driven seçeneğini seçti.
+- Ana kaydın Subagent-Driven uygulanması `0e4596e` ilk commit'iyle tamamlandı;
+  bağımsız task review Critical/Important bulmadı, ancak satır 3 hard-break
+  doğrulama anlatımını işaretledi. Kullanıcı kararıyla `b99735c` düzeltmesi
+  yapıldı ve scoped re-review temiz döndü. En güçlü modelle final review yalnız
+  güncel `672b433` ile özgün `7fc296d` tasarım hash'i eşlemesini Minor buldu;
+  geçici worktree ve branch korunuyor.
 
 **Değişen ve üretilen kayıtlar:** İzole branch'te `SUREC-GUNLUGU.md`
 (`2b167ab`, `dba9805`, `37cf426`); ana branch'te günlük kaydı tasarımı
-(`672b433`), uygulama planı ve bu ana kronolojik kayıt. Kullanıcıya veya diğer
-ajanlara ait başka dosya bu çalışma kapsamında değiştirilmedi.
+(`672b433` güncel; geçmiş yeniden yazılmadan önce `7fc296d`), uygulama planı
+ve bu ana kronolojik kayıt. Kullanıcıya veya diğer ajanlara ait başka dosya bu
+çalışma kapsamında değiştirilmedi.
 
 **Doğrulama:** İzole çalışma ve review turlarında `Get-Content -Encoding UTF8`,
 `Select-String`, `git diff --check`, `git diff-tree`, `npm run typecheck` ve
