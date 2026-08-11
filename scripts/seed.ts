@@ -1,9 +1,9 @@
 /**
  * Referans verisini yazar. **Idempotent** — istediğin kadar çalıştırabilirsin.
  *
- * Yazdıkları: haber kaynakları, semboller, akademi haftaları ve — diskteki
- * `content/akademi/` dosyalarından okuyarak — dersler, ders kaynakları,
- * sorular ve ön koşul DAG'ı.
+ * Yazdıkları: haber kaynakları, semboller, topluluk gönderileri, akademi
+ * haftaları ve — diskteki `content/akademi/` dosyalarından okuyarak — dersler,
+ * ders kaynakları, sorular ve ön koşul DAG'ı.
  *
  * `articles` KASITLI olarak seed edilmez — onu `npm run ingest` doldurur.
  * Sahte makale yazmak hangi satırın gerçek olduğunu belirsizleştirirdi.
@@ -16,10 +16,13 @@ import { eq, inArray } from "drizzle-orm";
 import { type LoadedLesson, loadWeekLessons } from "../src/lib/content/load";
 import { getDb } from "../src/lib/db";
 import {
+  communities,
+  communityPosts,
   lessonPrerequisites,
   lessonPrompts,
   lessonSources,
   lessons,
+  postTickers,
   sources,
   tickers,
   weeks,
@@ -106,6 +109,134 @@ const TICKER_SEED = [
   { symbol: "XAU", name: "Altın (ons)", assetType: "commodity" as const },
   { symbol: "EURUSD", name: "EUR/USD", assetType: "fx" as const },
 ];
+
+// --- Topluluk duyarlılığı -------------------------------------------------
+
+const COMMUNITY_SEED = [
+  {
+    platform: "reddit",
+    name: "r/investing",
+    displayName: "Investing",
+    subscriberCount: 2_940_000,
+  },
+  {
+    platform: "reddit",
+    name: "r/wallstreetbets",
+    displayName: "WallStreetBets",
+    subscriberCount: 17_200_000,
+  },
+  {
+    platform: "reddit",
+    name: "r/stocks",
+    displayName: "Stocks",
+    subscriberCount: 8_100_000,
+  },
+  {
+    platform: "reddit",
+    name: "r/CryptoCurrency",
+    displayName: "CryptoCurrency",
+    subscriberCount: 9_600_000,
+  },
+] as const;
+
+const SENTIMENT_POST_SEED = [
+  {
+    id: "00000000-0000-4000-8000-000000000001",
+    communityName: "r/wallstreetbets",
+    title: "NVDA guidance was fine, the market just wanted a miracle",
+    bodyText:
+      "Sequential data-center growth of 18% is absurd for a company this size. Everyone anchoring on the whisper number is going to look silly in two quarters.",
+    author: "u/theta_gang_survivor",
+    score: 4820,
+    commentCount: 1146,
+    upvoteRatio: 0.91,
+    flair: "DD",
+    minutesAgoOffset: 38,
+    sentimentLabel: "bullish",
+    sentimentScore: 0.72,
+    tickerSymbols: ["NVDA"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000002",
+    communityName: "r/CryptoCurrency",
+    title: "Four days of ETF outflows and nobody is talking about it",
+    bodyText:
+      "This is the longest redemption streak since launch. Either the marginal buyer is gone or someone big is rotating out. Neither reading is comfortable.",
+    author: "u/onchain_only",
+    score: 3140,
+    commentCount: 892,
+    upvoteRatio: 0.78,
+    flair: "DISCUSSION",
+    minutesAgoOffset: 64,
+    sentimentLabel: "bearish",
+    sentimentScore: -0.68,
+    tickerSymbols: ["BTC"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000003",
+    communityName: "r/investing",
+    title: "The Fed statement changed three words and the whole curve moved",
+    bodyText:
+      "Dropping the reference to additional firming is not nothing. Rates desks clearly read it as the end of the hiking discussion.",
+    author: "u/macro_and_chill",
+    score: 2210,
+    commentCount: 417,
+    upvoteRatio: 0.94,
+    flair: "Discussion",
+    minutesAgoOffset: 21,
+    sentimentLabel: "bullish",
+    sentimentScore: 0.41,
+    tickerSymbols: ["SPX"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000004",
+    communityName: "r/stocks",
+    title: "Is anyone else uncomfortable with how narrow breadth has gotten?",
+    bodyText:
+      "Under 200 names above their 50-day while the index prints highs. I have seen this movie before and I did not like the ending.",
+    author: "u/breadth_watcher",
+    score: 1870,
+    commentCount: 603,
+    upvoteRatio: 0.83,
+    flair: null,
+    minutesAgoOffset: 96,
+    sentimentLabel: "bearish",
+    sentimentScore: -0.52,
+    tickerSymbols: ["SPX", "NVDA"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000005",
+    communityName: "r/stocks",
+    title: "TSLA European share loss is real but the bear case is overcooked",
+    bodyText:
+      "Margin compression is priced. What is not priced is the energy storage segment, which nobody in this thread ever models.",
+    author: "u/ev_supply_chain",
+    score: 1420,
+    commentCount: 508,
+    upvoteRatio: 0.66,
+    flair: "Industry Discussion",
+    minutesAgoOffset: 151,
+    sentimentLabel: "neutral",
+    sentimentScore: 0.06,
+    tickerSymbols: ["TSLA"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000006",
+    communityName: "r/investing",
+    title: "Staking yields are compressing and that changes the ETH thesis",
+    bodyText:
+      "If the risk-free comparison stays where it is, the yield argument for holding stops working. The queue length is the number to watch.",
+    author: "u/duration_risk",
+    score: 980,
+    commentCount: 244,
+    upvoteRatio: 0.72,
+    flair: null,
+    minutesAgoOffset: 233,
+    sentimentLabel: "bearish",
+    sentimentScore: -0.34,
+    tickerSymbols: ["ETH"],
+  },
+] as const;
 
 // --- Akademi --------------------------------------------------------------
 /**
@@ -195,6 +326,72 @@ async function seedTickers(): Promise<number> {
     .onConflictDoNothing({ target: tickers.symbol })
     .returning({ id: tickers.id });
   return inserted.length;
+}
+
+interface SentimentCounts {
+  communities: number;
+  posts: number;
+  tickerLinks: number;
+}
+
+function requiredSeedId(ids: Map<string, string>, kind: string, key: string): string {
+  const id = ids.get(key);
+  if (!id) throw new Error(`Topluluk seed'i için ${kind} bulunamadı: ${key}`);
+  return id;
+}
+
+async function seedSentiment(): Promise<SentimentCounts> {
+  const db = getDb();
+  const insertedCommunities = await db
+    .insert(communities)
+    .values([...COMMUNITY_SEED])
+    .onConflictDoNothing({ target: communities.name })
+    .returning({ id: communities.id });
+
+  const communityRows = await db
+    .select({ id: communities.id, name: communities.name })
+    .from(communities)
+    .where(inArray(communities.name, COMMUNITY_SEED.map((item) => item.name)));
+  const communityIds = new Map(communityRows.map((row) => [row.name, row.id]));
+
+  const tickerSymbols = [
+    ...new Set(SENTIMENT_POST_SEED.flatMap((item) => item.tickerSymbols)),
+  ];
+  const tickerRows = await db
+    .select({ id: tickers.id, symbol: tickers.symbol })
+    .from(tickers)
+    .where(inArray(tickers.symbol, tickerSymbols));
+  const tickerIds = new Map(tickerRows.map((row) => [row.symbol, row.id]));
+
+  const postRows = SENTIMENT_POST_SEED.map(
+    ({ communityName, tickerSymbols: _tickerSymbols, ...post }) => ({
+      ...post,
+      communityId: requiredSeedId(communityIds, "topluluk", communityName),
+    }),
+  );
+  const insertedPosts = await db
+    .insert(communityPosts)
+    .values(postRows)
+    .onConflictDoNothing({ target: communityPosts.id })
+    .returning({ id: communityPosts.id });
+
+  const tickerLinks = SENTIMENT_POST_SEED.flatMap((post) =>
+    post.tickerSymbols.map((symbol) => ({
+      postId: post.id,
+      tickerId: requiredSeedId(tickerIds, "sembol", symbol),
+    })),
+  );
+  const insertedTickerLinks = await db
+    .insert(postTickers)
+    .values(tickerLinks)
+    .onConflictDoNothing()
+    .returning({ postId: postTickers.postId });
+
+  return {
+    communities: insertedCommunities.length,
+    posts: insertedPosts.length,
+    tickerLinks: insertedTickerLinks.length,
+  };
 }
 
 interface AcademyCounts {
@@ -398,6 +595,11 @@ async function main() {
 
   const tickerCount = await seedTickers();
   console.log(`  semboller        : ${tickerCount} yeni / ${TICKER_SEED.length} toplam`);
+
+  const sentiment = await seedSentiment();
+  console.log(`  topluluklar      : ${sentiment.communities} yeni / ${COMMUNITY_SEED.length} toplam`);
+  console.log(`  gönderiler       : ${sentiment.posts} yeni / ${SENTIMENT_POST_SEED.length} toplam`);
+  console.log(`  gönderi-sembol   : ${sentiment.tickerLinks} yeni`);
 
   const academy = await seedAcademy();
   console.log(`  akademi haftaları: ${academy.weeks} / ${WEEK_SEED.length}`);
