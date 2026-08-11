@@ -14,7 +14,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-rule md:flex",
+        "glass-chrome sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-hairline md:flex",
         "transition-[width] duration-300 ease-[var(--ease-settle)]",
         collapsed ? "w-[68px]" : "w-60",
       )}
@@ -55,11 +55,11 @@ export function Sidebar() {
               aria-current={active ? "page" : undefined}
               title={collapsed ? item.label : undefined}
               className={cn(
-                "press relative flex items-center gap-3 rounded-[var(--radius-inner)] px-3 py-2.5",
+                "press relative flex items-center gap-3 rounded-[var(--radius-inner)] border border-transparent px-3 py-2.5",
                 "text-[14px] font-medium",
                 active
-                  ? "bg-card text-ink shadow-[var(--shadow-card)]"
-                  : "text-ink-muted hover:bg-card/60 hover:text-ink",
+                  ? "border-hairline bg-elevated text-ink"
+                  : "text-ink-muted hover:border-hairline hover:bg-elevated/70 hover:text-ink",
                 collapsed && "justify-center px-0",
               )}
             >
@@ -88,7 +88,7 @@ export function Sidebar() {
           aria-expanded={!collapsed}
           className={cn(
             "press flex w-full items-center gap-3 rounded-[var(--radius-inner)] px-3 py-2.5",
-            "text-[13px] text-ink-faint hover:bg-card/60 hover:text-ink",
+            "text-[13px] text-ink-faint hover:bg-elevated/70 hover:text-ink",
             collapsed && "justify-center px-0",
           )}
         >

@@ -13,18 +13,15 @@ interface AppShellProps {
 
 export function AppShell({ tickerItems, user, children }: AppShellProps) {
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--color-paper)]">
-      {/* Superbrain Streaming efekti arka planına yerleştirildi */}
-      <div className="superbrain-stream border-b border-black/[0.04]">
-        <NewsTicker items={tickerItems} />
-      </div>
+    <div className="flex min-h-dvh flex-col bg-transparent">
+      <NewsTicker items={tickerItems} />
 
-      <div className="flex flex-1 items-start relative z-10 w-full max-w-[1536px] mx-auto">
+      <div className="relative z-10 flex w-full flex-1 items-start">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar user={user} />
 
-          <main className="min-w-0 flex-1 px-4 pt-10 pb-32 sm:px-12 sm:pt-14 md:pb-24">
+          <main className="min-w-0 flex-1 px-4 pt-7 pb-32 sm:px-8 sm:pt-9 md:pb-16 lg:px-10">
             {children}
           </main>
         </div>

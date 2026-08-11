@@ -405,9 +405,10 @@
   }
 
   .press,
-  *,
-  *::before,
-  *::after {
+  .rise,
+  .stagger > *,
+  .draw,
+  .ticker-track {
     scroll-behavior: auto;
     transition-duration: 0.01ms;
   }

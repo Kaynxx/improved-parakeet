@@ -59,7 +59,7 @@ export function UserMenu({ name, email, image }: UserMenuProps) {
         <div
           role="menu"
           className={cn(
-            "card absolute right-0 top-[calc(100%+8px)] z-30 w-60 overflow-hidden p-1.5",
+            "glass absolute top-[calc(100%+8px)] right-0 z-30 w-60 overflow-hidden p-1.5",
             "shadow-[var(--shadow-lift)]",
           )}
         >
@@ -74,7 +74,7 @@ export function UserMenu({ name, email, image }: UserMenuProps) {
             type="button"
             role="menuitem"
             onClick={() => void signOut({ redirectTo: "/giris" })}
-            className="press flex w-full items-center gap-2.5 rounded-[var(--radius-chip)] px-3 py-2.5 text-[13.5px] font-medium text-ink-muted hover:bg-sunken hover:text-ink"
+            className="press flex w-full items-center gap-2.5 rounded-[var(--radius-inner)] px-3 py-2.5 text-[13.5px] font-medium text-ink-muted hover:bg-elevated hover:text-ink"
           >
             <LogOut className="size-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
             Çıkış yap

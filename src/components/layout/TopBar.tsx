@@ -11,7 +11,7 @@ import type { SessionUser } from "@/types";
  */
 export function TopBar({ user }: { user: SessionUser }) {
   return (
-    <header className="chrome scroll-edge sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 px-4 sm:px-7">
+    <header className="glass-chrome scroll-edge sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-hairline px-4 sm:px-7">
       <label className="relative flex min-w-0 flex-1 items-center sm:max-w-xs">
         <Search
           className="pointer-events-none absolute left-3 size-4 text-ink-faint"
@@ -24,14 +24,14 @@ export function TopBar({ user }: { user: SessionUser }) {
         <input
           type="search"
           placeholder="Başlık veya sembol ara"
-          className="h-10 w-full rounded-[var(--radius-inner)] bg-card pr-3 pl-9 text-[14px] text-ink shadow-[var(--shadow-card)] placeholder:text-ink-faint"
+          className="inset-panel h-10 w-full pr-3 pl-9 text-[14px] text-ink placeholder:text-ink-faint"
         />
       </label>
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
         <button
           type="button"
-          className="press flex size-10 items-center justify-center rounded-[var(--radius-inner)] bg-card text-ink-muted shadow-[var(--shadow-card)] hover:text-ink"
+          className="inset-panel press flex size-10 items-center justify-center text-ink-muted hover:border-hairline-strong hover:text-ink"
         >
           <Bell className="size-[18px]" strokeWidth={1.75} aria-hidden="true" />
           <span className="sr-only">Bildirimler</span>
