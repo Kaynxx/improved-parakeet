@@ -1,16 +1,9 @@
-/**
- * Faz 2A + 2B şeması.
- *
- * Şema **dilim dilim** kuruluyor. 2C topluluk (communities/posts/post_sentiment/
- * post_tickers/ticker_sentiment_daily), 2D video (videos/step_videos),
- * 2E auth (users ve ona bağlı her şey), 2F piyasa tabloları kendi dilimlerinde
- * eklenecek.
- */
-
 import { type SQL, sql } from "drizzle-orm";
 import {
   boolean,
   customType,
+  date,
+  doublePrecision,
   index,
   integer,
   pgEnum,
@@ -354,4 +347,56 @@ export const userProgress = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.lessonId] })],
+);
+
+// --- Topluluk ve Duyarlılık (2C) -----------------------------------------
+
+export const sentimentLabel = pgEnum("sentiment_label", ["bullish", "bearish", "neutral"]);
+
+export const communities = pgTable("communities", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  platform: text("platform").notNull().default("reddit"),
+  name: text("name").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  subscriberCount: integer("subscriber_count").notNull(),
+});
+
+export const communityPosts = pgTable(
+  "community_posts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    communityId: uuid("community_id")
+      .notNull()
+      .references(() => communities.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    bodyText: text("body_text").notNull(),
+    author: text("author").notNull(),
+    score: integer("score").notNull(),
+    commentCount: integer("comment_count").notNull(),
+    upvoteRatio: doublePrecision("upvote_ratio").notNull(),
+    flair: text("flair"),
+    minutesAgoOffset: integer("minutes_ago_offset").notNull().default(0),
+    sentimentLabel: sentimentLabel("sentiment_label").notNull(),
+    sentimentScore: doublePrecision("sentiment_score").notNull(),
+  },
+  (table) => [
+    index("community_posts_community_id_idx").on(table.communityId),
+    index("community_posts_sentiment_label_idx").on(table.sentimentLabel),
+  ],
+);
+
+export const postTickers = pgTable(
+  "post_tickers",
+  {
+    postId: uuid("post_id")
+      .notNull()
+      .references(() => communityPosts.id, { onDelete: "cascade" }),
+    tickerId: uuid("ticker_id")
+      .notNull()
+      .references(() => tickers.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.postId, table.tickerId] }),
+    index("post_tickers_ticker_id_idx").on(table.tickerId),
+  ],
 );
