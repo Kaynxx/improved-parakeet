@@ -4,7 +4,7 @@
 
 **Goal:** Güncel veri ve işlevleri koruyarak Finans Programı arayüzünü tek koyu tema, keskin geometri ve ölçülü liquid-glass yüzeylerle yeniden kurmak.
 
-**Architecture:** Görsel sözleşme `src/app/globals.css` ve Geist font kurulumu üzerinden merkezi olarak sağlanır. Ortak kart ve chrome bileşenleri bu sınıfları tüketir; alan bileşenleri yalnız opaklık varsayımı, geometri veya semantik renk gerektiren yerlerde hedefli değişir. `scripts/check-glass-theme.ts` kaynak dosyaları üzerinde çalıştırılabilir bir sözleşme testi sağlar; veri katmanı ve bileşen prop imzaları değişmez.
+**Architecture:** Görsel sözleşme `src/app/globals.css` ve Geist font kurulumu üzerinden merkezi olarak sağlanır. Ortak kart ve chrome bileşenleri bu sınıfları tüketir; alan bileşenleri yalnız opaklık varsayımı, geometri veya semantik renk gerektiren yerlerde hedefli değişir. Görsel davranış gerçek tarayıcıda, işlevsel davranış mevcut testlerle doğrulanır; veri katmanı ve bileşen prop imzaları değişmez.
 
 **Tech Stack:** Next.js 15 App Router, React 19, TypeScript 5.9, Tailwind CSS 4, Biome 2, Geist 1.7, Node assert, PowerShell.
 
@@ -22,13 +22,26 @@
 - Son doğrulama sırası: `npm run format`, `npm run typecheck`, `npm run lint`, güvenli `.next` temizliği, `npm run build`.
 - `superpowers:finishing-a-development-branch` çağrılmaz.
 
+## Execution Correction — 2026-08-11
+
+İlk plan taslağındaki `scripts/check-glass-theme.ts` adımları uygulanmayacaktır.
+Kaynak metinde CSS sınıfı aramak kullanıcı davranışını sınamaz; yalnız bilinçli
+tasarım değişikliklerinde kırılan bir change-detector üretir. Bu nedenle ilgili
+“sözleşme kontrolünü yaz/çalıştır” adımları ve dosyanın commit listeleri geçersizdir.
+
+Her görsel görevde RED kanıtı güncel açık arayüzün gerçek tarayıcı görünümü;
+GREEN kanıtı aynı rota ve viewportta koyu cam yüzeyin hesaplanmış/görünür hâlidir.
+Otomatik kapı mevcut Faz 2C davranış testleri, `typecheck`, `lint`, `format` ve
+temiz üretim derlemesidir. Yeni test paketi veya kaynak-grep testi eklenmez.
+
 ---
 
 ## File Map
 
 - `src/app/globals.css`: renk, tipografi, yarıçap, cam, hareket ve erişilebilirlik sözleşmesinin tek kaynağı.
 - `src/app/layout.tsx`: Geist Sans/Mono kurulumu ve koyu tarayıcı tema rengi.
-- `scripts/check-glass-theme.ts`: bağımlılıksız kaynak sözleşmesi doğrulayıcısı.
+- Gerçek tarayıcı görünümü: tema, responsive yerleşim, odak, azaltılmış hareket
+  ve azaltılmış saydamlık için davranışsal doğrulama yüzeyi.
 - `src/components/common/*`: kart, iskelet, bölüm başlığı ve durum yüzeyleri.
 - `src/components/layout/*`: uygulama kabuğu, masaüstü/mobil gezinme, üst bar ve ticker.
 - `src/components/market/*`: iç paneller, semantik yön renkleri ve grafik ayırıcıları.
