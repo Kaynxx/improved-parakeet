@@ -5,50 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1785884069066,
-      "tag": "0000_normal_blonde_phantom",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1785926436591,
-      "tag": "0001_high_moondragon",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1785927072197,
-      "tag": "0002_misty_spyke",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1786045425282,
-      "tag": "0003_solid_warlock",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1786310400000,
-      "tag": "0004_rename_to_weeks_lessons",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1786448153002,
-      "tag": "0005_community_sentiment",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1786448378308,
-      "tag": "0006_market_quotes",
+      "when": 1786450068420,
+      "tag": "0000_baseline",
       "breakpoints": true
     }
   ]
