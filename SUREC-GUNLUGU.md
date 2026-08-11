@@ -47,9 +47,10 @@ ilişkilendirerek dağınık bilgiyi bağlama dönüştürmeyi hedefler.
   liste (`- hafta-NN/...`) biçimini tanıyor, satır içi
   (`onkosul: [a, b]`) biçimindeki 6 bildirimi atlıyordu. Doğru sayı 70'tir.
 - Ders ayrıntı sayfasındaki 404 hatası `eeb0e19` commit'iyle giderilmiştir.
-- `src/server/services/sentiment.ts` ve `market.ts` hâlâ `src/mocks` verisini
-  kullanır. Topluluk duyarlılığı ve piyasa fiyatları bu nedenle gerçek veri
-  değildir. `video.ts` Faz 2D'de Postgres'e geçti.
+- Topluluk duyarlılığı mock'tan ayrılmıştır. Altı referans gönderi Postgres'te
+  tutulur; gönderi zamanları dakikalık ofsetlerden canlı üretilir, özet ve ticker
+  trendleri sorgu anında belirlenimci biçimde hesaplanır. `src/mocks/index.ts`
+  kaldırılmıştır.
 - Günün videosu akademi derslerinin doğrulanmış YouTube kaynaklarından gelir;
   seçim güne göre belirlenimcidir ve 40 videoluk döngüyle ilerler. Kart ilgili
   derse götürür. YouTube Data API bilinçli olarak kullanılmaz.
@@ -70,6 +71,7 @@ ilişkilendirerek dağınık bilgiyi bağlama dönüştürmeyi hedefler.
 | 2026-08-11 | Ders rotası düzeltmesi | `[hafta]/[ders]` rota parametreleri servis sorgusuyla eşleştirildi; 404 giderildi (`eeb0e19`). |
 | 2026-08-11 | Süreç günlüğü tasarımı | Yaşayan günlük yapısı ve fazlara ayrılmış yol haritası tasarlandı (`a9b2103`, `2711207`). |
 | 2026-08-11 | Faz 0 — Doğrulama | Migration, idempotent seed, üretim derlemesi ve rota kontrolleri gerçek çıktılarıyla kaydedildi; üretimdeki auth hatası bulunup giderildi (`d6b110b`). |
+| 2026-08-11 | Faz 2C — Topluluk duyarlılığı | Sentiment mock'u Postgres/Drizzle şemasına, dinamik sorgulara ve idempotent seed'e taşındı; `/topluluk` dinamik render ediliyor (`274a663`, `2c5a7bb`, `d074075`, `87b4fe7`, `721c2b3`). |
 | 2026-08-11 | Faz 2D — Günlük video | Panel mock'tan doğrulanmış ders videolarına geçti; YouTube Data API gerekçesiyle kapsam dışı bırakıldı. |
 
 ## Bundan sonra yapılacaklar
@@ -104,34 +106,41 @@ ait çalışma ağacı dosyalarının korunması. (Önceki turu durduran Node/Wi
 kaydedilmiş; çekirdek durum belgeleri Git ile tutarlı; çalışma ağacındaki
 dosyaların sahipliği ve kapsamı açık.
 
-### Faz 2C — Topluluk ve Reddit duyarlılığı
+### Faz 2C — Topluluk duyarlılığı
 
-**Amaç:** Reddit topluluklarını toplayıp gönderi ve sembol bazlı duyarlılığı
-güvenilir, açıklanabilir bir veri katmanına dönüştürmek.
+**Amaç:** Topluluk gönderilerini, anlık duyarlılık özetini ve ticker trendlerini
+mock yerine Postgres/Drizzle verisinden dinamik ve belirlenimci olarak sunmak.
 
-**Durum:** Planlanmış; gerçek entegrasyon başlamadı ve `sentiment.ts` mock
-kullanıyor.
+**Durum:** **Bitti** (2026-08-11). Servis Postgres sorgularına geçti, sayfa
+force-dynamic oldu ve sentiment mock'u kaldırıldı.
 
-**Bağımlılıklar:** `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, izlenecek
-toplulukların kapsamı ve duyarlılık yönteminin tasarım kararı.
+**Bağımlılıklar:** Yok. Bu faz canlı Reddit API çekimi değil, onaylanan altı
+referans gönderiyle akan ve yeniden üretilebilir bir veritabanı simülasyonudur.
 
 **Konu — Tasarım ve veri modeli**
 
-- [ ] Kimlik bilgileri sağlandıktan sonra ayrı tasarım → plan → uygulama turu aç.
-- [ ] `communities`, `posts`, `post_tickers`, `post_sentiment` ve
-  `ticker_sentiment_daily` sözleşmelerini kesinleştir.
-- [ ] Sembol eşleştirme, hata kaydı, tekrar çekim ve veri saklama kurallarını yaz.
+- [x] Tasarım ve uygulama planını yaz, kullanıcı onaylarıyla yürüt.
+- [x] `sentiment_label`, `communities`, `community_posts` ve `post_tickers`
+  şemasını FK, index ve migration'la kur.
+- [x] Gönderi-ticker N:M ilişkisini ayrı sorgu ve `Map` ile eşle.
 
-**Konu — Çekim ve ürünleştirme**
+**Konu — Sorgu, seed ve ürünleştirme**
 
-- [ ] Reddit çekimini mevcut worker/entegrasyon desenine ekle.
-- [ ] Açıklanabilir duyarlılık skoru ve günlük sembol rollup'ını üret.
-- [ ] `sentiment.ts` servisini Postgres'e geçir; hata, boş ve bayat veri
-  durumlarını arayüzde doğrula.
+- [x] Gönderi zamanını `Date.now()` ve `minutesAgoOffset` ile canlı üret.
+- [x] 24 saatlik özet ve iki dönemli deterministic ticker trendini sorgu anında
+  hesapla.
+- [x] Dört topluluğu, altı gönderiyi ve yedi ticker bağlantısını idempotent seed
+  et; ikinci seed turunda yeni kayıt sayısını sıfırla doğrula.
+- [x] `sentiment.ts` servisini Postgres'e geçir, `/topluluk` sayfasını dinamik yap
+  ve `src/mocks/index.ts` dosyasını kaldır.
 
-**Tamamlanma ölçütü:** Gerçek Reddit verisi idempotent biçimde toplanıyor,
-sembollerle eşleşiyor, ölçüm penceresi ve gönderi sayısı görünür biçimde
-sunuluyor; `sentiment.ts` içinde mock importu kalmıyor.
+**Tamamlanma ölçütü:** Karşılandı — mock importu kalmadı; migration, iki seed
+turu, servis smoke testi, yedi otomatik test, typecheck, lint ve production build
+gerçek çıktılarla doğrulandı.
+
+Tasarım ve plan:
+[2026-08-11-faz-2c-topluluk-duygu-analizi-design.md](docs/superpowers/specs/2026-08-11-faz-2c-topluluk-duygu-analizi-design.md),
+[2026-08-11-faz-2c-topluluk-duygu-analizi.md](docs/superpowers/plans/2026-08-11-faz-2c-topluluk-duygu-analizi.md)
 
 ### Faz 2D — Video ve akademi kaynaklarını sonlandırma
 
@@ -246,7 +255,7 @@ doğrulanmış operasyon akışı var.
 
 | Konu | Güncel durum | Kapanması için gereken |
 |---|---|---|
-| Reddit erişimi | Kimlik bilgileri yok; topluluk verisi mock. | API bilgileri ve Faz 2C tasarım kararı. |
+| Canlı Reddit erişimi | Faz 2C'nin Postgres tabanlı belirlenimci simülasyonu tamamlandı; canlı API çekimi bu fazın kapsamında değildi. | Canlı veri istenirse API erişimi, saklama politikası ve worker akışı için ayrı tasarım → plan → uygulama turu. |
 | Piyasa verisi | Sağlayıcı seçilmedi; fiyatlar mock. | Kapsam, kota, gecikme, lisans ve saklama kararı. |
 | Deployment | Uygulama şimdilik localhost-only. | Worker/Postgres'e uygun hedef ve operasyon modeli. |
 | Akademi soruları arayüzde yok | 120 soru ve AI değerlendirme kodu var ama ders sayfası soru basmıyor; `degerlendir.ts` çağrılmıyor. Akademi şu an "okunur" bir ürün. | Soru/cevap arayüzü ve değerlendirmeyi tetikleyen server action için ayrı tasarım → plan → uygulama turu. |
@@ -278,6 +287,51 @@ doğrulanmış operasyon akışı var.
   bu kararlar gözden geçirilmeden uygulanmaz.
 
 ## Kronolojik süreç günlüğü
+
+### 2026-08-11 — Faz 2C: topluluk duyarlılığının Postgres'e taşınması
+
+**Amaç:** `src/server/services/sentiment.ts` içindeki mock bağımlılığını tamamen
+kesmek; topluluk gönderilerini, anlık özeti ve ticker trendlerini Postgres/Drizzle
+üzerinden canlı zamanlı ve belirlenimci üretmek.
+
+**Yapılanlar ve kararlar:**
+
+- Onaylı tasarım ve uygulama planı sırasıyla `4600e64` ve `b10f31d` commitleriyle
+  kaydedildi; uygulama kullanıcı tercihiyle aynı oturumda inline yürütüldü.
+- `sentiment_label`, `communities`, `community_posts` ve `post_tickers` şeması
+  `0005_community_sentiment.sql` migration'ıyla eklendi. Bütün mevcut timestamp
+  çağrılarının timezone kuralı korundu.
+- Gönderiler toplulukla çekiliyor; ticker'lar ayrı N:M sorgusu ve `Map` ile
+  eşleniyor. Boş kimlik dizisinde `inArray()` çağrılmıyor.
+- `postedAt`, tek `Date.now()` referansından `minutesAgoOffset` çıkarılarak her
+  istekte yeniden üretiliyor. 24 saatlik özet ve iki dönemli mention değişimi
+  ham satır sızdırmadan `SentimentSummary` ve `TickerSentiment[]` sözleşmelerine
+  dönüştürülüyor.
+- Servis üç yeni sorguya bağlandı ve `/topluluk` için `force-dynamic` eklendi.
+- Çalışan seed giriş noktası olan `scripts/seed.ts`, dört topluluk, altı gönderi
+  ve yedi ticker bağlantısını `onConflictDoNothing` ile yazacak şekilde
+  güncellendi. Artık başka mock kalmadığı için `src/mocks/index.ts` silindi.
+- Canlı Reddit API/worker entegrasyonu yapılmadı; onaylanan kapsam, orijinal altı
+  gönderinin veritabanından beslediği belirlenimci canlı simülasyondur.
+
+**Doğrulama:**
+
+- TDD kırmızı/yeşil döngülerinden sonra 7/7 Node testi geçti.
+- Migration gerçek yerel Postgres'e uygulandı. İlk seed 4 topluluk, 6 gönderi ve
+  7 köprü ekledi; ikinci seed 0/0/0 yeni sentiment kaydı üretti.
+- Servis smoke testi 6 gönderi, 6 gönderilik özet ve 5 trend ticker döndürdü;
+  anlık skor `-0.0583`, etiket `bearish` oldu.
+- `npm run format`, `npm run typecheck` ve `npm run lint` exit 0 verdi. Lint,
+  reduced-motion CSS'indeki 12 mevcut uyarıyı korudu.
+- Doğrulanmış `.next` hedefi temizlendikten sonra ağ erişimli `npm run build`
+  exit 0 verdi; `/topluluk` rota tablosunda `ƒ Dynamic` göründü. Mevcut
+  Auth.js/jose Edge Runtime uyarıları gizlenmedi.
+
+**Commitler:** Şema/migration `274a663`, sorgular `2c5a7bb`, servis/sayfa
+`d074075`, seed/mock temizliği `87b4fe7`, son lint düzeni `721c2b3`.
+
+**Sıradaki adım:** Kullanıcı Faz 2C sonucunu onayladıktan sonra kalan yol haritası
+Faz 0 belge eşitlemesi, Faz 2F piyasa çalışması ve akademi soru/cevap arayüzüdür.
 
 ### 2026-08-11 — Faz 0: süreç günlüğü planının SDD ile yürütülmesi
 
