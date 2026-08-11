@@ -351,12 +351,15 @@ async function seedSentiment(): Promise<SentimentCounts> {
   const communityRows = await db
     .select({ id: communities.id, name: communities.name })
     .from(communities)
-    .where(inArray(communities.name, COMMUNITY_SEED.map((item) => item.name)));
+    .where(
+      inArray(
+        communities.name,
+        COMMUNITY_SEED.map((item) => item.name),
+      ),
+    );
   const communityIds = new Map(communityRows.map((row) => [row.name, row.id]));
 
-  const tickerSymbols = [
-    ...new Set(SENTIMENT_POST_SEED.flatMap((item) => item.tickerSymbols)),
-  ];
+  const tickerSymbols = [...new Set(SENTIMENT_POST_SEED.flatMap((item) => item.tickerSymbols))];
   const tickerRows = await db
     .select({ id: tickers.id, symbol: tickers.symbol })
     .from(tickers)
@@ -597,8 +600,12 @@ async function main() {
   console.log(`  semboller        : ${tickerCount} yeni / ${TICKER_SEED.length} toplam`);
 
   const sentiment = await seedSentiment();
-  console.log(`  topluluklar      : ${sentiment.communities} yeni / ${COMMUNITY_SEED.length} toplam`);
-  console.log(`  gönderiler       : ${sentiment.posts} yeni / ${SENTIMENT_POST_SEED.length} toplam`);
+  console.log(
+    `  topluluklar      : ${sentiment.communities} yeni / ${COMMUNITY_SEED.length} toplam`,
+  );
+  console.log(
+    `  gönderiler       : ${sentiment.posts} yeni / ${SENTIMENT_POST_SEED.length} toplam`,
+  );
   console.log(`  gönderi-sembol   : ${sentiment.tickerLinks} yeni`);
 
   const academy = await seedAcademy();
