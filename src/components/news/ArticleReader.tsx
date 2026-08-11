@@ -5,8 +5,8 @@ import { timeAgo } from "@/lib/utils/format";
 import type { Article } from "@/types";
 
 /**
- * Okuma görünümü. Panelde tek serif yüzey burası: uzun metin gözü yormasın
- * diye gövde serif, başlık ve üstbilgi grotesk kalıyor.
+ * Okuma görünümü. Başlık ve gövde Geist Sans, kaynak/zaman bilgisi Geist Mono:
+ * anlatı ve makine sesi aynı uzun okumada da birbirinden ayrılır.
  *
  * **Gövde çoğu zaman yok.** RSS teaser verir; gövdeyi yayıncının sayfasından
  * çıkarıp saklamak kaynakların kullanım şartlarıyla çelişiyor, o yüzden
@@ -27,10 +27,10 @@ export function ArticleReader({ article }: { article: Article }) {
         Haberlere dön
       </Link>
 
-      <article className="card mt-4 px-6 py-7 sm:px-10 sm:py-9">
+      <article className="glass mt-4 px-6 py-7 sm:px-10 sm:py-9">
         <header>
           {article.isBreaking ? (
-            <span className="label mb-4 inline-block rounded-[var(--radius-chip)] bg-accent-soft px-2 py-1 text-accent">
+            <span className="label mb-4 inline-block rounded-[var(--radius-inner)] bg-elevated px-2 py-1 text-accent">
               Son dakika
             </span>
           ) : null}
@@ -82,7 +82,7 @@ export function ArticleReader({ article }: { article: Article }) {
             src={article.imageUrl}
             alt=""
             loading="lazy"
-            className="mt-7 w-full rounded-[var(--radius-inner)] bg-sunken object-cover"
+            className="mt-7 w-full rounded-[var(--radius-inner)] bg-elevated object-cover"
           />
         ) : null}
 
@@ -129,7 +129,7 @@ export function ArticleReader({ article }: { article: Article }) {
               {article.tickers.map((ticker) => (
                 <li
                   key={ticker.symbol}
-                  className="rounded-[var(--radius-chip)] bg-sunken px-2.5 py-1.5"
+                  className="rounded-[var(--radius-inner)] bg-elevated px-2.5 py-1.5"
                 >
                   <span className="figure text-[12.5px] font-semibold text-ink">
                     {ticker.symbol}

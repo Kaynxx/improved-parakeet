@@ -14,7 +14,7 @@ export function SourceBadge({ source, className }: { source: Source; className?:
     <span className={cn("inline-flex items-center gap-1.5", className)}>
       <span
         aria-hidden="true"
-        className="flex size-[17px] shrink-0 items-center justify-center rounded-[5px] bg-ink text-[10px] font-semibold text-paper"
+        className="flex size-[17px] shrink-0 items-center justify-center rounded-[var(--radius-inner)] bg-ink text-[10px] font-semibold text-paper"
       >
         {source.name.charAt(0)}
       </span>

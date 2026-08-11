@@ -20,10 +20,10 @@ function Dot() {
 
 export function NewsCard({ article, showSummary = false }: NewsCardProps) {
   return (
-    <article className="group/card relative -mx-2 rounded-[var(--radius-inner)] px-2 py-3.5 transition-colors duration-200 first:pt-1 hover:bg-sunken/70">
+    <article className="group/card relative -mx-2 rounded-[var(--radius-inner)] px-2 py-3.5 transition-colors duration-200 first:pt-1 hover:bg-elevated/70">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-ink-faint">
         {article.isBreaking ? (
-          <span className="label rounded-[var(--radius-chip)] bg-accent-soft px-1.5 py-1 text-accent">
+          <span className="label rounded-[var(--radius-inner)] bg-elevated px-1.5 py-1 text-accent">
             Son dakika
           </span>
         ) : null}
@@ -63,7 +63,7 @@ export function NewsCard({ article, showSummary = false }: NewsCardProps) {
           {article.tickers.map((ticker) => (
             <li
               key={ticker.symbol}
-              className="meta rounded-[var(--radius-chip)] bg-sunken px-1.5 py-0.5 font-medium text-ink-muted"
+              className="meta rounded-[var(--radius-inner)] bg-elevated px-1.5 py-0.5 font-medium text-ink-muted"
             >
               {ticker.symbol}
             </li>
