@@ -14,10 +14,23 @@ export interface MarketQuote {
   symbol: string;
   name: string;
   assetType: AssetType;
+  /**
+   * Vekil ise neyin yerine durduğu (`S&P 500` gibi), değilse null.
+   *
+   * Gerçek endeks değerleri lisanslı veri; SPX/NDX yerine ETF vekili (SPY/QQQ)
+   * izleniyor ve fiyat ölçekleri farklı. Kart "S&P 500" deyip 773 gösterirse
+   * yalan söyler, bu yüzden vekillik arayüze kadar taşınıyor.
+   */
+  proxyFor: string | null;
   price: number;
   change: number;
   changePercent: number;
-  /** Sparkline için kronolojik kapanış serisi (en eski → en yeni). */
+  /**
+   * Sparkline için kronolojik günlük kapanış serisi (en eski → en yeni).
+   *
+   * **Baştan dolu gelmez.** Sağlayıcının ücretsiz katmanında geçmiş seri yok;
+   * bu dizi worker her gün bir nokta ekledikçe uzar ve 30 günde dolar.
+   */
   history: number[];
   updatedAt: string;
 }

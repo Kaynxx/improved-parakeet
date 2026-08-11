@@ -43,6 +43,13 @@
       "when": 1786448153002,
       "tag": "0005_community_sentiment",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786448378308,
+      "tag": "0006_market_quotes",
+      "breakpoints": true
     }
   ]
 }

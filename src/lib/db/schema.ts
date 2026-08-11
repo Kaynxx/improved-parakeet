@@ -400,3 +400,60 @@ export const postTickers = pgTable(
     index("post_tickers_ticker_id_idx").on(table.tickerId),
   ],
 );
+
+// --- Piyasa (2F) ----------------------------------------------------------
+/**
+ * İzlenen varlığın **son** durumu. Sembol başına tek satır; worker her turda
+ * üzerine yazar.
+ *
+ * Fiyatlar `double precision`: `numeric` daha kesin ama Drizzle onu string
+ * döndürüyor ve bu veri yalnız ekranda gösteriliyor — üzerinde para hesabı
+ * yapılmıyor. Kesinlik ihtiyacı doğarsa (portföy değeri gibi) tip değişmeli.
+ *
+ * `symbol` doğal anahtar: küme sabit ve elle tanımlı, üretilmiş bir kimlik
+ * hiçbir şey kazandırmazdı.
+ */
+export const marketQuotes = pgTable("market_quotes", {
+  symbol: text("symbol").primaryKey(),
+  name: text("name").notNull(),
+  assetType: assetType("asset_type").notNull(),
+  /** Sağlayıcıya gönderilen ham sembol — `BINANCE:BTCUSDT` gibi. */
+  providerSymbol: text("provider_symbol").notNull(),
+  /**
+   * Vekil ise neyin yerine durduğu (`S&P 500` gibi), değilse null. Gerçek
+   * endeks değerleri lisanslı olduğu için ETF vekili kullanılıyor ve bunun
+   * arayüzde gizlenmemesi gerekiyor.
+   */
+  proxyFor: text("proxy_for"),
+  price: doublePrecision("price").notNull(),
+  change: doublePrecision("change").notNull(),
+  changePercent: doublePrecision("change_percent").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Sparkline'ın kaynağı: gün başına tek kapanış.
+ *
+ * **Geçmişi kendimiz biriktiriyoruz.** Finnhub'ın ücretsiz katmanında mum
+ * uçlarının hepsi 403 dönüyor (ölçüldü, varsayılmadı), yani hazır seri yok.
+ * Worker her turda o günün satırını güncelliyor; gün içinde "kapanış" son
+ * görülen fiyat demek, gün bitince o değer donuyor.
+ *
+ * Tur başına satır yazmak yerine gün başına tek satır: 15 dakikalık turla
+ * günde 96 satır × 5 sembol birikirdi ve sparkline yine günlük seri istiyor.
+ */
+export const marketDaily = pgTable(
+  "market_daily",
+  {
+    symbol: text("symbol")
+      .notNull()
+      .references(() => marketQuotes.symbol, { onDelete: "cascade" }),
+    day: date("day").notNull(),
+    close: doublePrecision("close").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.symbol, table.day] }),
+    index("market_daily_symbol_day_idx").on(table.symbol, table.day.desc()),
+  ],
+);

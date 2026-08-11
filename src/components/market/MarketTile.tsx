@@ -41,13 +41,19 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
   const Arrow = ARROW[direction];
   const directionWord = direction === "up" ? "yükseliş" : direction === "down" ? "düşüş" : "yatay";
   const digits = priceDigits(quote.assetType);
+  // Seri worker biriktikçe uzuyor; iki noktalık çizgiye "30 gün" demek yanlış olur.
+  const pencere = `son ${quote.history.length} gün`;
 
   return (
     <article className="flex flex-col gap-3 rounded-[var(--radius-inner)] bg-sunken p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="meta font-medium text-ink">{quote.symbol}</p>
-          <p className="mt-0.5 truncate text-[12px] text-ink-faint">{quote.name}</p>
+          <p className="mt-0.5 truncate text-[12px] text-ink-faint">
+            {/* Vekil sembolde neyin izlendiği yazılmazsa kart yalan söyler:
+                fiyat endeksin değil ETF'in fiyatı ve ölçekleri farklı. */}
+            {quote.proxyFor ? `${quote.name} · ${quote.proxyFor} yerine` : quote.name}
+          </p>
         </div>
         <span
           className={cn(
@@ -69,12 +75,22 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
         </p>
       </div>
 
-      <Sparkline
-        id={quote.symbol}
-        data={quote.history}
-        direction={direction}
-        label={`${quote.name} son 24 saat: ${directionWord}, ${formatPercent(quote.changePercent)}`}
-      />
+      {/**
+       * Seri iki noktaya ulaşmadan çizilemez. Sağlayıcının ücretsiz katmanında
+       * geçmiş yok; bu dizi worker günde bir nokta ekleyerek doluyor. Boş
+       * bırakmak kartta açıklamasız bir boşluk üretiyordu — kullanıcı bunu
+       * bozukluk sanır.
+       */}
+      {quote.history.length >= 2 ? (
+        <Sparkline
+          id={quote.symbol}
+          data={quote.history}
+          direction={direction}
+          label={`${quote.name} ${pencere}: ${directionWord}, ${formatPercent(quote.changePercent)}`}
+        />
+      ) : (
+        <p className="meta text-ink-faint">Geçmiş birikiyor</p>
+      )}
     </article>
   );
 }
