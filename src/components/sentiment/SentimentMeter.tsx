@@ -42,13 +42,13 @@ export function SentimentMeter({ summary }: { summary: SentimentSummary }) {
 
       <div>
         <div
-          className="relative h-2.5 w-full overflow-hidden rounded-full bg-sunken"
+          className="relative h-2.5 w-full overflow-hidden rounded-full bg-elevated"
           role="img"
           aria-label={`Son ${summary.windowHours} saatte topluluk duyarlılığı: ${LABEL_TR[summary.label]}, skor ${clamped.toFixed(2)}`}
         >
           {/* Merkez çentiği: dolgu sıfırken bile ölçeğin ortası görünsün. */}
           <span
-            className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-rule-strong"
+            className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-hairline-strong"
             aria-hidden="true"
           />
           <span

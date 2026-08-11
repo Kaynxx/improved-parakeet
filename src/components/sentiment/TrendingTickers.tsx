@@ -12,7 +12,7 @@ const SENTIMENT_TR: Record<SentimentLabel, string> = {
 const SENTIMENT_STYLE: Record<SentimentLabel, string> = {
   bullish: "bg-up-soft text-up",
   bearish: "bg-down-soft text-down",
-  neutral: "bg-sunken text-ink-muted",
+  neutral: "bg-elevated text-ink-muted",
 };
 
 function labelOf(avgScore: number): SentimentLabel {
@@ -62,7 +62,7 @@ export function TrendingTickers({ items }: { items: TickerSentiment[] }) {
             </div>
 
             <div className="flex items-center gap-2.5">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-sunken">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-elevated">
                 <div
                   className="h-full rounded-full bg-flat"
                   style={{ width: `${width}%` }}
@@ -71,7 +71,7 @@ export function TrendingTickers({ items }: { items: TickerSentiment[] }) {
               </div>
               <span
                 className={cn(
-                  "shrink-0 rounded-[var(--radius-chip)] px-1.5 py-0.5 text-[11px] font-semibold",
+                  "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-[11px] font-semibold",
                   SENTIMENT_STYLE[label],
                 )}
               >

@@ -59,7 +59,7 @@ export function TodayBrief({ quotes }: { quotes: MarketQuote[] }) {
   }).format(new Date());
 
   return (
-    <section className="card relative isolate overflow-hidden">
+    <section className="glass relative isolate overflow-hidden">
       <div className="relative z-10 flex flex-col gap-6 px-6 pt-5 sm:px-8 sm:pt-7">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <p className="label">Bugün</p>
@@ -106,7 +106,7 @@ export function TodayBrief({ quotes }: { quotes: MarketQuote[] }) {
         >
           <defs>
             <linearGradient id="today-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={STROKE[direction]} stopOpacity="0.16" />
+              <stop offset="0%" stopColor={STROKE[direction]} stopOpacity="0.1" />
               <stop offset="100%" stopColor={STROKE[direction]} stopOpacity="0" />
             </linearGradient>
           </defs>

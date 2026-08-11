@@ -20,7 +20,7 @@ const TONE: Record<Direction, string> = {
 const CHIP: Record<Direction, string> = {
   up: "bg-up-soft text-up",
   down: "bg-down-soft text-down",
-  flat: "bg-sunken text-flat",
+  flat: "bg-elevated text-flat",
 };
 
 const ARROW = {
@@ -45,7 +45,7 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
   const pencere = `son ${quote.history.length} gün`;
 
   return (
-    <article className="flex flex-col gap-3 rounded-[var(--radius-inner)] bg-sunken p-4">
+    <article className="inset-panel flex flex-col gap-3 p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="meta font-medium text-ink">{quote.symbol}</p>
@@ -57,7 +57,7 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
         </div>
         <span
           className={cn(
-            "figure flex shrink-0 items-center gap-0.5 rounded-[var(--radius-chip)] px-1.5 py-1 text-[11px] font-semibold",
+            "figure flex shrink-0 items-center gap-0.5 rounded-[var(--radius-inner)] px-1.5 py-1 text-[11px] font-semibold",
             CHIP[direction],
           )}
         >

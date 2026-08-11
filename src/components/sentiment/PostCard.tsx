@@ -12,7 +12,7 @@ const SENTIMENT_TR: Record<SentimentLabel, string> = {
 const SENTIMENT_STYLE: Record<SentimentLabel, string> = {
   bullish: "bg-up-soft text-up",
   bearish: "bg-down-soft text-down",
-  neutral: "bg-sunken text-ink-muted",
+  neutral: "bg-elevated text-ink-muted",
 };
 
 export function PostCard({ post, showBody = false }: { post: SentimentPost; showBody?: boolean }) {
@@ -27,14 +27,14 @@ export function PostCard({ post, showBody = false }: { post: SentimentPost; show
           {timeAgo(post.postedAt)}
         </time>
         {post.flair ? (
-          <span className="rounded-[var(--radius-chip)] bg-sunken px-1.5 py-0.5 text-[11px] text-ink-faint">
+          <span className="rounded-[var(--radius-inner)] bg-elevated px-1.5 py-0.5 text-[11px] text-ink-faint">
             {post.flair}
           </span>
         ) : null}
         {/* Duyarlılık her zaman metinle yazılır — renk tek başına taşımaz. */}
         <span
           className={cn(
-            "ml-auto rounded-[var(--radius-chip)] px-2 py-0.5 text-[11px] font-semibold",
+            "ml-auto rounded-[var(--radius-inner)] px-2 py-0.5 text-[11px] font-semibold",
             SENTIMENT_STYLE[post.sentiment.label],
           )}
         >
@@ -64,7 +64,7 @@ export function PostCard({ post, showBody = false }: { post: SentimentPost; show
         {post.tickers.map((ticker) => (
           <span
             key={ticker.symbol}
-            className="meta rounded-[var(--radius-chip)] bg-sunken px-1.5 py-0.5 font-medium text-ink-muted"
+            className="meta rounded-[var(--radius-inner)] bg-elevated px-1.5 py-0.5 font-medium text-ink-muted"
           >
             {ticker.symbol}
           </span>
