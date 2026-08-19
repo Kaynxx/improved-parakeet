@@ -15,12 +15,12 @@ interface EmptyStateProps {
 export function EmptyState({ icon: Icon = Inbox, title, description }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-      <span className="flex size-11 items-center justify-center rounded-full bg-sunken">
+      <span className="flex size-11 items-center justify-center rounded-full bg-elevated">
         <Icon className="size-5 text-ink-faint" strokeWidth={1.75} aria-hidden="true" />
       </span>
-      <p className="text-[14.5px] font-medium text-ink">{title}</p>
+      <p className="text-md font-medium text-ink">{title}</p>
       {description ? (
-        <p className="max-w-xs text-[13px] leading-relaxed text-ink-faint">{description}</p>
+        <p className="max-w-xs text-copy leading-relaxed text-ink-faint">{description}</p>
       ) : null}
     </div>
   );

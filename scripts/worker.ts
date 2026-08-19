@@ -8,8 +8,10 @@
  * `systemPatterns.md`'deki okuma/yazma ayrımının uygulaması budur.
  */
 
-import "./load-env";
+import "./load-worker-env";
 import cron from "node-cron";
+import { upsertMarketQuotes } from "../src/lib/db/queries/market";
+import { fiyatlariCek } from "../src/server/integrations/finnhub";
 import { ingestAllSources } from "../src/server/integrations/rss/ingest";
 
 /** Her 15 dakikada bir. Haber feed'leri bundan sık güncellenmiyor. */
@@ -37,7 +39,39 @@ async function tick(trigger: string) {
     for (const f of failed) console.log(`    ✗ ${f.source}: ${f.error}`);
   } catch (error) {
     // Worker ölmez: bir turun çökmesi zamanlayıcıyı durdurmamalı.
-    console.error(`[${new Date().toISOString()}] tur çöktü:`, error);
+    console.error(`[${new Date().toISOString()}] haber turu çöktü:`, error);
+  }
+
+  /**
+   * Piyasa çekimi **ayrı try içinde**: haberle piyasa birbirinden bağımsız iki
+   * kaynak ve birinin çökmesi diğerinin turunu düşürmemeli. Aynı gerekçe
+   * `ingestAllSources`'un kaynak başına hata yalıtımında da geçerli.
+   */
+  try {
+    const { basarili, hatalar } = await fiyatlariCek();
+
+    if (basarili.length > 0) {
+      await upsertMarketQuotes(
+        basarili.map(({ varlik, price, change, changePercent }) => ({
+          symbol: varlik.symbol,
+          name: varlik.name,
+          assetType: varlik.assetType,
+          providerSymbol: varlik.providerSymbol,
+          proxyFor: varlik.proxyFor,
+          price,
+          change,
+          changePercent,
+        })),
+      );
+    }
+
+    console.log(
+      `[${new Date().toISOString()}] ${trigger}: ` +
+        `${basarili.length}/${basarili.length + hatalar.length} piyasa sembolü güncellendi`,
+    );
+    for (const h of hatalar) console.log(`    ✗ ${h.symbol}: ${h.hata}`);
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] piyasa turu çöktü:`, error);
   } finally {
     running = false;
   }

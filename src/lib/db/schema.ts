@@ -1,16 +1,10 @@
-/**
- * Faz 2A + 2B şeması.
- *
- * Şema **dilim dilim** kuruluyor. 2C topluluk (communities/posts/post_sentiment/
- * post_tickers/ticker_sentiment_daily), 2D video (videos/step_videos),
- * 2E auth (users ve ona bağlı her şey), 2F piyasa tabloları kendi dilimlerinde
- * eklenecek.
- */
-
 import { type SQL, sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
+  date,
+  doublePrecision,
   index,
   integer,
   pgEnum,
@@ -147,50 +141,156 @@ export const articleTickers = pgTable(
 );
 
 // --- Akademi --------------------------------------------------------------
+/**
+ * **`tracks`/`steps` değil `weeks`/`lessons`.** Bir "parça" (track) paralel bir
+ * yol demek; müfredat 8 SIRALI hafta olduğu için isim yalan söylüyordu. İçerik
+ * ve kullanıcı yokken yeniden adlandırmak mekanik; içerik yazıldıktan sonra
+ * aynı değişiklik çok daha pahalı olurdu.
+ */
 
-export const tracks = pgTable("tracks", {
+export const weeks = pgTable("weeks", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: text("slug").notNull().unique(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   level: trackLevel("level").notNull(),
+  /** Haftanın sıra numarası: 1-8. URL ve başlıklar bundan türer. */
   orderIndex: integer("order_index").notNull(),
 });
 
-export const steps = pgTable(
-  "steps",
+export const lessons = pgTable(
+  "lessons",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    trackId: uuid("track_id")
+    weekId: uuid("week_id")
       .notNull()
-      .references(() => tracks.id, { onDelete: "cascade" }),
+      .references(() => weeks.id, { onDelete: "cascade" }),
     slug: text("slug").notNull(),
     title: text("title").notNull(),
     summary: text("summary").notNull(),
-    /** Ders metni; 2A'da boş, içerik üretimi ayrı bir iş. */
+    /** Ders gövdesi (markdown). `content/akademi/` altındaki dosyadan gelir. */
     contentMd: text("content_md"),
     estimatedMin: integer("estimated_min").notNull(),
     orderIndex: integer("order_index").notNull(),
   },
   (table) => [
-    // Slug yalnız parça içinde benzersiz — URL zaten /akademi/[track]/[step].
-    uniqueIndex("steps_track_slug_idx").on(table.trackId, table.slug),
+    // Slug yalnız hafta içinde benzersiz — URL zaten /akademi/[hafta]/[ders].
+    uniqueIndex("lessons_week_slug_idx").on(table.weekId, table.slug),
   ],
 );
 
-/** Yol haritasının DAG kenarları. */
-export const stepPrerequisites = pgTable(
-  "step_prerequisites",
+/** Ön koşul DAG'ı. Müfredat doğrusal ama yapı esnek kalıyor. */
+export const lessonPrerequisites = pgTable(
+  "lesson_prerequisites",
   {
-    stepId: uuid("step_id")
+    lessonId: uuid("lesson_id")
       .notNull()
-      .references(() => steps.id, { onDelete: "cascade" }),
-    prerequisiteStepId: uuid("prerequisite_step_id")
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    prerequisiteLessonId: uuid("prerequisite_lesson_id")
       .notNull()
-      .references(() => steps.id, { onDelete: "cascade" }),
+      .references(() => lessons.id, { onDelete: "cascade" }),
   },
-  (table) => [primaryKey({ columns: [table.stepId, table.prerequisiteStepId] })],
+  (table) => [primaryKey({ columns: [table.lessonId, table.prerequisiteLessonId] })],
 );
+
+// --- Destekleyici kaynaklar ------------------------------------------------
+
+export const sourceKind = pgEnum("source_kind", ["video", "article", "discussion"]);
+export const sourceLevel = pgEnum("source_level", ["orta", "ileri", "uzman"]);
+
+/**
+ * Dersi destekleyen video / makale / tartışma. Ders dosyasının frontmatter'ından
+ * seed ile türer — tek doğruluk kaynağı repodaki markdown.
+ */
+export const lessonSources = pgTable(
+  "lesson_sources",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    kind: sourceKind("kind").notNull(),
+    title: text("title").notNull(),
+    url: text("url").notNull(),
+    /** Kanal, yayıncı ya da platform adı. */
+    provider: text("provider"),
+    /**
+     * YouTube video kimliği — **seed sırasında URL'den çıkarılır.**
+     * Render anında ayrıştırmak her sayfa yüklemesinde tekrar eden bir iş
+     * ve bozuk URL'yi kullanıcıya taşırdı; burada bir kez çözülür.
+     */
+    youtubeId: text("youtube_id"),
+    /** "42 dk" gibi serbest metin — kaynak süresini her zaman vermiyor. */
+    durationLabel: text("duration_label"),
+    level: sourceLevel("level").notNull(),
+    summary: text("summary").notNull(),
+    orderIndex: integer("order_index").notNull(),
+  },
+  (table) => [uniqueIndex("lesson_sources_lesson_url_idx").on(table.lessonId, table.url)],
+);
+
+// --- Sorular ve cevaplar ---------------------------------------------------
+
+/**
+ * `acik`     → serbest metin, AI ölçüte göre değerlendirir
+ * `sayisal`  → beklenen değer + tolerans, deterministik kontrol
+ * `tahmin`   → cevap kaydedilir, ileride gerçekleşenle karşılaştırılır
+ */
+export const promptKind = pgEnum("prompt_kind", ["acik", "sayisal", "tahmin"]);
+
+export const lessonPrompts = pgTable(
+  "lesson_prompts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    /** Ders içinde sabit anahtar — cevaplar bu anahtara bağlanır, sıraya değil. */
+    key: text("key").notNull(),
+    kind: promptKind("kind").notNull(),
+    points: integer("points").notNull(),
+    promptMd: text("prompt_md").notNull(),
+    /** Değerlendirme ölçütü. `acik` sorularda ZORUNLU — AI'ın tek dayanağı. */
+    rubricMd: text("rubric_md"),
+    expectedNumeric: text("expected_numeric"),
+    tolerance: text("tolerance"),
+    orderIndex: integer("order_index").notNull(),
+  },
+  (table) => [uniqueIndex("lesson_prompts_lesson_key_idx").on(table.lessonId, table.key)],
+);
+
+export const lessonAnswers = pgTable(
+  "lesson_answers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    promptId: uuid("prompt_id")
+      .notNull()
+      .references(() => lessonPrompts.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  // Kullanıcı başına soru başına TEK cevap; yeniden yazmak üzerine yazar.
+  (table) => [uniqueIndex("lesson_answers_user_prompt_idx").on(table.userId, table.promptId)],
+);
+
+export const answerFeedback = pgTable("answer_feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  answerId: uuid("answer_id")
+    .notNull()
+    .references(() => lessonAnswers.id, { onDelete: "cascade" }),
+  /** Hangi model değerlendirdi — model değişince eski puanlar bağlamını korusun. */
+  model: text("model").notNull(),
+  score: integer("score").notNull(),
+  strengths: text("strengths").array().notNull(),
+  gaps: text("gaps").array().notNull(),
+  feedbackMd: text("feedback_md").notNull(),
+  followUp: text("follow_up"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 // --- Kimlik (2E) ----------------------------------------------------------
 /**
@@ -241,11 +341,155 @@ export const userProgress = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    stepId: uuid("step_id")
+    lessonId: uuid("lesson_id")
       .notNull()
-      .references(() => steps.id, { onDelete: "cascade" }),
+      .references(() => lessons.id, { onDelete: "cascade" }),
     status: stepStatus("status").notNull().default("not_started"),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [primaryKey({ columns: [table.userId, table.stepId] })],
+  (table) => [primaryKey({ columns: [table.userId, table.lessonId] })],
+);
+
+// --- Topluluk ve Duyarlılık (2C) -----------------------------------------
+
+export const sentimentLabel = pgEnum("sentiment_label", ["bullish", "bearish", "neutral"]);
+
+export const communities = pgTable("communities", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  platform: text("platform").notNull().default("reddit"),
+  name: text("name").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  subscriberCount: integer("subscriber_count").notNull(),
+});
+
+export const communityPosts = pgTable(
+  "community_posts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    communityId: uuid("community_id")
+      .notNull()
+      .references(() => communities.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    bodyText: text("body_text").notNull(),
+    author: text("author").notNull(),
+    score: integer("score").notNull(),
+    commentCount: integer("comment_count").notNull(),
+    upvoteRatio: doublePrecision("upvote_ratio").notNull(),
+    flair: text("flair"),
+    minutesAgoOffset: integer("minutes_ago_offset").notNull().default(0),
+    sentimentLabel: sentimentLabel("sentiment_label").notNull(),
+    sentimentScore: doublePrecision("sentiment_score").notNull(),
+  },
+  (table) => [
+    index("community_posts_community_id_idx").on(table.communityId),
+    index("community_posts_sentiment_label_idx").on(table.sentimentLabel),
+  ],
+);
+
+export const postTickers = pgTable(
+  "post_tickers",
+  {
+    postId: uuid("post_id")
+      .notNull()
+      .references(() => communityPosts.id, { onDelete: "cascade" }),
+    tickerId: uuid("ticker_id")
+      .notNull()
+      .references(() => tickers.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.postId, table.tickerId] }),
+    index("post_tickers_ticker_id_idx").on(table.tickerId),
+  ],
+);
+
+// --- Piyasa (2F) ----------------------------------------------------------
+/**
+ * İzlenen varlığın **son** durumu. Sembol başına tek satır; worker her turda
+ * üzerine yazar.
+ *
+ * Fiyatlar `double precision`: `numeric` daha kesin ama Drizzle onu string
+ * döndürüyor ve bu veri yalnız ekranda gösteriliyor — üzerinde para hesabı
+ * yapılmıyor. Kesinlik ihtiyacı doğarsa (portföy değeri gibi) tip değişmeli.
+ *
+ * `symbol` doğal anahtar: küme sabit ve elle tanımlı, üretilmiş bir kimlik
+ * hiçbir şey kazandırmazdı.
+ */
+export const marketQuotes = pgTable("market_quotes", {
+  symbol: text("symbol").primaryKey(),
+  name: text("name").notNull(),
+  assetType: assetType("asset_type").notNull(),
+  /** Sağlayıcıya gönderilen ham sembol — `BINANCE:BTCUSDT` gibi. */
+  providerSymbol: text("provider_symbol").notNull(),
+  /**
+   * Vekil ise neyin yerine durduğu (`S&P 500` gibi), değilse null. Gerçek
+   * endeks değerleri lisanslı olduğu için ETF vekili kullanılıyor ve bunun
+   * arayüzde gizlenmemesi gerekiyor.
+   */
+  proxyFor: text("proxy_for"),
+  price: doublePrecision("price").notNull(),
+  change: doublePrecision("change").notNull(),
+  changePercent: doublePrecision("change_percent").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Sparkline'ın kaynağı: gün başına tek kapanış.
+ *
+ * **Geçmişi kendimiz biriktiriyoruz.** Finnhub'ın ücretsiz katmanında mum
+ * uçlarının hepsi 403 dönüyor (ölçüldü, varsayılmadı), yani hazır seri yok.
+ * Worker her turda o günün satırını güncelliyor; gün içinde "kapanış" son
+ * görülen fiyat demek, gün bitince o değer donuyor.
+ *
+ * Tur başına satır yazmak yerine gün başına tek satır: 15 dakikalık turla
+ * günde 96 satır × 5 sembol birikirdi ve sparkline yine günlük seri istiyor.
+ */
+export const marketDaily = pgTable(
+  "market_daily",
+  {
+    symbol: text("symbol")
+      .notNull()
+      .references(() => marketQuotes.symbol, { onDelete: "cascade" }),
+    day: date("day").notNull(),
+    close: doublePrecision("close").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.symbol, table.day] }),
+    index("market_daily_symbol_day_idx").on(table.symbol, table.day.desc()),
+  ],
+);
+
+// --- Pilot ölçümü (dengeli dönüşüm) ---------------------------------------
+/**
+ * Ders sonu üç sinyal: sıkılma, zihinsel çaba, devam etme isteği.
+ *
+ * Üçü **ayrı** tutuluyor: desirable difficulty çabayı artırırken sıkılmayı
+ * azaltabilir, tek bir "memnuniyet" puanı bu ayrımı yok ederdi.
+ *
+ * Kullanıcı-ders başına tek satır; yeniden gönderim üzerine yazar. Aralık
+ * kontrolü CHECK ile veritabanında: uygulama katmanı atlanırsa bile 1-7
+ * dışında bir ölçek değeri tabloya giremez.
+ */
+export const lessonReflections = pgTable(
+  "lesson_reflections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    boredom: integer("boredom").notNull(),
+    effort: integer("effort").notNull(),
+    continueIntent: integer("continue_intent").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("lesson_reflections_user_lesson_idx").on(table.userId, table.lessonId),
+    check("lesson_reflections_boredom_check", sql`${table.boredom} between 1 and 7`),
+    check("lesson_reflections_effort_check", sql`${table.effort} between 1 and 7`),
+    check("lesson_reflections_continue_intent_check", sql`${table.continueIntent} between 1 and 7`),
+  ],
 );

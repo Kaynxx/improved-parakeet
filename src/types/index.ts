@@ -14,10 +14,23 @@ export interface MarketQuote {
   symbol: string;
   name: string;
   assetType: AssetType;
+  /**
+   * Vekil ise neyin yerine durduğu (`S&P 500` gibi), değilse null.
+   *
+   * Gerçek endeks değerleri lisanslı veri; SPX/NDX yerine ETF vekili (SPY/QQQ)
+   * izleniyor ve fiyat ölçekleri farklı. Kart "S&P 500" deyip 773 gösterirse
+   * yalan söyler, bu yüzden vekillik arayüze kadar taşınıyor.
+   */
+  proxyFor: string | null;
   price: number;
   change: number;
   changePercent: number;
-  /** Sparkline için kronolojik kapanış serisi (en eski → en yeni). */
+  /**
+   * Sparkline için kronolojik günlük kapanış serisi (en eski → en yeni).
+   *
+   * **Baştan dolu gelmez.** Sağlayıcının ücretsiz katmanında geçmiş seri yok;
+   * bu dizi worker her gün bir nokta ekledikçe uzar ve 30 günde dolar.
+   */
   history: number[];
   updatedAt: string;
 }
@@ -141,12 +154,12 @@ export type StepStatus =
 export interface RoadmapStep {
   id: string;
   slug: string;
-  trackSlug: string;
+  weekSlug: string;
   title: string;
   summary: string;
   estimatedMin: number;
   orderIndex: number;
-  /** DAG kenarları: bu adım açılmadan önce tamamlanması gerekenler. */
+  /** DAG kenarları: bu ders açılmadan önce tamamlanması gerekenler. */
   prerequisiteIds: string[];
   status: StepStatus;
 }
@@ -162,17 +175,82 @@ export interface Track {
   totalSteps: number;
 }
 
+// --- Destekleyici kaynaklar -----------------------------------------------
+
+export type SourceKind = "video" | "article" | "discussion";
+export type SourceLevel = "orta" | "ileri" | "uzman";
+
+export interface LessonSource {
+  id: string;
+  kind: SourceKind;
+  title: string;
+  url: string;
+  provider: string | null;
+  /**
+   * Doluysa video kendi sayfamızda gömülü oynatılır; boşsa yalnız bağlantı
+   * verilir. YouTube dışı video kaynakları için null kalır.
+   */
+  youtubeId: string | null;
+  durationLabel: string | null;
+  level: SourceLevel;
+  summary: string;
+}
+
+// --- Sorular ve cevaplar ---------------------------------------------------
+
+export type PromptKind = "acik" | "sayisal" | "tahmin";
+
+export interface LessonPrompt {
+  id: string;
+  key: string;
+  kind: PromptKind;
+  points: number;
+  promptMd: string;
+  /** `acik` sorularda dolu; AI değerlendirmesinin tek dayanağı. */
+  rubricMd: string | null;
+  expectedNumeric: string | null;
+  tolerance: string | null;
+}
+
+export interface AnswerFeedback {
+  model: string;
+  score: number;
+  strengths: string[];
+  gaps: string[];
+  feedbackMd: string;
+  followUp: string | null;
+  createdAt: string;
+}
+
+/** Bir sorunun kullanıcıya görünen tam hali: soru + cevabı + değerlendirmesi. */
+export interface PromptWithAnswer {
+  prompt: LessonPrompt;
+  answer: { id: string; body: string; updatedAt: string } | null;
+  feedback: AnswerFeedback | null;
+}
+
+/**
+ * Günün video önerisi. Kaynağı **akademi dersleridir** — ayrı bir video tablosu
+ * ya da YouTube Data API yok.
+ *
+ * Alanlar `lesson_sources`'un gerçekten tuttuklarıyla sınırlı. Önceki sürüm
+ * `durationSec`, `publishedAt` ve `thumbnailUrl` taşıyordu; üçünün de karşılığı
+ * yok, çünkü tip mock'un şeklinden türetilmişti. Süre `lesson_sources` tarafında
+ * "42 dk" gibi serbest metin (`durationLabel`) olarak duruyor.
+ */
 export interface VideoSuggestion {
   id: string;
   youtubeId: string;
   title: string;
-  channelTitle: string;
-  thumbnailUrl: string | null;
-  durationSec: number;
-  publishedAt: string;
-  /** Hangi adım için önerildiği — "günlük video" eşleştirmesi. */
-  stepSlug: string;
-  stepTitle: string;
+  /** Kanal / yayıncı adı. Kaynak dosyası vermemişse null. */
+  channelTitle: string | null;
+  durationLabel: string | null;
+  level: SourceLevel;
+  summary: string;
+  /** Videonun ait olduğu ders — kart oraya götürür. */
+  weekSlug: string;
+  lessonSlug: string;
+  lessonTitle: string;
 }
 
 // --- Ticker şeridi --------------------------------------------------------

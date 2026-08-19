@@ -1,15 +1,28 @@
 /**
- * Piyasa verisi servisi — kaynak: **mock** (Faz 2F'de gerçek veriye geçer).
+ * Piyasa verisi servisi — kaynak: **Postgres** (2F).
  *
- * Piyasa verisi orijinal Faz 2 kapsamında hiç yoktu; 2F olarak ayrı bir dilim
- * açıldı. Gerçek zamanlı fiyat, diğer modüllerden farklı bir problem: ücretsiz
- * API'ler gecikmeli veya kotalı ve saniyelik yenileme worker/cron modeline
- * oturmuyor. Sağlayıcı seçimi 2F'de tartışılacak.
+ * Çekim request path'inde değil: worker `market_quotes` ve `market_daily`
+ * tablolarını dolduruyor, bu katman yalnız okuyor. Sayfa açılışında
+ * sağlayıcıya gidilseydi kota sayfa görüntülemeye bağlanır ve sağlayıcının
+ * yavaşlığı panele yansırdı.
+ *
+ * Tablo boşken boş dizi döner — worker hiç çalışmadıysa doğru olan bu; panel
+ * "henüz veri yok" durumunu gösterir, sahte fiyat uydurmaz.
  */
 
-import { marketQuotes } from "@/mocks";
+import { findHistoryDepth, findMarketQuotes } from "@/lib/db/queries/market";
 import type { MarketQuote } from "@/types";
 
-export async function getMarketOverview(): Promise<MarketQuote[]> {
-  return marketQuotes;
+export function getMarketOverview(): Promise<MarketQuote[]> {
+  return findMarketQuotes();
+}
+
+/**
+ * Sparkline'da kaç günlük seri birikti.
+ *
+ * Arayüz pencereyi sabit "son 30 gün" diye yazamaz: seri worker çalıştıkça
+ * uzuyor ve ilk günlerde iki noktalık bir çizgiye "30 gün" demek yanlış olur.
+ */
+export function getHistoryDepth(): Promise<number> {
+  return findHistoryDepth();
 }

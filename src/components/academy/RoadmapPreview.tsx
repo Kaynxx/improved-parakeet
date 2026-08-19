@@ -21,15 +21,15 @@ export function RoadmapPreview({ track, limit = 4 }: { track: Track; limit?: num
       <div className="flex items-center gap-4">
         <ProgressRing completed={track.completedSteps} total={track.totalSteps} />
         <div className="min-w-0">
-          <p className="text-[15px] font-semibold tracking-[-0.015em] text-ink">{track.title}</p>
+          <p className="text-md font-semibold tracking-[-0.015em] text-ink">{track.title}</p>
           <p className="meta mt-0.5 text-ink-faint">
             {LEVEL_TR[track.level]} · {track.completedSteps}/{track.totalSteps} adım
           </p>
-          <p className="mt-1 line-clamp-1 text-[12.5px] text-ink-muted">{track.description}</p>
+          <p className="mt-1 line-clamp-1 text-sm text-ink-muted">{track.description}</p>
         </div>
       </div>
 
-      <ol className="flex flex-col border-t border-rule pt-5">
+      <ol className="flex flex-col border-t border-hairline pt-5">
         {visible.map((step, index) => (
           <RoadmapNode key={step.id} step={step} isLast={index === visible.length - 1} />
         ))}

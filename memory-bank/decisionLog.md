@@ -679,6 +679,55 @@ kaydeden bir kaynak bırakmak, `ingestion_runs`'ın "gerçekten ne bozuk" sinyal
 gürültüye boğar. Kayıt tutuluyor ki "neden Cointelegraph yok" sorusu cevaplı
 kalsın; engel kalkarsa tek alan değiştirmek yeter.
 
+### Ajan belleği — birleşik, etkin giriş (2026-08-19)
+
+**Soru:** Güncel coding-agent'lar için bellek, legacy Cline şeması emekliye
+ayrılarak seçmeli okunan birleşik yapı olarak etkinleştirilsin mi?
+
+**Seçenekler:**
+1. Legacy dosyaları yerinde güncellemek
+2. Yeni belleği yalnız `AGENTS.md` üzerinden pasif bırakmak
+3. Birleşik belleği `CLAUDE.md` ve `AGENTS.md` üzerinden etkinleştirmek
+4. Letta, LangGraph/LangMem veya Mem0 tabanlı harici store eklemek
+
+**Karar:** Kullanıcı birleşik belleğin `CLAUDE.md` ve `AGENTS.md` üzerinden
+etkin olmasını seçti. Kalıcı karar kaydı bu dosyada tutulur; diğer bellek
+dosyaları seçmeli okunan durum, kanıt, araştırma, workstream ve handoff
+katmanıdır.
+
+**Sahibi:** Kullanıcı
+
+**Gerekçe:** Birleşik bellek, güncel proje gerçeğini küçük ve kaynaklı
+bağlamda sunar; ajan-sahipli workstream ve immutable handoff yapısı ortak
+aktif dosya çakışmasını önler. Markdown, ek servis olmadan mevcut coding-agent
+araçlarında okunabilir.
+
+**Varsayımlar:**
+- Yeni OmP oturumları `CLAUDE.md`yi yükleyip bellek yönlendirmesini izleyecek.
+- Kanonik özetler, daha yüksek öncelikli kaynakları açıkça cite etmeye devam
+  edecek.
+
+**Kabul edilen riskler:**
+- Etkin giriş, yeni oturumların başlangıç bağlamına küçük ek yük getirir.
+- Eski ajanlar emekliye ayrılan kayda başvurabilir; kaynak önceliği bu
+  çelişkileri güvenli biçimde çözmek için uygulanır.
+
+**Kanıt:**
+- `CLAUDE.md:87-178` — bellek girişi, kaynak önceliği, karar alanları ve otonomi sınırları
+- `memory-bank/INDEX.md`
+- `memory-bank/research/2026-08-19-agent-memory.md`
+
+**Güven:** 0.95
+
+**Durum:** accepted
+
+**Gözden geçirme tetiği:** Birleşik belleğin seçmeli dosya okuması ilgili
+bilgiyi bulamıyorsa, eşzamanlı ajan yazmaları hâlâ çakışıyorsa veya bellek
+hacmi path-temelli aramayı yetersiz bırakıyorsa namespace'li semantik store
+seçeneği yeniden değerlendirilir.
+
+**Tarih:** 2026-08-19
+
 ## Pending Decisions
 
 ### Deployment hedefi (2026-08-05)

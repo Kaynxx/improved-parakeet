@@ -8,11 +8,13 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test:security": "node --import tsx --test \"src/lib/security/*.test.ts\"",
     "lint": "biome check src scripts drizzle.config.ts",
     "format": "biome format --write src scripts drizzle.config.ts",
     "db:up": "tsx scripts/pg.ts up",
     "db:down": "tsx scripts/pg.ts down",
     "db:status": "tsx scripts/pg.ts status",
+    "db:harden": "tsx scripts/harden-db.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
@@ -22,12 +24,15 @@
     "user:create": "tsx scripts/create-user.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@node-rs/argon2": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "geist": "^1.7.2",
+    "gray-matter": "^4.0.3",
     "lucide-react": "^1.28.0",
+    "marked": "^18.0.9",
     "motion": "^12.43.0",
     "next": "^15.5.22",
     "next-auth": "^5.0.0-beta.32",
@@ -37,7 +42,9 @@
     "react-dom": "^19.2.8",
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.17.6",
-    "tailwind-merge": "^3.6.0"
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",
@@ -51,5 +58,10 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.5",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "nanoid": "^3.3.18",
+    "postcss": "^8.5.26",
+    "sharp": "^0.35.3"
   }
 }

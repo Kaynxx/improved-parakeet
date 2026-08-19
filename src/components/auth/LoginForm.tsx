@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { type GirisDurumu, girisYap } from "@/app/(auth)/giris/actions";
+import { Button } from "@/components/common/Button";
 
 const BASLANGIC: GirisDurumu = { hata: null };
 
@@ -33,7 +34,7 @@ export function LoginForm({ donus }: { donus: string }) {
       {durum.hata ? (
         <p
           role="alert"
-          className="rounded-[var(--radius-inner)] bg-down-soft px-4 py-3 text-[13px] leading-relaxed text-down"
+          className="rounded-[var(--radius-inner)] bg-down-soft px-4 py-3 text-copy leading-relaxed text-down"
         >
           {durum.hata}
         </p>
@@ -66,7 +67,7 @@ function Alan({ id, name, type, label, autoComplete, placeholder }: AlanProps) {
         required
         autoComplete={autoComplete}
         placeholder={placeholder}
-        className="h-11 rounded-[var(--radius-inner)] bg-sunken px-3.5 text-[14.5px] text-ink placeholder:text-ink-faint"
+        className="inset-panel h-11 px-3.5 text-md text-ink placeholder:text-ink-faint"
       />
     </div>
   );
@@ -81,12 +82,8 @@ function GonderDugmesi() {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="press mt-1 h-11 rounded-[var(--radius-inner)] bg-ink text-[14.5px] font-semibold text-paper hover:bg-accent disabled:opacity-60"
-    >
+    <Button type="submit" disabled={pending} className="mt-1 w-full">
       {pending ? "Giriş yapılıyor…" : "Giriş yap"}
-    </button>
+    </Button>
   );
 }

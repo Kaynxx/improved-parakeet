@@ -1,84 +1,82 @@
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { findProgressByUser } from "@/lib/db/queries/progress";
-import { stepPrerequisites, steps, tracks } from "@/lib/db/schema";
+import { lessonPrerequisites, lessons, weeks } from "@/lib/db/schema";
 import type { RoadmapStep, Track } from "@/types";
 
 /**
- * `userId` zorunlu — bu sorgu artık her zaman bir kullanıcıya ait. Kaydı
- * olmayan adım `not_started` sayılır, yani ilerleme tablosu boşken davranış
- * 2A ile birebir aynı kalıyor.
+ * `userId` zorunlu — bu sorgu her zaman bir kullanıcıya ait. Kaydı olmayan
+ * ders `not_started` sayılır, yani ilerleme tablosu boşken davranış tutarlı.
  */
 export async function findTracks(userId: string): Promise<Track[]> {
-  const [trackRows, stepRows, prereqRows, progress] = await Promise.all([
-    getDb().select().from(tracks).orderBy(asc(tracks.orderIndex)),
-    getDb().select().from(steps).orderBy(asc(steps.orderIndex)),
-    getDb().select().from(stepPrerequisites),
+  const [weekRows, lessonRows, prereqRows, progress] = await Promise.all([
+    getDb().select().from(weeks).orderBy(asc(weeks.orderIndex)),
+    getDb().select().from(lessons).orderBy(asc(lessons.orderIndex)),
+    getDb().select().from(lessonPrerequisites),
     findProgressByUser(userId),
   ]);
 
-  const prereqsByStep = new Map<string, string[]>();
+  const prereqsByLesson = new Map<string, string[]>();
   for (const row of prereqRows) {
-    const list = prereqsByStep.get(row.stepId) ?? [];
-    list.push(row.prerequisiteStepId);
-    prereqsByStep.set(row.stepId, list);
+    const list = prereqsByLesson.get(row.lessonId) ?? [];
+    list.push(row.prerequisiteLessonId);
+    prereqsByLesson.set(row.lessonId, list);
   }
 
-  const stepsByTrack = new Map<string, RoadmapStep[]>();
-  const trackSlugById = new Map(trackRows.map((row) => [row.id, row.slug]));
+  const lessonsByWeek = new Map<string, RoadmapStep[]>();
+  const weekSlugById = new Map(weekRows.map((row) => [row.id, row.slug]));
 
-  for (const row of stepRows) {
-    const trackSlug = trackSlugById.get(row.trackId);
-    if (!trackSlug) continue; // yetim adım — parça silinmişse
+  for (const row of lessonRows) {
+    const weekSlug = weekSlugById.get(row.weekId);
+    if (!weekSlug) continue; // yetim ders — hafta silinmişse
 
-    const list = stepsByTrack.get(row.trackId) ?? [];
+    const list = lessonsByWeek.get(row.weekId) ?? [];
     list.push({
       id: row.id,
       slug: row.slug,
-      trackSlug,
+      weekSlug,
       title: row.title,
       summary: row.summary,
       estimatedMin: row.estimatedMin,
       orderIndex: row.orderIndex,
-      prerequisiteIds: prereqsByStep.get(row.id) ?? [],
+      prerequisiteIds: prereqsByLesson.get(row.id) ?? [],
       status: progress.get(row.id) ?? "not_started",
     });
-    stepsByTrack.set(row.trackId, list);
+    lessonsByWeek.set(row.weekId, list);
   }
 
-  return trackRows.map((row) => {
-    const trackSteps = stepsByTrack.get(row.id) ?? [];
+  return weekRows.map((row) => {
+    const weekLessons = lessonsByWeek.get(row.id) ?? [];
     return {
       id: row.id,
       slug: row.slug,
       title: row.title,
       description: row.description,
       level: row.level,
-      steps: trackSteps,
+      steps: weekLessons,
       // Yalnız `mastered` sayılır. Ara aşamalara ağırlık vermek (her biri %25)
-      // 2F'de, gerçek veri akmaya başlayınca eklenecek — boş tabloda
-      // ağırlıklandırma görünmez, dolayısıyla şimdi yazmak doğrulanamaz olurdu.
-      completedSteps: trackSteps.filter((step) => step.status === "mastered").length,
-      totalSteps: trackSteps.length,
+      // gerçek veri akmaya başlayınca eklenecek.
+      completedSteps: weekLessons.filter((lesson) => lesson.status === "mastered").length,
+      totalSteps: weekLessons.length,
     };
   });
 }
 
 export async function findTrackBySlug(userId: string, slug: string): Promise<Track | null> {
   const all = await findTracks(userId);
-  return all.find((track) => track.slug === slug) ?? null;
+  return all.find((week) => week.slug === slug) ?? null;
 }
 
-/** Adım slug'ı yalnız parça içinde benzersiz — iki koşul birlikte daraltır. */
+/** Ders slug'ı yalnız hafta içinde benzersiz — iki koşul birlikte daraltır. */
 export async function findStepContent(
-  trackSlug: string,
-  stepSlug: string,
+  weekSlug: string,
+  lessonSlug: string,
 ): Promise<{ contentMd: string | null } | null> {
   const rows = await getDb()
-    .select({ contentMd: steps.contentMd })
-    .from(steps)
-    .innerJoin(tracks, eq(steps.trackId, tracks.id))
-    .where(and(eq(tracks.slug, trackSlug), eq(steps.slug, stepSlug)))
+    .select({ contentMd: lessons.contentMd })
+    .from(lessons)
+    .innerJoin(weeks, eq(lessons.weekId, weeks.id))
+    .where(and(eq(weeks.slug, weekSlug), eq(lessons.slug, lessonSlug)))
     .limit(1);
 
   const row = rows[0];

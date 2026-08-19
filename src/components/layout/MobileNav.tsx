@@ -18,7 +18,7 @@ export function MobileNav() {
   return (
     <nav
       aria-label="Ana gezinme"
-      className="chrome fixed inset-x-0 bottom-0 z-30 border-t border-rule md:hidden"
+      className="glass-chrome fixed inset-x-0 bottom-0 z-30 border-t border-hairline md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <ul className="grid grid-cols-4">
@@ -39,13 +39,13 @@ export function MobileNav() {
                 {/* Aktif sekmenin üstündeki kısa çubuk: renk tek kanal kalmasın. */}
                 <span
                   className={cn(
-                    "h-[3px] w-7 rounded-full transition-colors duration-200",
+                    "h-[3px] w-7 rounded-[var(--radius-inner)] transition-colors duration-200",
                     active ? "bg-accent" : "bg-transparent",
                   )}
                   aria-hidden="true"
                 />
                 <Icon className="size-[19px]" strokeWidth={active ? 2 : 1.75} aria-hidden="true" />
-                <span className="text-[11px] font-medium">{item.label}</span>
+                <span className="text-xs font-medium">{item.label}</span>
               </Link>
             </li>
           );

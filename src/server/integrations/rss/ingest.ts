@@ -32,7 +32,9 @@ async function ingestSource(
   matchers: ReturnType<typeof buildMatchers>,
   tickerIdBySymbol: Map<string, string>,
 ): Promise<SourceResult> {
-  const db = getDb();
+  // İşleyici kapsamı: bu yol haber tablolarına yazar, kimlik tablosuna
+  // erişimi yoktur.
+  const db = getDb("isleyici");
 
   const [run] = await db
     .insert(ingestionRuns)
@@ -120,7 +122,7 @@ async function ingestSource(
 
 /** Tüm aktif kaynakları sırayla tarar. Sonuç her kaynak için bir satır. */
 export async function ingestAllSources(): Promise<SourceResult[]> {
-  const db = getDb();
+  const db = getDb("isleyici");
 
   const [activeSources, tickerRows] = await Promise.all([
     db

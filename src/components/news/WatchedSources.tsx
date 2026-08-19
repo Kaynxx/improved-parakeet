@@ -18,11 +18,11 @@ export function WatchedSources({ sources }: { sources: Source[] }) {
   if (sources.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-        <span className="flex size-11 items-center justify-center rounded-full bg-sunken">
+        <span className="flex size-11 items-center justify-center rounded-full bg-elevated">
           <Rss className="size-5 text-ink-faint" strokeWidth={1.75} aria-hidden="true" />
         </span>
-        <p className="text-[14.5px] font-medium text-ink">Henüz kaynak tanımlı değil</p>
-        <p className="max-w-xs text-[13px] leading-relaxed text-ink-faint">
+        <p className="text-md font-medium text-ink">Henüz kaynak tanımlı değil</p>
+        <p className="max-w-xs text-copy leading-relaxed text-ink-faint">
           Haber akışı için önce izlenecek kaynaklar eklenmeli.
         </p>
       </div>
@@ -32,8 +32,8 @@ export function WatchedSources({ sources }: { sources: Source[] }) {
   return (
     <div className="flex h-full flex-col justify-center py-6">
       <div className="mx-auto w-full max-w-md">
-        <p className="text-[15px] font-semibold text-ink">Akış henüz boş</p>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-ink-faint">
+        <p className="text-md font-semibold text-ink">Akış henüz boş</p>
+        <p className="mt-1.5 text-copy leading-relaxed text-ink-faint">
           Aşağıdaki {sources.length} kaynak izleniyor. İlk tarama tamamlandığında başlıklar buraya
           düşer.
         </p>
@@ -41,7 +41,7 @@ export function WatchedSources({ sources }: { sources: Source[] }) {
         <ul className="mt-5 flex flex-col divide-y divide-rule">
           {sources.map((source) => (
             <li key={source.id} className="flex items-center gap-4 py-2.5">
-              <span className="min-w-0 flex-1 truncate text-[13px] text-ink-muted">
+              <span className="min-w-0 flex-1 truncate text-copy text-ink-muted">
                 {source.name}
               </span>
               <span className="label shrink-0">{CATEGORY_LABEL[source.category]}</span>

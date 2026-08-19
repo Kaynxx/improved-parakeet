@@ -44,7 +44,7 @@ export function UserMenu({ name, email, image }: UserMenuProps) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="press flex size-10 items-center justify-center overflow-hidden rounded-[var(--radius-inner)] bg-ink text-[13px] font-semibold text-paper hover:bg-accent"
+        className="press flex size-10 items-center justify-center overflow-hidden rounded-[var(--radius-inner)] bg-ink text-copy font-semibold text-on-ink hover:bg-accent"
       >
         {image ? (
           // biome-ignore lint/performance/noImgElement: Google CDN alan adı, next/image için remotePatterns gerekir
@@ -59,22 +59,22 @@ export function UserMenu({ name, email, image }: UserMenuProps) {
         <div
           role="menu"
           className={cn(
-            "card absolute right-0 top-[calc(100%+8px)] z-30 w-60 overflow-hidden p-1.5",
+            "glass absolute top-[calc(100%+8px)] right-0 z-30 w-60 overflow-hidden p-1.5",
             "shadow-[var(--shadow-lift)]",
           )}
         >
           <div className="px-3 py-2.5">
-            {name ? <p className="truncate text-[13.5px] font-semibold text-ink">{name}</p> : null}
-            <p className="mt-0.5 truncate text-[12px] text-ink-faint">{email}</p>
+            {name ? <p className="truncate text-copy font-semibold text-ink">{name}</p> : null}
+            <p className="mt-0.5 truncate text-sm text-ink-faint">{email}</p>
           </div>
 
-          <div className="my-1 h-px bg-rule" />
+          <div className="my-1 h-px bg-hairline" />
 
           <button
             type="button"
             role="menuitem"
             onClick={() => void signOut({ redirectTo: "/giris" })}
-            className="press flex w-full items-center gap-2.5 rounded-[var(--radius-chip)] px-3 py-2.5 text-[13.5px] font-medium text-ink-muted hover:bg-sunken hover:text-ink"
+            className="press flex w-full items-center gap-2.5 rounded-[var(--radius-inner)] px-3 py-2.5 text-copy font-medium text-ink-muted hover:bg-elevated hover:text-ink"
           >
             <LogOut className="size-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
             Çıkış yap

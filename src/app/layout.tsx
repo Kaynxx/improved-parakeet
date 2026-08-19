@@ -1,32 +1,14 @@
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Schibsted_Grotesk, Source_Serif_4 } from "next/font/google";
+import { Newsreader } from "next/font/google";
 import "./globals.css";
+import { aktifTema } from "@/app/theme-actions";
 
-/**
- * Üç yüz, üç iş. Hepsinde `latin-ext` zorunlu: ğ ı İ ş Latin Extended-A'da,
- * yalnız `latin` istenirse Türkçe metin yedek yüzden düşüyor ve satır ortasında
- * yüz değişiyor.
- */
-
-/** Arayüz, başlık ve sayılar. Bir haber kuruluşu için çizilmiş grotesk. */
-const schibsted = Schibsted_Grotesk({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-schibsted",
-  display: "swap",
-});
-
-/** Yalnız uzun okuma: haber gövdesi ve ders metni. */
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-source-serif",
-  display: "swap",
-});
-
-/** Yalnız etiket ve üstbilgi — verinin adı, verinin kendisi değil. */
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono",
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 
@@ -39,15 +21,22 @@ export const metadata: Metadata = {
     "Piyasa haberleri, topluluk duyarlılığı ve finansal okuryazarlık akademisi — tek panelde.",
 };
 
-export const viewport: Viewport = {
-  themeColor: "#eae8e3",
-};
+/** Şema başına farklı tarayıcı kroması: statik `viewport.themeColor` tek
+ *  rengi donduruyordu, üç şemayı da yanlış temsil ederdi. */
+export async function generateViewport(): Promise<Viewport> {
+  const tema = await aktifTema();
+  const renk = tema === "editorial" ? "#f6f1e7" : tema === "terminal" ? "#000000" : "#0a0a0c";
+  return { themeColor: renk };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const tema = await aktifTema();
+
   return (
     <html
       lang="tr"
-      className={`${schibsted.variable} ${sourceSerif.variable} ${plexMono.variable}`}
+      data-theme={tema}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${newsreader.variable}`}
     >
       <body>{children}</body>
     </html>

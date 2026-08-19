@@ -29,12 +29,10 @@ export function SentimentMeter({ summary }: { summary: SentimentSummary }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-baseline justify-between gap-3">
-        <p
-          className={cn("text-[19px] font-semibold tracking-[-0.02em]", LABEL_TONE[summary.label])}
-        >
+        <p className={cn("text-lg font-semibold tracking-[-0.02em]", LABEL_TONE[summary.label])}>
           {LABEL_TR[summary.label]}
         </p>
-        <p className="figure text-[15px] font-semibold text-ink">
+        <p className="figure text-md font-semibold text-ink">
           {clamped > 0 ? "+" : clamped < 0 ? "−" : ""}
           {Math.abs(clamped).toFixed(2)}
         </p>
@@ -42,13 +40,13 @@ export function SentimentMeter({ summary }: { summary: SentimentSummary }) {
 
       <div>
         <div
-          className="relative h-2.5 w-full overflow-hidden rounded-full bg-sunken"
+          className="relative h-2.5 w-full overflow-hidden rounded-full bg-elevated"
           role="img"
           aria-label={`Son ${summary.windowHours} saatte topluluk duyarlılığı: ${LABEL_TR[summary.label]}, skor ${clamped.toFixed(2)}`}
         >
           {/* Merkez çentiği: dolgu sıfırken bile ölçeğin ortası görünsün. */}
           <span
-            className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-rule-strong"
+            className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-hairline-strong"
             aria-hidden="true"
           />
           <span
@@ -66,7 +64,7 @@ export function SentimentMeter({ summary }: { summary: SentimentSummary }) {
         </div>
       </div>
 
-      <dl className="grid grid-cols-3 gap-3 border-t border-rule pt-4">
+      <dl className="grid grid-cols-3 gap-3 border-t border-hairline pt-4">
         <Counter label="Boğa" value={summary.bullishCount} total={total} tone="text-up" />
         <Counter label="Nötr" value={summary.neutralCount} total={total} tone="text-ink-muted" />
         <Counter label="Ayı" value={summary.bearishCount} total={total} tone="text-down" />
@@ -94,9 +92,9 @@ function Counter({
   return (
     <div className="flex flex-col gap-1">
       <dt className="label">{label}</dt>
-      <dd className={cn("figure text-[15px] font-semibold", tone)}>
+      <dd className={cn("figure text-md font-semibold", tone)}>
         {value.toLocaleString("tr-TR")}
-        <span className="ml-1 text-[11px] font-normal text-ink-faint">%{share}</span>
+        <span className="ml-1 text-xs font-normal text-ink-faint">%{share}</span>
       </dd>
     </div>
   );

@@ -1,100 +1,219 @@
 @import "tailwindcss";
 
-/* ==========================================================================
-   MÜREKKEP — Finans Programı görsel sistemi
+/* ===========================================================================
+   Finans Programı — üç tasarım şeması, tek bileşen ağacı
 
-   Yön: koyu cam terminal değil, **aydınlık günlük bülten.** Panelin okuru
-   profesyonel bir trader değil, öğrenen bir yatırımcı; ürün izlenen bir ekran
-   değil, okunan bir sayfa. Bütün kararlar bu cümleden türüyor.
+   Mono = makinenin sesi: sayı, sembol, zaman, bölüm etiketi.
+   Sans = insanın sesi: başlık, açıklama, haber ve ders metni (Terminal şeması
+   hariç — orada başlıklar da veri gibi görünür, bkz. aşağıdaki şema bloğu).
+   Renk = piyasa yönü ve (yalnız Terminal'de) sinyal. Diğer bütün vurgu ışık,
+   kontrast ve malzemeyle kurulur.
 
-   Üç malzeme var ve karışmazlar:
-     · kâğıt   — uygulamanın zemini. Beyaz DEĞİL; hafif sıcak gri.
-     · kart    — kâğıdın üstünde duran, ondan AÇIK yüzey. Işığı o taşır.
-     · cam     — yalnız sabit kabuk (üst bar, kenar çubuğu, şerit). İçerik altından akar.
+   Mimari: değişmez katman (bu dosyanın @theme bloğu — adlar hiç değişmez) +
+   şema katmanı (aşağıdaki üç ham değer bloğu — [data-theme] ile seçilir).
+   Bileşenler her zaman semantik ismi tüketir (`bg-surface`, `text-ink`),
+   asla ham hex. Şema anahtarı <html data-theme> üzerinde durur; sunucu
+   render'ında bir çerezden okunur, flaş oluşmaz.
    ========================================================================== */
 
 @theme {
-  /* --- Zemin ------------------------------------------------------------
-     Kâğıt beyaz olsaydı kart onun üstünde ancak gölgeyle ayrılabilirdi ve
-     gölge tek başına zayıf bir ayraçtır. Zemin bir kademe koyu olunca kart
-     kendi parlaklığıyla ayrılıyor — ayrımı ışık yapıyor, çizgi değil. */
-  --color-paper: #eae8e3;
-  --color-paper-deep: #ded9d2;
+  --color-base: var(--scheme-base);
+  --color-surface: var(--scheme-surface);
+  --color-elevated: var(--scheme-elevated);
+  --color-hairline: var(--scheme-hairline);
+  --color-hairline-strong: var(--scheme-hairline-strong);
 
-  --color-card: #fcfbf9;
-  /* Kartın İÇİNDEKİ kutu. Kart açıksa iç kutu koyu olmak zorunda: aksi halde
-     iç içe iki açık yüzey birbirinden ayrılmaz. */
-  --color-sunken: #f1efea;
+  --color-ink: var(--scheme-ink);
+  --color-ink-muted: var(--scheme-ink-muted);
+  --color-ink-faint: var(--scheme-ink-faint);
+  --color-on-ink: var(--scheme-on-ink);
 
-  /* --- Mürekkep: üç kademe, üçü de AA geçer -----------------------------
-     ink-faint bilerek #6C7180 değil #636875: çıplak kâğıdın (#EAE8E3) üstüne
-     düştüğünde 4.5'i tutması gerekiyordu, kartın üstüne değil. Metnin en zayıf
-     kademesi en zayıf zeminde ölçülür. */
-  --color-ink: #191b21;
-  --color-ink-muted: #4a4f5a;
-  --color-ink-faint: #636875;
+  --color-accent: var(--scheme-accent);
+  --color-accent-soft: var(--scheme-accent-soft);
+  --color-accent-line: var(--scheme-accent-line);
 
-  /* --- Çizgiler ---------------------------------------------------------
-     Kâğıt sisteminde kenarlık ikincil: ayrımı gölge ve parlaklık yapıyor.
-     Çizgi yalnız gerçek bir ayrım varken (satır arası, sütun başı) çıkar. */
-  --color-rule: rgb(25 27 33 / 0.09);
-  --color-rule-strong: rgb(25 27 33 / 0.18);
+  --color-up: var(--scheme-up);
+  --color-down: var(--scheme-down);
+  --color-flat: var(--scheme-flat);
+  --color-up-soft: var(--scheme-up-soft);
+  --color-down-soft: var(--scheme-down-soft);
 
-  /* --- Aksan: derin ultramarin -----------------------------------------
-     Yeşil ve kırmızı veriye ait — yön onların işi. Aksan bu yüzden ÜÇÜNCÜ bir
-     hue olmak zorunda. Eski panel bunu beyaz aksanla çözüyordu; çözmüyordu,
-     yalnız rengi tamamen kaldırıyordu ve arayüz karaktersiz kalıyordu. */
-  --color-accent: #2436c4;
-  --color-accent-soft: rgb(36 54 196 / 0.09);
-  --color-accent-line: rgb(36 54 196 / 0.28);
-
-  /* --- Semantik: SADECE piyasa yönü -------------------------------------
-     Renk hiçbir yerde tek taşıyıcı değil; her yerde ok + işaretli sayı eşlik
-     eder. Bu yüzden ton seçimi renk körlüğü ayrımına değil, açık zeminde
-     kontrast oranına göre optimize edildi. */
-  --color-up: #0b6b49;
-  --color-down: #c42b1c;
-  --color-flat: #767b87;
-  --color-up-soft: rgb(11 107 73 / 0.1);
-  --color-down-soft: rgb(196 43 28 / 0.1);
-
-  /* --- Tipografi: üç ses, üç iş ----------------------------------------
-     display → arayüz, başlık VE sayılar. Sayıyı mono'ya vermek terminal
-       klişesi; tabular-nums açılmış bir grotesk, gazetenin piyasa sayfası
-       gibi okunuyor ve daha iyi hizalanıyor.
-     text    → yalnız uzun okuma (haber gövdesi, ders metni). Serif.
-     mono    → yalnız etiket ve üstbilgi. Veri değil, verinin ADI. */
-  --font-display: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
-  --font-text: var(--font-source-serif), Georgia, "Times New Roman", serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-display: var(--scheme-font-display);
+  --font-text: var(--scheme-font-text);
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
   --font-sans: var(--font-display);
 
-  /* --- Yarıçap ----------------------------------------------------------
-     Kâğıt kesilir, kavislenmez — ama ekranda 0 yarıçap gölgeyi sertleştirip
-     kartı "yapıştırılmış" gösteriyor. 14px kartı fiziksel bir nesne yapacak
-     kadar, süse kaçmayacak kadar. */
-  --radius-card: 14px;
-  --radius-inner: 9px;
-  --radius-chip: 6px;
+  --radius-card: var(--scheme-radius-card);
+  --radius-inner: var(--scheme-radius-inner);
+  --radius-chip: var(--radius-inner);
 
-  /* --- Gölge: yüzey ne kadar büyükse o kadar kalın -----------------------
-     Üç katman: teması (1px), yakın gölge, uzak gölge. Tek kutulu gölge
-     "drop shadow" gibi görünür; katmanlı olan malzeme gibi. */
-  --shadow-card:
-    0 0 0 1px rgb(25 27 33 / 0.04), 0 1px 2px -1px rgb(25 27 33 / 0.1),
-    0 6px 16px -8px rgb(25 27 33 / 0.14);
   --shadow-lift:
-    0 0 0 1px rgb(25 27 33 / 0.05), 0 2px 4px -2px rgb(25 27 33 / 0.1),
-    0 14px 28px -12px rgb(25 27 33 / 0.2);
-  --shadow-chrome: 0 1px 0 0 rgb(25 27 33 / 0.06), 0 8px 24px -16px rgb(25 27 33 / 0.35);
+    inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 7px 12px -9px rgb(255 255 255 / 0.34),
+    inset 0 -1px 0 rgb(0 0 0 / 0.46), 0 16px 32px -20px rgb(0 0 0 / 0.78);
 
-  /* --- Hareket ----------------------------------------------------------
-     İki eğri yeter. `--ease-settle` kritik sönümlü bir yayın yaklaşımı:
-     hızlı çıkar, taşmadan oturur. `--ease-press` basışın anlık geri dönüşü. */
   --ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-press: cubic-bezier(0.4, 0, 0.2, 1);
-
   --animate-ticker: ticker 64s linear infinite;
+
+  /* Tipografi ölçeği — adım isimleri hiç değişmez, her adım eşleşen
+     satır yüksekliği/harf aralığı/ağırlık taşır. Büyük iki adım `clamp()`
+     ile akışkan: tek sınıf, `sm:` çifti gerekmez. */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.35;
+  --text-2xs--letter-spacing: 0;
+  --text-2xs--font-weight: 600;
+
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1.4;
+  --text-xs--letter-spacing: 0.01em;
+  --text-xs--font-weight: 500;
+
+  --text-sm: 0.78125rem;
+  --text-sm--line-height: 1.5;
+  --text-sm--letter-spacing: 0;
+  --text-sm--font-weight: 400;
+
+  --text-copy: 0.84375rem;
+  --text-copy--line-height: 1.6;
+  --text-copy--letter-spacing: 0;
+  --text-copy--font-weight: 400;
+
+  --text-md: 0.9375rem;
+  --text-md--line-height: 1.4;
+  --text-md--letter-spacing: -0.005em;
+  --text-md--font-weight: 500;
+
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.25;
+  --text-lg--letter-spacing: -0.015em;
+  --text-lg--font-weight: 600;
+
+  --text-heading: clamp(1.75rem, 1.6rem + 0.6vw, 2rem);
+  --text-heading--line-height: 1.1;
+  --text-heading--letter-spacing: -0.03em;
+  --text-heading--font-weight: 600;
+
+  --text-display: clamp(1.875rem, 1.65rem + 1vw, 2.25rem);
+  --text-display--line-height: 1.12;
+  --text-display--letter-spacing: -0.032em;
+  --text-display--font-weight: 600;
+}
+
+/* --- Şema: Koyu Cam (varsayılan) — Ethereal Glass, gece piyasası, sakin --- */
+:root,
+[data-theme="glass"] {
+  color-scheme: dark;
+
+  --scheme-base: #0a0a0c;
+  --scheme-surface: rgb(255 255 255 / 0.045);
+  --scheme-elevated: rgb(255 255 255 / 0.055);
+  --scheme-hairline: rgb(255 255 255 / 0.1);
+  --scheme-hairline-strong: rgb(255 255 255 / 0.2);
+
+  --scheme-ink: #f4f5f7;
+  --scheme-ink-muted: #a3a8b2;
+  --scheme-ink-faint: #8d929b;
+  --scheme-on-ink: #0a0a0c;
+
+  --scheme-accent: #e8eaee;
+  --scheme-accent-soft: rgb(232 234 238 / 0.1);
+  --scheme-accent-line: rgb(232 234 238 / 0.28);
+
+  --scheme-up: #2dd4a0;
+  --scheme-down: #ef4444;
+  --scheme-flat: #8d929b;
+  --scheme-up-soft: rgb(45 212 160 / 0.12);
+  --scheme-down-soft: rgb(239 68 68 / 0.12);
+
+  --scheme-font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --scheme-font-text: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --scheme-radius-card: 14px;
+  --scheme-radius-inner: 8px;
+
+  --scheme-glass-blur: blur(14px) saturate(140%);
+  --scheme-chrome-bg: rgb(10 10 12 / 0.74);
+  --scheme-chrome-blur: blur(24px) saturate(160%);
+  --glass-edge:
+    inset 0 1px 0 rgb(255 255 255 / 0.2), inset 0 6px 10px -8px rgb(255 255 255 / 0.3),
+    inset 0 -1px 0 rgb(0 0 0 / 0.4), 0 18px 36px -26px rgb(0 0 0 / 0.9);
+  --scheme-opaque-fallback: #101216;
+}
+
+/* --- Şema: Açık Editoryal — okuma-öncelikli, mat krem, blur yok --- */
+[data-theme="editorial"] {
+  color-scheme: light;
+
+  --scheme-base: #f6f1e7;
+  --scheme-surface: #fffdf8;
+  --scheme-elevated: #efe8d8;
+  --scheme-hairline: rgb(36 31 22 / 0.14);
+  --scheme-hairline-strong: rgb(36 31 22 / 0.26);
+
+  --scheme-ink: #241f16;
+  --scheme-ink-muted: #6b6252;
+  --scheme-ink-faint: #726a59;
+  --scheme-on-ink: #f6f1e7;
+
+  --scheme-accent: #6b2f1f;
+  --scheme-accent-soft: rgb(107 47 31 / 0.08);
+  --scheme-accent-line: rgb(107 47 31 / 0.24);
+
+  --scheme-up: #3c7746;
+  --scheme-down: #a23b2e;
+  --scheme-flat: #726a59;
+  --scheme-up-soft: rgb(60 119 70 / 0.1);
+  --scheme-down-soft: rgb(162 59 46 / 0.1);
+
+  --scheme-font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --scheme-font-text: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --scheme-radius-card: 2px;
+  --scheme-radius-inner: 1px;
+
+  --scheme-glass-blur: none;
+  --scheme-chrome-bg: rgb(255 253 248 / 0.92);
+  --scheme-chrome-blur: none;
+  --glass-edge: 0 1px 0 rgb(36 31 22 / 0.06), 0 10px 24px -18px rgb(36 31 22 / 0.3);
+  --scheme-opaque-fallback: #fffdf8;
+}
+
+/* --- Şema: Terminal — ters yüksek kontrast, mono-öncelikli, sıfır radius --- */
+[data-theme="terminal"] {
+  color-scheme: dark;
+
+  --scheme-base: #000000;
+  --scheme-surface: #000000;
+  --scheme-elevated: #0d0d0d;
+  --scheme-hairline: rgb(255 255 255 / 0.22);
+  --scheme-hairline-strong: rgb(255 255 255 / 0.4);
+
+  --scheme-ink: #ffffff;
+  --scheme-ink-muted: #9a9a9a;
+  --scheme-ink-faint: #787878;
+  --scheme-on-ink: #000000;
+
+  --scheme-accent: #ffffff;
+  --scheme-accent-soft: rgb(255 255 255 / 0.08);
+  --scheme-accent-line: rgb(255 255 255 / 0.3);
+
+  --scheme-up: #00ff9c;
+  --scheme-down: #ff3b3b;
+  --scheme-flat: #9a9a9a;
+  --scheme-up-soft: rgb(0 255 156 / 0.1);
+  --scheme-down-soft: rgb(255 59 59 / 0.1);
+
+  --scheme-font-display: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --scheme-font-text: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --scheme-radius-card: 0px;
+  --scheme-radius-inner: 0px;
+
+  --scheme-glass-blur: none;
+  --scheme-chrome-bg: #000000;
+  --scheme-chrome-blur: none;
+  --glass-edge: none;
+  --scheme-opaque-fallback: #000000;
 }
 
 @keyframes ticker {
@@ -106,9 +225,6 @@
   }
 }
 
-/* Kart açılışı: 8px yükselme + opaklık. Kayma mesafesi bilerek küçük —
-   büyük mesafeler sayfayı "animasyonlu" gösterir, küçük olanlar yalnız
-   yerleşiyormuş hissi verir. */
 @keyframes rise {
   from {
     opacity: 0;
@@ -120,8 +236,6 @@
   }
 }
 
-/* İmza: günün çizgisi soldan sağa çizilir. `pathLength="1"` sayesinde
-   uzunluk normalize; gerçek yol uzunluğunu bilmeye gerek yok. */
 @keyframes draw {
   from {
     stroke-dashoffset: 1;
@@ -133,23 +247,40 @@
 
 @layer base {
   html {
-    color-scheme: light;
+    background: var(--color-base);
+    /* Şema geçişi anlık değil — malzeme ve renk 200ms'de çapraz geçer,
+       tema kart konumu değiştirmiyormuş gibi ışık/renk değişimi hisseder. */
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
 
   body {
-    background-color: var(--color-paper);
+    min-height: 100dvh;
+    background-color: var(--color-base);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgb(255 255 255 / 0.035), transparent 34%),
+      radial-gradient(circle at 88% 92%, rgb(255 255 255 / 0.022), transparent 38%);
+    background-attachment: fixed;
     color: var(--color-ink);
     font-family: var(--font-display);
-    /* Grotesk küçük puntolarda ince kalıyor; antialiasing kapalı bırakılırsa
-       Windows'ta gövde metni sıçrıyor. */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
 
-  /* --- Tracking boyuta bağlıdır, sabit değil ---------------------------
-     Harf aralığı büyüdükçe negatife gider. Tek bir `letter-spacing` değeri
-     bir yerde mutlaka yanlıştır; o yüzden ölçek kademeleri kendi aralığını
-     taşıyor. */
+  [data-theme="editorial"] body {
+    background-image:
+      radial-gradient(circle at 12% 8%, rgb(36 31 22 / 0.03), transparent 34%),
+      radial-gradient(circle at 88% 92%, rgb(36 31 22 / 0.02), transparent 38%);
+  }
+
+  [data-theme="terminal"] body {
+    background-image: none;
+  }
+
   h1,
   h2,
   h3 {
@@ -159,148 +290,219 @@
 }
 
 @layer components {
-  /* --- Sayı ------------------------------------------------------------
-     Fiyat kolonları zıplamasın diye sabit genişlikli rakam; ama yüz mono
-     değil — display. Finansal sayı burada bir ölçüm değil, manşet. */
   .figure {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.015em;
   }
 
-  /* --- Etiket ----------------------------------------------------------
-     Mono'nun panelde tek işi bu: bir şeyin ADINI söylemek. Değerin kendisi
-     asla mono değil. Kural öğrenilebilir olduğu için arayüzde "bu bir başlık
-     mı yoksa ölçüm mü" sorusu okumadan cevaplanıyor. */
   .label {
+    color: var(--color-ink-faint);
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.14em;
-    /* `1` DEĞİL. Etiketler büyük harfe çevriliyor ve Türkçede Ö Ü İ Ğ'nin
-       işareti büyük harfin üstünde duruyor. Satır kutusu harf yüksekliğine
-       eşitlenince bu işaretler kutunun dışında kalıyor ve etiket `truncate`
-       (overflow:hidden) ile birleştiği her yerde kırpılıyordu: "ÖNE" ekranda
-       "ONE" oluyordu. Ç kurtuluyordu çünkü sedilla tabanın ALTINDA. */
+    letter-spacing: 0.18em;
     line-height: 1.45;
     text-transform: uppercase;
-    color: var(--color-ink-faint);
   }
 
-  /* Zaman damgası, sembol kodu, sayaç — mono ama etiket değil, büyük harf değil. */
   .meta {
     font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
     font-size: 11px;
+    font-variant-numeric: tabular-nums;
     letter-spacing: 0.01em;
   }
 
-  /* --- Okuma ------------------------------------------------------------
-     Serif yalnız burada. Uzun metnin ölçüsü 66ch, satır arası 1.7 — ekrandan
-     okunan gövde için basılı kitaptan daha açık olmalı. */
   .reading {
+    color: var(--color-ink);
     font-family: var(--font-text);
     font-size: 1.0625rem;
-    line-height: 1.72;
-    letter-spacing: 0.005em;
-    color: var(--color-ink);
+    letter-spacing: 0;
+    line-height: 1.76;
   }
 
-  /* --- Kart -------------------------------------------------------------
-     Kâğıdın üstünde duran açık yüzey. Kenarlık yok; ayrımı gölgenin ilk
-     katmanındaki 1px teması yapıyor. */
-  .card {
-    background-color: var(--color-card);
+  .ders-govde > * + * {
+    margin-top: 1.15em;
+  }
+
+  .ders-govde h2 {
+    margin-top: 2em;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .ders-govde h3 {
+    margin-top: 1.6em;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .ders-govde ul,
+  .ders-govde ol {
+    padding-left: 1.4em;
+  }
+
+  .ders-govde ul {
+    list-style: disc;
+  }
+
+  .ders-govde ol {
+    list-style: decimal;
+  }
+
+  .ders-govde li + li {
+    margin-top: 0.4em;
+  }
+
+  .ders-govde blockquote {
+    border-left: 2px solid var(--color-accent);
+    padding-left: 1em;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .ders-govde code {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-inner);
+    background-color: var(--color-elevated);
+    padding: 0.1em 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .ders-govde pre {
+    overflow-x: auto;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-inner);
+    background-color: var(--color-elevated);
+    padding: 0.9em 1.1em;
+  }
+
+  .ders-govde pre code {
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+
+  .ders-govde a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .ders-govde table {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .ders-govde th,
+  .ders-govde td {
+    border: 1px solid var(--color-hairline);
+    padding: 0.45em 0.7em;
+    text-align: left;
+  }
+
+  .ders-govde hr {
+    border: 0;
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  .glass {
+    border: 1px solid var(--color-hairline);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
+    background: var(--color-surface);
+    box-shadow: var(--glass-edge);
+    backdrop-filter: var(--scheme-glass-blur);
+    -webkit-backdrop-filter: var(--scheme-glass-blur);
   }
 
-  /* --- Cam: YALNIZ sabit kabuk -----------------------------------------
-     İçerik altından aktığı için kabuk saydam. Kart camdan yapılmaz —
-     iki saydam yüzeyi üst üste koymak okunabilirliği çökertir. */
-  .chrome {
-    background-color: rgb(234 232 227 / 0.72);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: var(--shadow-chrome);
+  .glass-chrome {
+    border-color: var(--color-hairline);
+    background: var(--scheme-chrome-bg);
+    box-shadow: var(--glass-edge);
+    backdrop-filter: var(--scheme-chrome-blur);
+    -webkit-backdrop-filter: var(--scheme-chrome-blur);
   }
 
-  /* --- Kayan kenar ------------------------------------------------------
-     Sabit kabuğun altında 1px çizgi yerine kısa bir solma. Çizgi içerik
-     olmadığı yerde de durur ve sayfayı böler; solma yalnız içerik gerçekten
-     altından geçerken görünür. */
+  .inset-panel {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-inner);
+    background: var(--color-elevated);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+
+  [data-theme="editorial"] .inset-panel,
+  [data-theme="terminal"] .inset-panel {
+    box-shadow: none;
+  }
+
   .scroll-edge::after {
-    content: "";
     position: absolute;
     inset-inline: 0;
     top: 100%;
-    height: 20px;
-    background: linear-gradient(to bottom, rgb(234 232 227 / 0.9), transparent);
+    height: 22px;
+    background: linear-gradient(to bottom, var(--scheme-chrome-bg), transparent);
+    content: "";
     pointer-events: none;
   }
 
-  /* --- Basış ------------------------------------------------------------
-     Geri bildirim tıklamada değil BASIŞTA. `:active` pointer-down'da tetiklenir;
-     `click` beklemek arayüzü ölü gösterir. */
+  /* Basış: anında tepki, gecikme yok. Bırakış: yumuşak — Apple hareket
+     ilkesi, gecikme algı eşiğinin (~100ms) altında kalır. */
   .press {
     transition:
-      transform 140ms var(--ease-press),
-      box-shadow 200ms var(--ease-settle),
-      background-color 160ms var(--ease-press),
-      color 160ms var(--ease-press);
+      transform 70ms var(--ease-press),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease;
   }
 
   .press:active {
-    transform: scale(0.978);
+    transform: translateY(1px) scale(0.98);
   }
 }
 
 @layer utilities {
-  .rise {
-    animation: rise 520ms var(--ease-settle) both;
-  }
-
-  /* Sayfa yerleşimi tek seferde değil, sırayla oturur. Gecikme bileşenin
-     kendisinde değil kapsayıcıda: kartlar hangi sırada olduklarını bilmek
-     zorunda kalmasın diye. 40ms yeterince kısa — daha uzunu sayfayı yavaş
-     gösterir, daha kısası sırayı okunmaz kılar. */
+  .rise,
   .stagger > * {
     animation: rise 520ms var(--ease-settle) both;
   }
 
-  .stagger > *:nth-child(1) {
-    animation-delay: 0ms;
-  }
   .stagger > *:nth-child(2) {
-    animation-delay: 40ms;
+    animation-delay: 45ms;
   }
+
   .stagger > *:nth-child(3) {
-    animation-delay: 80ms;
+    animation-delay: 90ms;
   }
+
   .stagger > *:nth-child(4) {
-    animation-delay: 120ms;
+    animation-delay: 135ms;
   }
-  .stagger > *:nth-child(5) {
-    animation-delay: 160ms;
-  }
-  .stagger > *:nth-child(n + 6) {
-    animation-delay: 200ms;
+
+  .stagger > *:nth-child(n + 5) {
+    animation-delay: 180ms;
   }
 
   .draw {
+    animation: draw 900ms var(--ease-settle) 100ms forwards;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw 1100ms var(--ease-settle) 120ms forwards;
   }
 
   .scroll-thin {
+    scrollbar-color: var(--color-hairline-strong) transparent;
     scrollbar-width: thin;
-    scrollbar-color: rgb(25 27 33 / 0.18) transparent;
   }
 
   .scroll-thin::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   .scroll-thin::-webkit-scrollbar-track {
@@ -308,97 +510,85 @@
   }
 
   .scroll-thin::-webkit-scrollbar-thumb {
-    background-color: rgb(25 27 33 / 0.16);
-    border: 2px solid transparent;
-    background-clip: content-box;
-    border-radius: 999px;
+    border-radius: 2px;
+    background-color: var(--color-hairline-strong);
   }
 
   .scroll-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(25 27 33 / 0.28);
+    background-color: var(--color-ink-faint);
   }
 
   .ticker-track {
     animation: var(--animate-ticker);
+    will-change: transform;
   }
 
   .ticker:hover .ticker-track,
-  .ticker:focus-within .ticker-track {
+  .ticker:focus-within .ticker-track,
+  .ticker[data-paused="true"] .ticker-track {
     animation-play-state: paused;
   }
 }
 
-/* Katmansız (unlayered) — bilerek `@layer` dışında. Katmanlı kurallar
-   katmansızlara her zaman yenilir; Tailwind'in `outline-*` utility'leri
-   odak halkasının rengini currentColor'a düşürüyordu. */
 :focus-visible {
+  border-radius: var(--radius-inner);
   outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-  /* Odak göstergesi gecikmeli belirmemeli — Tailwind'in `transition-colors`
-     listesi `outline-color`'ı da kapsadığı için burada geçiş kapatılır. */
+  outline-offset: 3px;
   transition-property: none;
 }
 
-/* --- Erişilebilirlik: üç bağımsız sinyal --------------------------------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-chrome {
+    background: var(--scheme-opaque-fallback);
+  }
+}
 
-/* Saydamlıktan rahatsız olan kullanıcı için cam kapanır; kabuk opak olur. */
 @media (prefers-reduced-transparency: reduce) {
-  .chrome {
-    background-color: #edebe6;
+  .glass,
+  .glass-chrome {
+    background: var(--scheme-opaque-fallback);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 }
 
-/* Yüksek kontrast: gölgeyle ayrım yerine tanımlı kenarlık. */
 @media (prefers-contrast: more) {
-  .card {
+  .glass,
+  .glass-chrome,
+  .inset-panel {
+    border-color: var(--color-ink-muted);
     box-shadow: none;
-    border: 1px solid var(--color-ink-muted);
-  }
-
-  .chrome {
-    background-color: #edebe6;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom: 1px solid var(--color-ink-muted);
   }
 }
 
-/* Hareket azaltma "geri bildirim yok" demek değil: kayma ve çizim gider,
-   opaklık kalır. Anlamayı KOLAYLAŞTIRAN geçiş korunur. */
 @media (prefers-reduced-motion: reduce) {
-  /* biome-ignore-start lint/complexity/noImportantStyles: erişilebilirlik tercihi her şeyi ezmeli */
-  .rise,
-  .stagger > * {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  html,
+  body {
+    transition-duration: 0.01ms;
   }
 
-  .draw {
-    animation: none !important;
-    stroke-dasharray: none !important;
-    stroke-dashoffset: 0 !important;
+  .rise,
+  .stagger > *,
+  .draw,
+  .ticker-track {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  .press,
+  .rise,
+  .stagger > *,
+  .draw,
+  .ticker-track {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
   }
 
   .press:active {
-    transform: none !important;
+    transform: none;
   }
-
-  /* Süpürge kural: yukarıda tek tek ele alınmayan her animasyon ve geçiş.
-     Özgüllüğü (0,0,0) ve `.stagger > *`'dan sonra geliyor — normalde bu bir
-     sıralama hatası olurdu, ama buradaki her bildirim `!important` taşıdığı
-     için özgüllük hiç devreye girmiyor. */
-  /* biome-ignore-start lint/style/noDescendingSpecificity: her bildirim !important, özgüllük devre dışı */
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  /* biome-ignore-end lint/style/noDescendingSpecificity: her bildirim !important, özgüllük devre dışı */
-  /* biome-ignore-end lint/complexity/noImportantStyles: erişilebilirlik tercihi her şeyi ezmeli */
 }

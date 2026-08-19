@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { isActive, NAV } from "@/components/layout/nav";
+import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { cn } from "@/lib/utils/cn";
 
 export function Sidebar() {
@@ -14,7 +15,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-rule md:flex",
+        "glass-chrome sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-hairline md:flex",
         "transition-[width] duration-300 ease-[var(--ease-settle)]",
         collapsed ? "w-[68px]" : "w-60",
       )}
@@ -37,7 +38,7 @@ export function Sidebar() {
           />
         </svg>
         {!collapsed ? (
-          <span className="truncate text-[15px] font-semibold tracking-[-0.02em] text-ink">
+          <span className="truncate text-md font-semibold tracking-[-0.02em] text-ink">
             Finans Programı
           </span>
         ) : null}
@@ -55,18 +56,18 @@ export function Sidebar() {
               aria-current={active ? "page" : undefined}
               title={collapsed ? item.label : undefined}
               className={cn(
-                "press relative flex items-center gap-3 rounded-[var(--radius-inner)] px-3 py-2.5",
-                "text-[14px] font-medium",
+                "press relative flex items-center gap-3 rounded-[var(--radius-inner)] border border-transparent px-3 py-2.5",
+                "text-md font-medium",
                 active
-                  ? "bg-card text-ink shadow-[var(--shadow-card)]"
-                  : "text-ink-muted hover:bg-card/60 hover:text-ink",
+                  ? "border-hairline bg-elevated text-ink"
+                  : "text-ink-muted hover:border-hairline hover:bg-elevated/70 hover:text-ink",
                 collapsed && "justify-center px-0",
               )}
             >
               {/* Aktiflik renk dışında ikinci bir kanal daha taşır: sol çubuk. */}
               {active ? (
                 <span
-                  className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-accent"
+                  className="absolute inset-y-2 left-0 w-[3px] rounded-[var(--radius-inner)] bg-accent"
                   aria-hidden="true"
                 />
               ) : null}
@@ -81,14 +82,18 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="shrink-0 p-3">
+      <div className="shrink-0 p-3 pt-0">
+        <ThemeSwitcher collapsed={collapsed} />
+      </div>
+
+      <div className="shrink-0 p-3 pt-0">
         <button
           type="button"
           onClick={() => setCollapsed((value) => !value)}
           aria-expanded={!collapsed}
           className={cn(
             "press flex w-full items-center gap-3 rounded-[var(--radius-inner)] px-3 py-2.5",
-            "text-[13px] text-ink-faint hover:bg-card/60 hover:text-ink",
+            "text-copy text-ink-faint hover:bg-elevated/70 hover:text-ink",
             collapsed && "justify-center px-0",
           )}
         >

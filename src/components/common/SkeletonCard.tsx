@@ -5,13 +5,15 @@ interface SkeletonProps {
 }
 
 export function SkeletonLine({ className }: SkeletonProps) {
-  return <div className={cn("h-3 animate-pulse rounded-full bg-sunken", className)} />;
+  return (
+    <div className={cn("h-3 animate-pulse rounded-[var(--radius-inner)] bg-elevated", className)} />
+  );
 }
 
 /** Suspense sınırlarında kartın yerini korur — ızgara yükleme sırasında zıplamaz. */
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <div className={cn("card flex flex-col gap-4 p-5", className)} aria-hidden="true">
+    <div className={cn("glass flex flex-col gap-4 p-5", className)} aria-hidden="true">
       <SkeletonLine className="w-1/3" />
       <div className="flex flex-col gap-3">
         <SkeletonLine className="w-full" />

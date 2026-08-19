@@ -45,7 +45,7 @@ export function Sparkline({ data, direction, label, id, className }: SparklinePr
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={stroke} stopOpacity="0.14" />
+          <stop offset="0%" stopColor={stroke} stopOpacity="0.1" />
           <stop offset="100%" stopColor={stroke} stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -65,7 +65,7 @@ export function Sparkline({ data, direction, label, id, className }: SparklinePr
         cy={geometry.last[1]}
         r="3"
         fill={stroke}
-        stroke="var(--color-sunken)"
+        stroke="var(--color-base)"
         strokeWidth="2"
         vectorEffect="non-scaling-stroke"
       />

@@ -1,18 +1,32 @@
 /**
  * Referans verisini yazar. **Idempotent** — istediğin kadar çalıştırabilirsin.
  *
- * Yazdıkları: haber kaynakları, semboller, akademi parçaları/adımları ve
- * ön koşul DAG'ı. `articles` KASITLI olarak seed edilmez — onu 2B'deki RSS
- * çekimi doldurur. Sahte makale yazmak, 2B geldiğinde hangi satırın gerçek
- * olduğunu belirsizleştirirdi.
+ * Yazdıkları: haber kaynakları, semboller, topluluk gönderileri, akademi
+ * haftaları ve — diskteki `content/akademi/` dosyalarından okuyarak — dersler,
+ * ders kaynakları, sorular ve ön koşul DAG'ı.
+ *
+ * `articles` KASITLI olarak seed edilmez — onu `npm run ingest` doldurur.
+ * Sahte makale yazmak hangi satırın gerçek olduğunu belirsizleştirirdi.
  *
  * Çalıştırma:  npm run seed
  */
 
-import "./load-env";
-import { and, eq } from "drizzle-orm";
+import "./load-admin-env";
+import { eq, inArray } from "drizzle-orm";
+import { type LoadedLesson, loadWeekLessons } from "../src/lib/content/load";
 import { getDb } from "../src/lib/db";
-import { sources, stepPrerequisites, steps, tickers, tracks } from "../src/lib/db/schema";
+import {
+  communities,
+  communityPosts,
+  lessonPrerequisites,
+  lessonPrompts,
+  lessonSources,
+  lessons,
+  postTickers,
+  sources,
+  tickers,
+  weeks,
+} from "../src/lib/db/schema";
 
 // --- Haber kaynakları -----------------------------------------------------
 // Yalnız ücretsiz ve kararlı RSS verenler. Bloomberg, FT ve Reuters bilinçli
@@ -96,155 +110,199 @@ const TICKER_SEED = [
   { symbol: "EURUSD", name: "EUR/USD", assetType: "fx" as const },
 ];
 
+// --- Topluluk duyarlılığı -------------------------------------------------
+
+const COMMUNITY_SEED = [
+  {
+    platform: "reddit",
+    name: "r/investing",
+    displayName: "Investing",
+    subscriberCount: 2_940_000,
+  },
+  {
+    platform: "reddit",
+    name: "r/wallstreetbets",
+    displayName: "WallStreetBets",
+    subscriberCount: 17_200_000,
+  },
+  {
+    platform: "reddit",
+    name: "r/stocks",
+    displayName: "Stocks",
+    subscriberCount: 8_100_000,
+  },
+  {
+    platform: "reddit",
+    name: "r/CryptoCurrency",
+    displayName: "CryptoCurrency",
+    subscriberCount: 9_600_000,
+  },
+] as const;
+
+const SENTIMENT_POST_SEED = [
+  {
+    id: "00000000-0000-4000-8000-000000000001",
+    communityName: "r/wallstreetbets",
+    title: "NVDA guidance was fine, the market just wanted a miracle",
+    bodyText:
+      "Sequential data-center growth of 18% is absurd for a company this size. Everyone anchoring on the whisper number is going to look silly in two quarters.",
+    author: "u/theta_gang_survivor",
+    score: 4820,
+    commentCount: 1146,
+    upvoteRatio: 0.91,
+    flair: "DD",
+    minutesAgoOffset: 38,
+    sentimentLabel: "bullish",
+    sentimentScore: 0.72,
+    tickerSymbols: ["NVDA"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000002",
+    communityName: "r/CryptoCurrency",
+    title: "Four days of ETF outflows and nobody is talking about it",
+    bodyText:
+      "This is the longest redemption streak since launch. Either the marginal buyer is gone or someone big is rotating out. Neither reading is comfortable.",
+    author: "u/onchain_only",
+    score: 3140,
+    commentCount: 892,
+    upvoteRatio: 0.78,
+    flair: "DISCUSSION",
+    minutesAgoOffset: 64,
+    sentimentLabel: "bearish",
+    sentimentScore: -0.68,
+    tickerSymbols: ["BTC"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000003",
+    communityName: "r/investing",
+    title: "The Fed statement changed three words and the whole curve moved",
+    bodyText:
+      "Dropping the reference to additional firming is not nothing. Rates desks clearly read it as the end of the hiking discussion.",
+    author: "u/macro_and_chill",
+    score: 2210,
+    commentCount: 417,
+    upvoteRatio: 0.94,
+    flair: "Discussion",
+    minutesAgoOffset: 21,
+    sentimentLabel: "bullish",
+    sentimentScore: 0.41,
+    tickerSymbols: ["SPX"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000004",
+    communityName: "r/stocks",
+    title: "Is anyone else uncomfortable with how narrow breadth has gotten?",
+    bodyText:
+      "Under 200 names above their 50-day while the index prints highs. I have seen this movie before and I did not like the ending.",
+    author: "u/breadth_watcher",
+    score: 1870,
+    commentCount: 603,
+    upvoteRatio: 0.83,
+    flair: null,
+    minutesAgoOffset: 96,
+    sentimentLabel: "bearish",
+    sentimentScore: -0.52,
+    tickerSymbols: ["SPX", "NVDA"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000005",
+    communityName: "r/stocks",
+    title: "TSLA European share loss is real but the bear case is overcooked",
+    bodyText:
+      "Margin compression is priced. What is not priced is the energy storage segment, which nobody in this thread ever models.",
+    author: "u/ev_supply_chain",
+    score: 1420,
+    commentCount: 508,
+    upvoteRatio: 0.66,
+    flair: "Industry Discussion",
+    minutesAgoOffset: 151,
+    sentimentLabel: "neutral",
+    sentimentScore: 0.06,
+    tickerSymbols: ["TSLA"],
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000006",
+    communityName: "r/investing",
+    title: "Staking yields are compressing and that changes the ETH thesis",
+    bodyText:
+      "If the risk-free comparison stays where it is, the yield argument for holding stops working. The queue length is the number to watch.",
+    author: "u/duration_risk",
+    score: 980,
+    commentCount: 244,
+    upvoteRatio: 0.72,
+    flair: null,
+    minutesAgoOffset: 233,
+    sentimentLabel: "bearish",
+    sentimentScore: -0.34,
+    tickerSymbols: ["ETH"],
+  },
+] as const;
+
 // --- Akademi --------------------------------------------------------------
-// Ön koşullar slug ile veriliyor; id'ler ekleme sırasında çözülüyor.
+/**
+ * **Haftalar burada, dersler diskte.** Haftanın başlığı ve sırası müfredatın
+ * kendisi — nadiren değişir, kodda durması doğru. Ders gövdeleri ise
+ * `content/akademi/hafta-NN/` altındaki markdown dosyalarından okunur; burada
+ * ikinci bir kopya tutmak iki doğruluk kaynağı yaratırdı.
+ *
+ * İskelet: `docs/superpowers/specs/2026-08-08-mufredat-8-hafta.md`
+ */
 
-interface StepSeed {
-  slug: string;
-  title: string;
-  summary: string;
-  estimatedMin: number;
-  /** "parcaSlug/adimSlug" biçiminde — parçalar arası ön koşul mümkün. */
-  prerequisites: string[];
-}
-
-interface TrackSeed {
+interface WeekSeed {
   slug: string;
   title: string;
   description: string;
   level: "beginner" | "intermediate" | "advanced";
-  steps: StepSeed[];
 }
 
-const TRACK_SEED: TrackSeed[] = [
+const WEEK_SEED: WeekSeed[] = [
   {
-    slug: "temeller",
-    title: "Temeller",
-    description: "Para, risk ve piyasa mekaniğinin sıfırdan kurulumu.",
-    level: "beginner",
-    steps: [
-      {
-        slug: "paranin-zaman-degeri",
-        title: "Paranın zaman değeri",
-        summary: "Bugünkü 100 lira neden yarınki 100 liradan değerli?",
-        estimatedMin: 12,
-        prerequisites: [],
-      },
-      {
-        slug: "bilesik-getiri",
-        title: "Bileşik getiri",
-        summary: "Zamanın en güçlü finansal kaldıraç olmasının matematiği.",
-        estimatedMin: 15,
-        prerequisites: ["temeller/paranin-zaman-degeri"],
-      },
-      {
-        slug: "risk-ve-getiri",
-        title: "Risk ve getiri ilişkisi",
-        summary: "Yüksek getiri neden bedava gelmez.",
-        estimatedMin: 18,
-        prerequisites: ["temeller/bilesik-getiri"],
-      },
-      {
-        slug: "varlik-siniflari",
-        title: "Varlık sınıfları",
-        summary: "Hisse, tahvil, emtia, kripto — her biri hangi işi yapar?",
-        estimatedMin: 20,
-        prerequisites: ["temeller/risk-ve-getiri"],
-      },
-      {
-        slug: "portfoy-cesitlendirme",
-        title: "Portföy çeşitlendirme",
-        summary: "Korelasyonun tek bedava öğle yemeği olmasının nedeni.",
-        estimatedMin: 22,
-        prerequisites: ["temeller/varlik-siniflari"],
-      },
-      {
-        slug: "enflasyon-ve-reel-getiri",
-        title: "Enflasyon ve reel getiri",
-        summary: "Nominal kazanç ile gerçek kazancı ayırt etmek.",
-        estimatedMin: 16,
-        prerequisites: ["temeller/portfoy-cesitlendirme"],
-      },
-    ],
-  },
-  {
-    slug: "analiz",
-    title: "Analiz",
-    description: "Bilanço okumaktan değerleme çarpanlarına.",
+    slug: "hafta-01",
+    title: "Para nedir: yaratım, ölçüm, kurum",
+    description: "Paranın kökeni, banka parası yaratımı ve para arzının ölçülmesi.",
     level: "intermediate",
-    steps: [
-      {
-        slug: "gelir-tablosu",
-        title: "Gelir tablosu okuma",
-        summary: "Ciro ile nakit akışının aynı şey olmadığı yer.",
-        estimatedMin: 25,
-        prerequisites: ["temeller/varlik-siniflari"],
-      },
-      {
-        slug: "bilanco",
-        title: "Bilanço ve borçluluk",
-        summary: "Kaldıracın şirketi nasıl kırılgan hale getirdiği.",
-        estimatedMin: 28,
-        prerequisites: ["analiz/gelir-tablosu"],
-      },
-      {
-        slug: "degerleme-carpanlari",
-        title: "Değerleme çarpanları",
-        summary: "F/K, PD/DD ve bunların yanıltıcı olduğu durumlar.",
-        estimatedMin: 30,
-        prerequisites: ["analiz/bilanco"],
-      },
-      {
-        slug: "nakit-akisi-iskontosu",
-        title: "İndirgenmiş nakit akışı",
-        summary: "Varsayımların sonucu nasıl belirlediğini görmek.",
-        estimatedMin: 35,
-        prerequisites: ["analiz/degerleme-carpanlari"],
-      },
-      {
-        slug: "sektor-karsilastirma",
-        title: "Sektör karşılaştırması",
-        summary: "Bir çarpanın yüksek mi ucuz mu olduğuna karar vermek.",
-        estimatedMin: 24,
-        prerequisites: ["analiz/degerleme-carpanlari"],
-      },
-    ],
   },
   {
-    slug: "davranis",
-    title: "Davranışsal Finans",
-    description: "En pahalı hataların kaynağı: yatırımcının kendisi.",
+    slug: "hafta-02",
+    title: "Para politikası nasıl uygulanır",
+    description: "Faiz koridoru, rezerv rejimleri, bilanço politikası ve bağımsızlık.",
+    level: "intermediate",
+  },
+  {
+    slug: "hafta-03",
+    title: "Faiz ve vadeli yapı",
+    description: "Fisher denklemi, aktarım kanalları, getiri eğrisi ve finansal baskı.",
     level: "advanced",
-    steps: [
-      {
-        slug: "kayip-kacinma",
-        title: "Kayıptan kaçınma",
-        summary: "Zararı kesmenin neden bu kadar zor olduğu.",
-        estimatedMin: 18,
-        prerequisites: ["temeller/portfoy-cesitlendirme"],
-      },
-      {
-        slug: "onyargi-dogrulama",
-        title: "Doğrulama önyargısı",
-        summary: "Tezini destekleyen yorumları aramanın maliyeti.",
-        estimatedMin: 16,
-        prerequisites: ["davranis/kayip-kacinma"],
-      },
-      {
-        slug: "surunun-etkisi",
-        title: "Sürü davranışı",
-        summary: "Topluluk duyarlılığını sinyal sanmanın tuzağı.",
-        estimatedMin: 20,
-        prerequisites: ["davranis/onyargi-dogrulama"],
-      },
-      {
-        slug: "yatirim-gunlugu",
-        title: "Yatırım günlüğü tutmak",
-        summary: "Kararı sonuçtan ayırmanın tek pratik yolu.",
-        estimatedMin: 14,
-        prerequisites: ["davranis/surunun-etkisi"],
-      },
-    ],
+  },
+  {
+    slug: "hafta-04",
+    title: "Enflasyon: ölçüm, mekanizma, rejim",
+    description: "TÜFE'nin inşası, Phillips eğrisi, miktar teorisi ve hiperenflasyon.",
+    level: "advanced",
+  },
+  {
+    slug: "hafta-05",
+    title: "Açık ekonomi: kur ve sermaye akımları",
+    description: "Pariteler, imkânsız üçleme, kur geçişkenliği ve dolarizasyon.",
+    level: "advanced",
+  },
+  {
+    slug: "hafta-06",
+    title: "Kredi, kırılganlık, kriz",
+    description: "Finansal hızlandıran, Minsky, banka hücumu ve makro ihtiyati politika.",
+    level: "advanced",
+  },
+  {
+    slug: "hafta-07",
+    title: "Para politikası ve varlık fiyatları",
+    description: "Doğal faiz, politika şoku tanımlama, finansal koşullar ve enflasyon koruması.",
+    level: "advanced",
+  },
+  {
+    slug: "hafta-08",
+    title: "Rejimler ve Türkiye",
+    description: "Para rejimleri tarihi, mali baskınlık, Türkiye vakası ve dijital para.",
+    level: "advanced",
   },
 ];
 
@@ -253,7 +311,7 @@ const TRACK_SEED: TrackSeed[] = [
 async function seedSources(): Promise<number> {
   // `isActive` artık kaynağın kendi kaydında; belirtilmeyenler aktif.
   const rows = SOURCE_SEED.map((source) => ({ isActive: true, ...source }));
-  const inserted = await getDb()
+  const inserted = await getDb("yonetim")
     .insert(sources)
     .values(rows)
     .onConflictDoNothing({ target: sources.slug })
@@ -262,7 +320,7 @@ async function seedSources(): Promise<number> {
 }
 
 async function seedTickers(): Promise<number> {
-  const inserted = await getDb()
+  const inserted = await getDb("yonetim")
     .insert(tickers)
     .values(TICKER_SEED)
     .onConflictDoNothing({ target: tickers.symbol })
@@ -270,92 +328,266 @@ async function seedTickers(): Promise<number> {
   return inserted.length;
 }
 
-async function seedAcademy(): Promise<{ tracks: number; steps: number; edges: number }> {
-  let trackCount = 0;
-  let stepCount = 0;
+interface SentimentCounts {
+  communities: number;
+  posts: number;
+  tickerLinks: number;
+}
 
-  // "parcaSlug/adimSlug" → adım id'si. Ön koşulları çözmek için gerekli.
-  const stepIdByKey = new Map<string, string>();
+function requiredSeedId(ids: Map<string, string>, kind: string, key: string): string {
+  const id = ids.get(key);
+  if (!id) throw new Error(`Topluluk seed'i için ${kind} bulunamadı: ${key}`);
+  return id;
+}
 
-  for (const [trackIndex, track] of TRACK_SEED.entries()) {
-    const insertedTracks = await getDb()
-      .insert(tracks)
+async function seedSentiment(): Promise<SentimentCounts> {
+  const db = getDb("yonetim");
+  const insertedCommunities = await db
+    .insert(communities)
+    .values([...COMMUNITY_SEED])
+    .onConflictDoNothing({ target: communities.name })
+    .returning({ id: communities.id });
+
+  const communityRows = await db
+    .select({ id: communities.id, name: communities.name })
+    .from(communities)
+    .where(
+      inArray(
+        communities.name,
+        COMMUNITY_SEED.map((item) => item.name),
+      ),
+    );
+  const communityIds = new Map(communityRows.map((row) => [row.name, row.id]));
+
+  const tickerSymbols = [...new Set(SENTIMENT_POST_SEED.flatMap((item) => item.tickerSymbols))];
+  const tickerRows = await db
+    .select({ id: tickers.id, symbol: tickers.symbol })
+    .from(tickers)
+    .where(inArray(tickers.symbol, tickerSymbols));
+  const tickerIds = new Map(tickerRows.map((row) => [row.symbol, row.id]));
+
+  const postRows = SENTIMENT_POST_SEED.map(
+    ({ communityName, tickerSymbols: _tickerSymbols, ...post }) => ({
+      ...post,
+      communityId: requiredSeedId(communityIds, "topluluk", communityName),
+    }),
+  );
+  const insertedPosts = await db
+    .insert(communityPosts)
+    .values(postRows)
+    .onConflictDoNothing({ target: communityPosts.id })
+    .returning({ id: communityPosts.id });
+
+  const tickerLinks = SENTIMENT_POST_SEED.flatMap((post) =>
+    post.tickerSymbols.map((symbol) => ({
+      postId: post.id,
+      tickerId: requiredSeedId(tickerIds, "sembol", symbol),
+    })),
+  );
+  const insertedTickerLinks = await db
+    .insert(postTickers)
+    .values(tickerLinks)
+    .onConflictDoNothing()
+    .returning({ postId: postTickers.postId });
+
+  return {
+    communities: insertedCommunities.length,
+    posts: insertedPosts.length,
+    tickerLinks: insertedTickerLinks.length,
+  };
+}
+
+interface AcademyCounts {
+  weeks: number;
+  lessons: number;
+  sources: number;
+  prompts: number;
+  edges: number;
+  /** İçeriği henüz yazılmamış haftalara giden ön koşullar. */
+  bekleyenOnkosullar: string[];
+}
+
+async function seedAcademy(): Promise<AcademyCounts> {
+  const db = getDb("yonetim");
+
+  // "hafta-03/fisher-denklemi" → ders id'si. Ön koşulları çözmek için.
+  const lessonIdByKey = new Map<string, string>();
+  // Hafta slug'ı → o haftadan kaç ders yüklendi. Ön koşul hatasını "içerik
+  // yazılmadı" durumundan ayırmanın tek yolu.
+  const lessonCountByWeek = new Map<string, number>();
+  const derslerByWeek = new Map<string, LoadedLesson[]>();
+
+  let weekCount = 0;
+  let lessonCount = 0;
+  let sourceCount = 0;
+  let promptCount = 0;
+
+  for (const [weekIndex, week] of WEEK_SEED.entries()) {
+    // Upsert: müfredat iskeleti değişince başlık ve sıra veritabanına yansısın.
+    const [insertedWeek] = await db
+      .insert(weeks)
       .values({
-        slug: track.slug,
-        title: track.title,
-        description: track.description,
-        level: track.level,
-        orderIndex: trackIndex + 1,
+        slug: week.slug,
+        title: week.title,
+        description: week.description,
+        level: week.level,
+        orderIndex: weekIndex + 1,
       })
-      .onConflictDoNothing({ target: tracks.slug })
-      .returning({ id: tracks.id });
+      .onConflictDoUpdate({
+        target: weeks.slug,
+        set: {
+          title: week.title,
+          description: week.description,
+          level: week.level,
+          orderIndex: weekIndex + 1,
+        },
+      })
+      .returning({ id: weeks.id });
 
-    trackCount += insertedTracks.length;
+    const weekId = insertedWeek?.id;
+    if (!weekId) throw new Error(`Hafta eklenemedi: ${week.slug}`);
+    weekCount += 1;
 
-    // Zaten varsa id'sini oku — idempotent çalışmanın gereği.
-    const trackId =
-      insertedTracks[0]?.id ??
-      (await getDb().select({ id: tracks.id }).from(tracks).where(eq(tracks.slug, track.slug)))[0]
-        ?.id;
+    const dersler = loadWeekLessons(week.slug);
+    derslerByWeek.set(week.slug, dersler);
+    lessonCountByWeek.set(week.slug, dersler.length);
 
-    if (!trackId) throw new Error(`Parça bulunamadı ve eklenemedi: ${track.slug}`);
-
-    for (const [stepIndex, step] of track.steps.entries()) {
-      const insertedSteps = await getDb()
-        .insert(steps)
+    for (const ders of dersler) {
+      const [insertedLesson] = await db
+        .insert(lessons)
         .values({
-          trackId,
-          slug: step.slug,
-          title: step.title,
-          summary: step.summary,
-          estimatedMin: step.estimatedMin,
-          orderIndex: stepIndex + 1,
+          weekId,
+          slug: ders.slug,
+          title: ders.title,
+          summary: ders.summary,
+          contentMd: ders.contentMd,
+          estimatedMin: ders.estimatedMin,
+          orderIndex: ders.orderIndex,
         })
-        .onConflictDoNothing()
-        .returning({ id: steps.id });
+        .onConflictDoUpdate({
+          target: [lessons.weekId, lessons.slug],
+          set: {
+            title: ders.title,
+            summary: ders.summary,
+            contentMd: ders.contentMd,
+            estimatedMin: ders.estimatedMin,
+            orderIndex: ders.orderIndex,
+          },
+        })
+        .returning({ id: lessons.id });
 
-      stepCount += insertedSteps.length;
+      const lessonId = insertedLesson?.id;
+      if (!lessonId) throw new Error(`Ders eklenemedi: ${week.slug}/${ders.slug}`);
 
-      // Slug yalnız parça içinde benzersiz — trackId olmadan aramak yanlış
-      // parçanın adımını bulabilir.
-      const stepId =
-        insertedSteps[0]?.id ??
-        (
-          await getDb()
-            .select({ id: steps.id })
-            .from(steps)
-            .where(and(eq(steps.trackId, trackId), eq(steps.slug, step.slug)))
-            .limit(1)
-        )[0]?.id;
+      lessonCount += 1;
+      lessonIdByKey.set(`${week.slug}/${ders.slug}`, lessonId);
 
-      if (!stepId) throw new Error(`Adım bulunamadı ve eklenemedi: ${track.slug}/${step.slug}`);
-      stepIdByKey.set(`${track.slug}/${step.slug}`, stepId);
-    }
-  }
+      // Kaynaklar sil-yaz: dosyadan çıkarılan bir kaynak veritabanında kalmasın.
+      // Kimse kaynağa referans vermiyor, silmek veri kaybetmez.
+      await db.delete(lessonSources).where(eq(lessonSources.lessonId, lessonId));
+      if (ders.sources.length > 0) {
+        await db.insert(lessonSources).values(
+          ders.sources.map((kaynak, i) => ({
+            lessonId,
+            kind: kaynak.kind,
+            title: kaynak.title,
+            url: kaynak.url,
+            provider: kaynak.provider,
+            youtubeId: kaynak.youtubeId,
+            durationLabel: kaynak.durationLabel,
+            level: kaynak.level,
+            summary: kaynak.summary,
+            orderIndex: i + 1,
+          })),
+        );
+        sourceCount += ders.sources.length;
+      }
 
-  // Ön koşullar en sona bırakılıyor: parçalar arası kenarlar da çözülebilsin.
-  const edges: { stepId: string; prerequisiteStepId: string }[] = [];
-  for (const track of TRACK_SEED) {
-    for (const step of track.steps) {
-      const stepId = stepIdByKey.get(`${track.slug}/${step.slug}`);
-      if (!stepId) continue;
-      for (const key of step.prerequisites) {
-        const prerequisiteStepId = stepIdByKey.get(key);
-        if (!prerequisiteStepId) throw new Error(`Tanımsız ön koşul: ${key}`);
-        edges.push({ stepId, prerequisiteStepId });
+      // **Sorular ASLA silinmez, yalnız güncellenir.** `lesson_answers` soruya
+      // cascade ile bağlı; sil-yaz yapmak kullanıcının verdiği cevapları ve
+      // aldığı geri bildirimi sessizce yok ederdi. Dosyadan çıkarılan bir soru
+      // veritabanında öksüz kalır — bu, cevap kaybetmeye yeğdir.
+      for (const [i, soru] of ders.prompts.entries()) {
+        await db
+          .insert(lessonPrompts)
+          .values({
+            lessonId,
+            key: soru.key,
+            kind: soru.kind,
+            points: soru.points,
+            promptMd: soru.promptMd,
+            rubricMd: soru.rubricMd,
+            expectedNumeric: soru.expectedNumeric,
+            tolerance: soru.tolerance,
+            orderIndex: i + 1,
+          })
+          .onConflictDoUpdate({
+            target: [lessonPrompts.lessonId, lessonPrompts.key],
+            set: {
+              kind: soru.kind,
+              points: soru.points,
+              promptMd: soru.promptMd,
+              rubricMd: soru.rubricMd,
+              expectedNumeric: soru.expectedNumeric,
+              tolerance: soru.tolerance,
+              orderIndex: i + 1,
+            },
+          });
+        promptCount += 1;
       }
     }
   }
 
-  const insertedEdges = edges.length
-    ? await getDb()
-        .insert(stepPrerequisites)
-        .values(edges)
-        .onConflictDoNothing()
-        .returning({ stepId: stepPrerequisites.stepId })
-    : [];
+  // Ön koşullar en sona bırakılıyor: haftalar arası kenarlar da çözülebilsin.
+  const edges: { lessonId: string; prerequisiteLessonId: string }[] = [];
+  const bekleyenOnkosullar: string[] = [];
 
-  return { tracks: trackCount, steps: stepCount, edges: insertedEdges.length };
+  for (const week of WEEK_SEED) {
+    for (const ders of derslerByWeek.get(week.slug) ?? []) {
+      const lessonId = lessonIdByKey.get(`${week.slug}/${ders.slug}`);
+      if (!lessonId) continue;
+
+      for (const key of ders.prerequisites) {
+        const prerequisiteLessonId = lessonIdByKey.get(key);
+        if (prerequisiteLessonId) {
+          edges.push({ lessonId, prerequisiteLessonId });
+          continue;
+        }
+
+        // Hedef hafta hiç ders yüklemediyse içerik henüz yazılmamış demektir —
+        // müfredat sırayla yazılıyor, bu beklenen bir durum. Ama hafta doluysa
+        // slug yanlış yazılmış demektir ve bunu geçirmek kenarı sessizce yer.
+        const hedefHafta = key.split("/")[0] ?? "";
+        if ((lessonCountByWeek.get(hedefHafta) ?? 0) > 0) {
+          throw new Error(
+            `Tanımsız ön koşul: \`${key}\` — ${week.slug}/${ders.slug} dosyasında. ` +
+              `\`${hedefHafta}\` yüklendi ama içinde \`${key.split("/")[1]}\` yok.`,
+          );
+        }
+        bekleyenOnkosullar.push(`${week.slug}/${ders.slug} → ${key}`);
+      }
+    }
+  }
+
+  // Kenarlar sil-yaz: dosyadan kaldırılan bir ön koşul haritada asılı kalmasın.
+  const seededLessonIds = [...lessonIdByKey.values()];
+  if (seededLessonIds.length > 0) {
+    await db
+      .delete(lessonPrerequisites)
+      .where(inArray(lessonPrerequisites.lessonId, seededLessonIds));
+  }
+  if (edges.length > 0) {
+    await db.insert(lessonPrerequisites).values(edges).onConflictDoNothing();
+  }
+
+  return {
+    weeks: weekCount,
+    lessons: lessonCount,
+    sources: sourceCount,
+    prompts: promptCount,
+    edges: edges.length,
+    bekleyenOnkosullar,
+  };
 }
 
 async function main() {
@@ -367,13 +599,30 @@ async function main() {
   const tickerCount = await seedTickers();
   console.log(`  semboller        : ${tickerCount} yeni / ${TICKER_SEED.length} toplam`);
 
-  const academy = await seedAcademy();
-  const totalSteps = TRACK_SEED.reduce((sum, track) => sum + track.steps.length, 0);
-  console.log(`  akademi parçaları: ${academy.tracks} yeni / ${TRACK_SEED.length} toplam`);
-  console.log(`  akademi adımları : ${academy.steps} yeni / ${totalSteps} toplam`);
-  console.log(`  ön koşul kenarı  : ${academy.edges} yeni`);
+  const sentiment = await seedSentiment();
+  console.log(
+    `  topluluklar      : ${sentiment.communities} yeni / ${COMMUNITY_SEED.length} toplam`,
+  );
+  console.log(
+    `  gönderiler       : ${sentiment.posts} yeni / ${SENTIMENT_POST_SEED.length} toplam`,
+  );
+  console.log(`  gönderi-sembol   : ${sentiment.tickerLinks} yeni`);
 
-  console.log("\nSeed tamam. (articles KASITLI olarak boş — onu Faz 2B dolduracak.)");
+  const academy = await seedAcademy();
+  console.log(`  akademi haftaları: ${academy.weeks} / ${WEEK_SEED.length}`);
+  console.log(`  akademi dersleri : ${academy.lessons} (content/akademi/ altından)`);
+  console.log(`  ders kaynakları  : ${academy.sources}`);
+  console.log(`  ders soruları    : ${academy.prompts}`);
+  console.log(`  ön koşul kenarı  : ${academy.edges}`);
+
+  if (academy.bekleyenOnkosullar.length > 0) {
+    // Sessizce atlamak, yol haritasında eksik kenarı fark edilmez kılardı.
+    console.log("\n  ⚠ İçeriği henüz yazılmamış derslere giden ön koşullar atlandı:");
+    for (const satir of academy.bekleyenOnkosullar) console.log(`      ${satir}`);
+    console.log("    O haftanın dersleri yazıldıktan sonra seed'i tekrar çalıştırın.");
+  }
+
+  console.log("\nSeed tamam. (articles KASITLI olarak boş — onu `npm run ingest` doldurur.)");
   process.exit(0);
 }
 

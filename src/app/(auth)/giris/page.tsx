@@ -2,16 +2,9 @@ import type { Metadata, Route } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { guvenliIcYol } from "@/lib/security/donus";
 
 export const metadata: Metadata = { title: "Giriş" };
-
-/** Açık yönlendirme koruması: yalnız site içi göreli yollar kabul edilir. */
-function guvenliDonus(raw: string | undefined): string {
-  if (!raw) return "/";
-  if (!raw.startsWith("/")) return "/";
-  if (raw.startsWith("//")) return "/"; // //evil.com protokol-göreli mutlak URL
-  return raw;
-}
 
 export default async function GirisPage({
   searchParams,
@@ -19,17 +12,17 @@ export default async function GirisPage({
   searchParams: Promise<{ donus?: string }>;
 }) {
   const { donus } = await searchParams;
-  const hedef = guvenliDonus(donus);
+  const hedef = guvenliIcYol(donus);
 
   // Giriş yapmış kullanıcı giriş sayfasını görmemeli.
   const session = await auth();
   // `typedRoutes` derleme anında sabit yol bekliyor; burada yol çalışma anında
-  // türüyor. `guvenliDonus` onu zaten site içi göreli bir yola daralttı.
+  // türüyor. `guvenliIcYol` onu zaten site içi göreli bir yola daralttı.
   if (session?.user) redirect(hedef as Route);
 
   return (
     <div className="w-full max-w-[26rem]">
-      <div className="card px-7 py-8 sm:px-9 sm:py-10">
+      <div className="glass px-7 py-8 sm:px-9 sm:py-10">
         <svg
           viewBox="0 0 20 20"
           className="size-7 text-accent"
@@ -46,16 +39,16 @@ export default async function GirisPage({
           />
         </svg>
 
-        <h1 className="mt-5 text-[26px] leading-[1.15] font-semibold tracking-[-0.03em] text-ink">
+        <h1 className="mt-5 text-heading leading-[1.15] font-semibold tracking-[-0.03em] text-ink">
           Finans Programı
         </h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">
+        <p className="mt-2 text-md leading-relaxed text-ink-muted">
           Panelini ve akademi ilerlemeni görmek için giriş yap.
         </p>
 
         <LoginForm donus={hedef} />
 
-        <p className="mt-6 text-[12px] leading-relaxed text-ink-faint">
+        <p className="mt-6 text-sm leading-relaxed text-ink-faint">
           Hesap açmak için terminalde <span className="meta">npm run user:create</span> çalıştır.
         </p>
       </div>

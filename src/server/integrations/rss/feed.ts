@@ -7,6 +7,7 @@
  */
 
 import Parser from "rss-parser";
+import { guvenliHariciUrl } from "@/lib/security/url";
 
 /** Kaynaklara kim olduğumuzu söylüyoruz; kimliksiz istekler daha çok engelleniyor. */
 const USER_AGENT = "Mozilla/5.0 (compatible; FinansProgrami/0.1; +http://localhost:3000)";
@@ -97,9 +98,14 @@ export async function fetchFeed(feedUrl: string): Promise<FeedItem[]> {
   const items: FeedItem[] = [];
 
   for (const item of feed.items) {
-    const url = item.link?.trim();
+    /**
+     * Adres politikası burada uygulanıyor: makale bağlantısı ve görseli
+     * kullanıcıya `a href` / `img src` olarak basılıyor. Yayıncı feed'i ele
+     * geçirilirse tek savunma bu; render tarafında şema kontrolü yok.
+     */
+    const url = guvenliHariciUrl(item.link ?? undefined);
     const title = item.title?.trim();
-    // Başlıksız veya linksiz kayıt kullanılamaz; sessizce atlanır.
+    // Başlıksız, linksiz ya da geçersiz şemalı kayıt kullanılamaz.
     if (!url || !title) continue;
 
     const publishedAt = parseDate(item.isoDate) ?? parseDate(item.pubDate);
@@ -121,7 +127,7 @@ export async function fetchFeed(feedUrl: string): Promise<FeedItem[]> {
       author: item.creator?.trim() || item["dc:creator"]?.trim() || null,
       summary: summary && summary.length > 0 ? summary : null,
       contentHtml: isFullBody ? encoded : null,
-      imageUrl: firstImage(item),
+      imageUrl: guvenliHariciUrl(firstImage(item) ?? undefined),
       publishedAt,
     });
   }

@@ -1,14 +1,22 @@
-import "./scripts/load-env";
+import "./scripts/load-admin-env";
 import { defineConfig } from "drizzle-kit";
 
-const url = process.env.DATABASE_URL;
+/**
+ * Migration **yönetim rolüyle** çalışır: web ve işleyici rollerinin DDL
+ * yetkisi yok. Varsayılan bağlantı dizesine düşmek de kaldırıldı — denetimde
+ * bilinen bir kimlik bilgisinin üç dosyada tekrarlanması DB-01 bulgusunun
+ * parçasıydı ve sessiz varsayılan yanlış veritabanına migration uygulama
+ * riskini taşıyordu.
+ */
+const url = process.env.DATABASE_ADMIN_URL;
 
 if (!url) {
-  // `generate` bağlantı kurmaz, o yüzden burada durmuyoruz. Ama `migrate`
-  // sessizce varsayılana düşerse yanlış veritabanına migration uygulanır —
-  // en azından hangi URL'in kullanıldığı görünsün.
-  console.warn(
-    "[drizzle.config] DATABASE_URL yok, yerel varsayılana düşülüyor. `.env.local` dosyasını kontrol edin.",
+  throw new Error(
+    [
+      "DATABASE_ADMIN_URL tanımlı değil; migration uygulanamaz.",
+      "",
+      "  npm run db:up && npm run db:harden",
+    ].join("\n"),
   );
 }
 
@@ -16,8 +24,7 @@ export default defineConfig({
   schema: "./src/lib/db/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
-  // `generate` bağlantı kurmaz; yalnız `migrate`/`push` için gerekir.
-  dbCredentials: { url: url ?? "postgresql://finans:finans@127.0.0.1:5432/finans" },
+  dbCredentials: { url },
   strict: true,
   verbose: true,
 });
