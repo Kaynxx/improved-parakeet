@@ -8,7 +8,7 @@
  * `systemPatterns.md`'deki okuma/yazma ayrımının uygulaması budur.
  */
 
-import "./load-env";
+import "./load-worker-env";
 import cron from "node-cron";
 import { upsertMarketQuotes } from "../src/lib/db/queries/market";
 import { fiyatlariCek } from "../src/server/integrations/finnhub";

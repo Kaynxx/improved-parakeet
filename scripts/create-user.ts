@@ -10,7 +10,7 @@
  * Aynı e-posta ikinci kez verilirse şifre günceller (idempotent).
  */
 
-import "./load-env";
+import "./load-admin-env";
 
 import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
@@ -96,13 +96,16 @@ async function main(): Promise<void> {
   // ve özetin içinde saklanır, ayrı bir sütun gerekmiyor.
   const passwordHash = await hash(password);
 
-  const mevcut = await getDb().select({ id: users.id }).from(users).where(eq(users.email, email));
+  const mevcut = await getDb("yonetim")
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email));
 
   if (mevcut[0]) {
-    await getDb().update(users).set({ passwordHash, name }).where(eq(users.email, email));
+    await getDb("yonetim").update(users).set({ passwordHash, name }).where(eq(users.email, email));
     console.log(`\nŞifre güncellendi: ${email}`);
   } else {
-    await getDb().insert(users).values({ email, name, passwordHash });
+    await getDb("yonetim").insert(users).values({ email, name, passwordHash });
     console.log(`\nHesap oluşturuldu: ${email}`);
   }
 

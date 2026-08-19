@@ -1,3 +1,5 @@
+import { parseLessonContent } from "@/lib/content/interactions";
+import { guvenliHariciUrl } from "@/lib/security/url";
 import { youtubeIdFromUrl } from "@/lib/utils/youtube";
 import type { PromptKind, SourceKind, SourceLevel } from "@/types";
 
@@ -82,6 +84,10 @@ export function parseLesson(
     throw new Error(`${nerede}: ders gövdesi boş.`);
   }
 
+  // Etkileşim blokları **seed sırasında** doğrulanıyor: bozuk bir blok
+  // çalışma zamanında ders sayfasını patlatmadan önce burada durmalı.
+  parseLessonContent(contentMd, nerede);
+
   return { slug, title, summary, estimatedMin, contentMd, prerequisites, sources, prompts };
 }
 
@@ -91,7 +97,17 @@ function parseSource(raw: unknown, index: number, nerede: string): ParsedSource 
 
   const kind = birinden(s.tip, SOURCE_KINDS, `${alan}.tip`, nerede);
   const level = birinden(s.seviye, SOURCE_LEVELS, `${alan}.seviye`, nerede);
-  const url = zorunluMetin(s.url, `${alan}.url`, nerede);
+  const hamUrl = zorunluMetin(s.url, `${alan}.url`, nerede);
+
+  /**
+   * Adres burada normalize ediliyor: kaynak listesi kullanıcıya bağlantı ve
+   * gömülü oynatıcı olarak basılıyor. `javascript:`/`data:` bir ders
+   * dosyasına yazılabilir olsaydı sanitize edilmemiş tek yüzey burası olurdu.
+   */
+  const url = guvenliHariciUrl(hamUrl);
+  if (!url) {
+    throw new Error(`${nerede}: ${alan}.url geçerli bir http(s) adresi değil: ${hamUrl}`);
+  }
 
   // Video kaynağının kimliği çözülemiyorsa bu bir içerik hatasıdır: gömülü
   // oynatıcı çalışmayacak ve kullanıcı sebebini anlamayacaktı.

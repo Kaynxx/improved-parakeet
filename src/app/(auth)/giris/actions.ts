@@ -2,6 +2,7 @@
 
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
+import { guvenliIcYol } from "@/lib/security/donus";
 
 export interface GirisDurumu {
   hata: string | null;
@@ -14,7 +15,12 @@ export interface GirisDurumu {
 export async function girisYap(_onceki: GirisDurumu, formData: FormData): Promise<GirisDurumu> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const donus = String(formData.get("donus") ?? "/");
+  /**
+   * Dönüş hedefi burada **yeniden** daraltılıyor. Sayfa gizli alanı zaten
+   * doğruluyor, ama sunucu eylemi doğrudan da çağrılabiliyor: denetimde
+   * `/\evil.example` değeri 307 `Location` başlığına kadar inmişti.
+   */
+  const donus = guvenliIcYol(String(formData.get("donus") ?? "/"));
 
   if (!email || !password) {
     return { hata: "E-posta ve şifre gerekli." };

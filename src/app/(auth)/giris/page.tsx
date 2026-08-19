@@ -2,16 +2,9 @@ import type { Metadata, Route } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { guvenliIcYol } from "@/lib/security/donus";
 
 export const metadata: Metadata = { title: "Giriş" };
-
-/** Açık yönlendirme koruması: yalnız site içi göreli yollar kabul edilir. */
-function guvenliDonus(raw: string | undefined): string {
-  if (!raw) return "/";
-  if (!raw.startsWith("/")) return "/";
-  if (raw.startsWith("//")) return "/"; // //evil.com protokol-göreli mutlak URL
-  return raw;
-}
 
 export default async function GirisPage({
   searchParams,
@@ -19,12 +12,12 @@ export default async function GirisPage({
   searchParams: Promise<{ donus?: string }>;
 }) {
   const { donus } = await searchParams;
-  const hedef = guvenliDonus(donus);
+  const hedef = guvenliIcYol(donus);
 
   // Giriş yapmış kullanıcı giriş sayfasını görmemeli.
   const session = await auth();
   // `typedRoutes` derleme anında sabit yol bekliyor; burada yol çalışma anında
-  // türüyor. `guvenliDonus` onu zaten site içi göreli bir yola daralttı.
+  // türüyor. `guvenliIcYol` onu zaten site içi göreli bir yola daralttı.
   if (session?.user) redirect(hedef as Route);
 
   return (

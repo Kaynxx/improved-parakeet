@@ -39,7 +39,9 @@ export async function upsertMarketQuotes(fiyatlar: YazilacakFiyat[]): Promise<vo
 
   const simdi = new Date();
 
-  await getDb().transaction(async (tx) => {
+  // Yazma yolu işleyici kapsamında: web rolünün piyasa tablolarına yazma
+  // yetkisi yok ve olmamalı.
+  await getDb("isleyici").transaction(async (tx) => {
     for (const f of fiyatlar) {
       await tx
         .insert(marketQuotes)

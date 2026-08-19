@@ -11,7 +11,7 @@
  * Çalıştırma:  npm run seed
  */
 
-import "./load-env";
+import "./load-admin-env";
 import { eq, inArray } from "drizzle-orm";
 import { type LoadedLesson, loadWeekLessons } from "../src/lib/content/load";
 import { getDb } from "../src/lib/db";
@@ -311,7 +311,7 @@ const WEEK_SEED: WeekSeed[] = [
 async function seedSources(): Promise<number> {
   // `isActive` artık kaynağın kendi kaydında; belirtilmeyenler aktif.
   const rows = SOURCE_SEED.map((source) => ({ isActive: true, ...source }));
-  const inserted = await getDb()
+  const inserted = await getDb("yonetim")
     .insert(sources)
     .values(rows)
     .onConflictDoNothing({ target: sources.slug })
@@ -320,7 +320,7 @@ async function seedSources(): Promise<number> {
 }
 
 async function seedTickers(): Promise<number> {
-  const inserted = await getDb()
+  const inserted = await getDb("yonetim")
     .insert(tickers)
     .values(TICKER_SEED)
     .onConflictDoNothing({ target: tickers.symbol })
@@ -341,7 +341,7 @@ function requiredSeedId(ids: Map<string, string>, kind: string, key: string): st
 }
 
 async function seedSentiment(): Promise<SentimentCounts> {
-  const db = getDb();
+  const db = getDb("yonetim");
   const insertedCommunities = await db
     .insert(communities)
     .values([...COMMUNITY_SEED])
@@ -408,7 +408,7 @@ interface AcademyCounts {
 }
 
 async function seedAcademy(): Promise<AcademyCounts> {
-  const db = getDb();
+  const db = getDb("yonetim");
 
   // "hafta-03/fisher-denklemi" → ders id'si. Ön koşulları çözmek için.
   const lessonIdByKey = new Map<string, string>();

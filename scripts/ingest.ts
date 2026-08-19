@@ -7,7 +7,7 @@
  * fonksiyonunu çağırır — çekirdek tek yerde, sarmalayıcılar ince.
  */
 
-import "./load-env";
+import "./load-worker-env";
 import { ingestAllSources } from "../src/server/integrations/rss/ingest";
 
 async function main() {

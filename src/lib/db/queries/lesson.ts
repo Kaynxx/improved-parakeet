@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, ne } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, ne } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import {
   answerFeedback,
@@ -123,15 +123,36 @@ export async function findLessonPrompts(
   }));
 }
 
-/** Cevap başına EN SON değerlendirme. Boş listede sorgu hiç atılmaz. */
-async function findLatestFeedback(answerIds: string[]) {
-  const map = new Map<string, PromptWithAnswer["feedback"]>();
-  if (answerIds.length === 0) return map;
+/** `answer_feedback` satırının bu katmanda kullanılan biçimi. */
+export interface GeriBildirimSatiri {
+  answerId: string;
+  model: string;
+  score: number;
+  strengths: string[];
+  gaps: string[];
+  feedbackMd: string;
+  followUp: string | null;
+  createdAt: Date;
+}
 
-  const rows = await getDb().select().from(answerFeedback).orderBy(desc(answerFeedback.createdAt));
+/**
+ * Cevap başına en yeni değerlendirme. Satırlar **tarihe göre azalan** gelmiş
+ * olmalı; ilk görülen kazanır.
+ *
+ * Saf fonksiyon: seçim kuralı veritabanına gitmeden test edilebilsin. İstenmeyen
+ * `answerId` burada da süzülüyor — sorgu zaten daraltıyor, ama iki katman
+ * arasındaki sessiz bir uyumsuzluk başka kullanıcının geri bildirimini
+ * sızdırırdı.
+ */
+export function enYeniGeriBildirimiSec(
+  rows: GeriBildirimSatiri[],
+  answerIds: string[],
+): Map<string, PromptWithAnswer["feedback"]> {
+  const map = new Map<string, PromptWithAnswer["feedback"]>();
+  const istenenler = new Set(answerIds);
 
   for (const row of rows) {
-    if (!answerIds.includes(row.answerId)) continue;
+    if (!istenenler.has(row.answerId)) continue;
     if (map.has(row.answerId)) continue; // ilk gelen en yenisi
     map.set(row.answerId, {
       model: row.model,
@@ -145,4 +166,86 @@ async function findLatestFeedback(answerIds: string[]) {
   }
 
   return map;
+}
+
+/**
+ * Cevap başına EN SON değerlendirme. Boş listede sorgu hiç atılmaz.
+ *
+ * **Denetim bulgusu DB-02:** bu sorgu eskiden `answer_feedback` tablosunun
+ * TAMAMINI çekip bellekte süzüyordu. Sonuç doğruydu ama gereksiz hassas veri
+ * işlemek ve büyüyen tabloda kaynak tüketmek demekti; filtre artık sorguda.
+ */
+async function findLatestFeedback(
+  answerIds: string[],
+): Promise<Map<string, PromptWithAnswer["feedback"]>> {
+  if (answerIds.length === 0) return new Map();
+
+  const rows = await getDb()
+    .select()
+    .from(answerFeedback)
+    .where(inArray(answerFeedback.answerId, answerIds))
+    .orderBy(desc(answerFeedback.createdAt));
+
+  return enYeniGeriBildirimiSec(rows, answerIds);
+}
+
+/**
+ * Soruyu **ders kimliğiyle birlikte** getirir. Yalnız `id` ile okumak,
+ * istemciden gelen bir soru kimliğiyle başka dersin sorusuna cevap
+ * yazılmasına izin verirdi.
+ */
+export async function findPromptInLesson(promptId: string, lessonId: string) {
+  const rows = await getDb()
+    .select()
+    .from(lessonPrompts)
+    .where(and(eq(lessonPrompts.id, promptId), eq(lessonPrompts.lessonId, lessonId)))
+    .limit(1);
+
+  return rows[0] ?? null;
+}
+
+/**
+ * Cevabı yazar; aynı soruya ikinci gönderim **üzerine yazar**. Geri bildirim
+ * satırları silinmez: revizyon geçmişi denetim izi olarak kalır.
+ */
+export async function upsertLessonAnswer(
+  userId: string,
+  promptId: string,
+  body: string,
+): Promise<string> {
+  const [answer] = await getDb()
+    .insert(lessonAnswers)
+    .values({ userId, promptId, body })
+    .onConflictDoUpdate({
+      target: [lessonAnswers.userId, lessonAnswers.promptId],
+      set: { body, updatedAt: new Date() },
+    })
+    .returning({ id: lessonAnswers.id });
+
+  return answer.id;
+}
+
+/** Değerlendirmeyi ekler — güncellemez; her tur ayrı satır olarak kalır. */
+export async function insertAnswerFeedback(
+  data: typeof answerFeedback.$inferInsert,
+): Promise<void> {
+  await getDb().insert(answerFeedback).values(data);
+}
+
+/**
+ * Rota slug'larından ders kimliği. Sunucu eylemleri kimliği istemciden
+ * almasın diye var: slug zaten URL'de görünüyor, kimlik görünmüyor.
+ */
+export async function findLessonIdBySlugs(
+  weekSlug: string,
+  lessonSlug: string,
+): Promise<string | null> {
+  const rows = await getDb()
+    .select({ id: lessons.id })
+    .from(lessons)
+    .innerJoin(weeks, eq(weeks.id, lessons.weekId))
+    .where(and(eq(weeks.slug, weekSlug), eq(lessons.slug, lessonSlug)))
+    .limit(1);
+
+  return rows[0]?.id ?? null;
 }
