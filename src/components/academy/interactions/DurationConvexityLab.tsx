@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { BentoCard } from "@/components/common/BentoCard";
 import { hesaplaDurasyonKonveksite } from "@/components/academy/interactions/calculators";
+import { BentoCard } from "@/components/common/BentoCard";
 import type { EtkilesimYapilandirmasi } from "@/lib/content/interactions";
 
 interface DurationConvexityLabProps {
@@ -40,19 +40,19 @@ export function DurationConvexityLab({ config }: DurationConvexityLabProps) {
         </div>
 
         <div>
-          <label className="flex justify-between text-sm mb-3">
-            <span className="font-medium text-ink">Faiz Şoku (Baz Puan)</span>
+          <label htmlFor="faiz-soku" className="mb-3 flex justify-between text-sm">
+            <span className="font-medium text-ink">Faiz şoku (baz puan)</span>
             <span className="font-mono text-ink">{sok > 0 ? `+${sok}` : sok} bps</span>
           </label>
           <input
+            id="faiz-soku"
             type="range"
             min="-300"
             max="300"
             step="10"
             value={sok}
             onChange={(e) => setSok(Number(e.target.value))}
-            className="w-full accent-accent cursor-pointer"
-            aria-label="Faiz Şoku"
+            className="w-full cursor-pointer accent-accent"
           />
         </div>
 

@@ -3,8 +3,8 @@
 import { BookOpen, Moon, TerminalSquare } from "lucide-react";
 import { useState, useTransition } from "react";
 import { temaSec } from "@/app/theme-actions";
-import { cn } from "@/lib/utils/cn";
 import type { Tema } from "@/lib/theme";
+import { cn } from "@/lib/utils/cn";
 
 const SEMALAR: { tema: Tema; label: string; Icon: typeof Moon }[] = [
   { tema: "glass", label: "Koyu Cam", Icon: Moon },

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { BentoCard } from "@/components/common/BentoCard";
 import { hesaplaTufeSepeti } from "@/components/academy/interactions/calculators";
+import { BentoCard } from "@/components/common/BentoCard";
 import type { EtkilesimYapilandirmasi } from "@/lib/content/interactions";
 
 interface TufeSepetiLabProps {

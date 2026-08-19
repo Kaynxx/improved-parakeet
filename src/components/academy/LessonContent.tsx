@@ -1,6 +1,6 @@
+import { LessonInteraction } from "@/components/academy/interactions/LessonInteraction";
 import { parseLessonContent } from "@/lib/content/interactions";
 import { renderMarkdown } from "@/lib/content/render";
-import { LessonInteraction } from "@/components/academy/interactions/LessonInteraction";
 
 interface LessonContentProps {
   contentMd: string;

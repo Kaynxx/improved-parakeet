@@ -1,7 +1,7 @@
-import type { EtkilesimYapilandirmasi } from "@/lib/content/interactions";
-import { THesapLab } from "@/components/academy/interactions/THesapLab";
 import { DurationConvexityLab } from "@/components/academy/interactions/DurationConvexityLab";
+import { THesapLab } from "@/components/academy/interactions/THesapLab";
 import { TufeSepetiLab } from "@/components/academy/interactions/TufeSepetiLab";
+import type { EtkilesimYapilandirmasi } from "@/lib/content/interactions";
 
 interface LessonInteractionProps {
   config: EtkilesimYapilandirmasi;

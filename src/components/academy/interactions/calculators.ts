@@ -84,13 +84,13 @@ export function hesaplaDurasyonKonveksite(
   // Nakit akışlarının bugünkü değerini ve durasyon/konveksite paylarını hesaplıyoruz.
   for (let t = 1; t <= N; t++) {
     const cf = t === N ? C + girdi.nominalFiyat : C;
-    const indirim = Math.pow(1 + r, t);
+    const indirim = (1 + r) ** t;
     const pv = cf / indirim;
 
     P += pv;
     macaulayPay += (t * pv) / m;
     // Konveksite formülü: (1/P)*sum[t(t+1)*CF_t/(1+y/m)^(t+2)] / m^2
-    konveksitePay += (t * (t + 1) * cf) / Math.pow(1 + r, t + 2);
+    konveksitePay += (t * (t + 1) * cf) / (1 + r) ** (t + 2);
   }
 
   const modifiyeDurasyon = macaulayPay / P / (1 + r);
@@ -105,7 +105,7 @@ export function hesaplaDurasyonKonveksite(
   let sokluTamFiyat = 0;
   for (let t = 1; t <= N; t++) {
     const cf = t === N ? C + girdi.nominalFiyat : C;
-    sokluTamFiyat += cf / Math.pow(1 + yeniR, t);
+    sokluTamFiyat += cf / (1 + yeniR) ** t;
   }
 
   return {

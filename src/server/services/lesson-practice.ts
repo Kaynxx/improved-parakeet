@@ -7,7 +7,7 @@ import {
   upsertLessonAnswer,
 } from "@/lib/db/queries/lesson";
 import { advanceProgress } from "@/lib/db/queries/progress";
-import { DegerlendiriciYok, MODEL, degerlendir } from "@/server/ai/degerlendir";
+import { DegerlendiriciYok, degerlendir, MODEL } from "@/server/ai/degerlendir";
 import {
   deriveLessonStatus,
   evaluateNumericAnswer,

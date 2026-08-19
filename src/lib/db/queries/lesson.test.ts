@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { type GeriBildirimSatiri, enYeniGeriBildirimiSec } from "./lesson";
+import { enYeniGeriBildirimiSec, type GeriBildirimSatiri } from "./lesson";
 
 function satir(answerId: string, createdAt: string, score: number): GeriBildirimSatiri {
   return {
