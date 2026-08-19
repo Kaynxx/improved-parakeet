@@ -39,16 +39,16 @@ export default async function GirisPage({
           />
         </svg>
 
-        <h1 className="mt-5 text-[26px] leading-[1.15] font-semibold tracking-[-0.03em] text-ink">
+        <h1 className="mt-5 text-heading leading-[1.15] font-semibold tracking-[-0.03em] text-ink">
           Finans Programı
         </h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">
+        <p className="mt-2 text-md leading-relaxed text-ink-muted">
           Panelini ve akademi ilerlemeni görmek için giriş yap.
         </p>
 
         <LoginForm donus={hedef} />
 
-        <p className="mt-6 text-[12px] leading-relaxed text-ink-faint">
+        <p className="mt-6 text-sm leading-relaxed text-ink-faint">
           Hesap açmak için terminalde <span className="meta">npm run user:create</span> çalıştır.
         </p>
       </div>

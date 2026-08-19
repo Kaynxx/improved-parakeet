@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { isActive, NAV } from "@/components/layout/nav";
+import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { cn } from "@/lib/utils/cn";
 
 export function Sidebar() {
@@ -37,7 +38,7 @@ export function Sidebar() {
           />
         </svg>
         {!collapsed ? (
-          <span className="truncate text-[15px] font-semibold tracking-[-0.02em] text-ink">
+          <span className="truncate text-md font-semibold tracking-[-0.02em] text-ink">
             Finans Programı
           </span>
         ) : null}
@@ -56,7 +57,7 @@ export function Sidebar() {
               title={collapsed ? item.label : undefined}
               className={cn(
                 "press relative flex items-center gap-3 rounded-[var(--radius-inner)] border border-transparent px-3 py-2.5",
-                "text-[14px] font-medium",
+                "text-md font-medium",
                 active
                   ? "border-hairline bg-elevated text-ink"
                   : "text-ink-muted hover:border-hairline hover:bg-elevated/70 hover:text-ink",
@@ -81,14 +82,18 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="shrink-0 p-3">
+      <div className="shrink-0 p-3 pt-0">
+        <ThemeSwitcher collapsed={collapsed} />
+      </div>
+
+      <div className="shrink-0 p-3 pt-0">
         <button
           type="button"
           onClick={() => setCollapsed((value) => !value)}
           aria-expanded={!collapsed}
           className={cn(
             "press flex w-full items-center gap-3 rounded-[var(--radius-inner)] px-3 py-2.5",
-            "text-[13px] text-ink-faint hover:bg-elevated/70 hover:text-ink",
+            "text-copy text-ink-faint hover:bg-elevated/70 hover:text-ink",
             collapsed && "justify-center px-0",
           )}
         >

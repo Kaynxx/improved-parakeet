@@ -47,14 +47,14 @@ export function TrendingTickers({ items }: { items: TickerSentiment[] }) {
           <li key={item.ticker.symbol} className="flex flex-col gap-2">
             <div className="flex items-baseline justify-between gap-2">
               <div className="flex min-w-0 items-baseline gap-2">
-                <span className="figure text-[13.5px] font-semibold text-ink">
+                <span className="figure text-copy font-semibold text-ink">
                   {item.ticker.symbol}
                 </span>
-                <span className="truncate text-[12px] text-ink-faint">{item.ticker.name}</span>
+                <span className="truncate text-sm text-ink-faint">{item.ticker.name}</span>
               </div>
-              <span className="figure flex shrink-0 items-baseline gap-1.5 text-[12.5px] text-ink-muted">
+              <span className="figure flex shrink-0 items-baseline gap-1.5 text-sm text-ink-muted">
                 {formatCompact(item.mentionCount)}
-                <span className="flex items-center gap-0.5 text-[11px] text-ink-faint">
+                <span className="flex items-center gap-0.5 text-xs text-ink-faint">
                   <ChangeArrow className="size-3" strokeWidth={2.25} aria-hidden="true" />
                   {formatPercent(item.mentionChangePercent)}
                 </span>
@@ -71,7 +71,7 @@ export function TrendingTickers({ items }: { items: TickerSentiment[] }) {
               </div>
               <span
                 className={cn(
-                  "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-[11px] font-semibold",
+                  "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-xs font-semibold",
                   SENTIMENT_STYLE[label],
                 )}
               >

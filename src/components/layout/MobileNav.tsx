@@ -45,7 +45,7 @@ export function MobileNav() {
                   aria-hidden="true"
                 />
                 <Icon className="size-[19px]" strokeWidth={active ? 2 : 1.75} aria-hidden="true" />
-                <span className="text-[11px] font-medium">{item.label}</span>
+                <span className="text-xs font-medium">{item.label}</span>
               </Link>
             </li>
           );

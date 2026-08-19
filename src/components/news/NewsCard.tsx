@@ -12,7 +12,7 @@ interface NewsCardProps {
 /** Üstbilgi ayraçları için — nokta karakterini her yerde tekrar yazmamak adına. */
 function Dot() {
   return (
-    <span className="text-rule-strong" aria-hidden="true">
+    <span className="text-hairline-strong" aria-hidden="true">
       ·
     </span>
   );
@@ -21,7 +21,7 @@ function Dot() {
 export function NewsCard({ article, showSummary = false }: NewsCardProps) {
   return (
     <article className="group/card relative -mx-2 rounded-[var(--radius-inner)] px-2 py-3.5 transition-colors duration-200 first:pt-1 hover:bg-elevated/70">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-ink-faint">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-faint">
         {article.isBreaking ? (
           <span className="label rounded-[var(--radius-inner)] bg-elevated px-1.5 py-1 text-accent">
             Son dakika
@@ -42,7 +42,7 @@ export function NewsCard({ article, showSummary = false }: NewsCardProps) {
         ) : null}
       </div>
 
-      <h3 className="mt-2 text-[16px] leading-[1.35] font-semibold tracking-[-0.012em] text-ink">
+      <h3 className="mt-2 text-md leading-[1.35] font-semibold tracking-[-0.012em] text-ink">
         {/* Kartın tamamı tıklanabilir; odak halkası başlıkta belirir. */}
         <Link
           href={{ pathname: `/haberler/${article.slug}` }}
@@ -53,7 +53,7 @@ export function NewsCard({ article, showSummary = false }: NewsCardProps) {
       </h3>
 
       {showSummary ? (
-        <p className="mt-1.5 line-clamp-2 text-[13.5px] leading-relaxed text-ink-muted">
+        <p className="mt-1.5 line-clamp-2 text-copy leading-relaxed text-ink-muted">
           {article.summary}
         </p>
       ) : null}

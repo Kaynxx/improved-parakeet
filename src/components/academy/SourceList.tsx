@@ -18,7 +18,7 @@ const LEVEL_LABEL: Record<SourceLevel, string> = {
 const LEVEL_STYLE: Record<SourceLevel, string> = {
   orta: "bg-elevated text-ink-muted",
   ileri: "bg-accent-soft text-accent",
-  uzman: "bg-ink text-paper",
+  uzman: "bg-ink text-on-ink",
 };
 
 /**
@@ -32,7 +32,7 @@ export function SourceList({ sources }: { sources: LessonSource[] }) {
   const okumalar = sources.filter((s) => !(s.kind === "video" && s.youtubeId));
 
   return (
-    <section className="mt-10 border-t border-rule pt-7">
+    <section className="mt-10 border-t border-hairline pt-7">
       <h2 className="label">Bu dersi destekleyen kaynaklar</h2>
 
       {videos.length > 0 ? (
@@ -48,7 +48,7 @@ export function SourceList({ sources }: { sources: LessonSource[] }) {
               />
               <div className="flex items-start gap-2">
                 <Rozet level={source.level} />
-                <p className="text-[12.5px] leading-relaxed text-ink-muted">{source.summary}</p>
+                <p className="text-sm leading-relaxed text-ink-muted">{source.summary}</p>
               </div>
             </div>
           ))}
@@ -81,10 +81,10 @@ export function SourceList({ sources }: { sources: LessonSource[] }) {
                     ) : null}
                     <Rozet level={source.level} />
                   </span>
-                  <span className="mt-1 block text-[14px] leading-snug font-semibold text-ink group-hover/src:text-accent">
+                  <span className="mt-1 block text-md leading-snug font-semibold text-ink group-hover/src:text-accent">
                     {source.title}
                   </span>
-                  <span className="mt-1 block text-[12.5px] leading-relaxed text-ink-muted">
+                  <span className="mt-1 block text-sm leading-relaxed text-ink-muted">
                     {source.summary}
                   </span>
                 </span>
@@ -107,7 +107,7 @@ function Rozet({ level }: { level: SourceLevel }) {
   return (
     <span
       className={cn(
-        "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-[10px] font-semibold",
+        "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-2xs font-semibold",
         LEVEL_STYLE[level],
       )}
     >

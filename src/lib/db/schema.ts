@@ -1,6 +1,7 @@
 import { type SQL, sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
   date,
   doublePrecision,
@@ -455,5 +456,40 @@ export const marketDaily = pgTable(
   (table) => [
     primaryKey({ columns: [table.symbol, table.day] }),
     index("market_daily_symbol_day_idx").on(table.symbol, table.day.desc()),
+  ],
+);
+
+// --- Pilot ölçümü (dengeli dönüşüm) ---------------------------------------
+/**
+ * Ders sonu üç sinyal: sıkılma, zihinsel çaba, devam etme isteği.
+ *
+ * Üçü **ayrı** tutuluyor: desirable difficulty çabayı artırırken sıkılmayı
+ * azaltabilir, tek bir "memnuniyet" puanı bu ayrımı yok ederdi.
+ *
+ * Kullanıcı-ders başına tek satır; yeniden gönderim üzerine yazar. Aralık
+ * kontrolü CHECK ile veritabanında: uygulama katmanı atlanırsa bile 1-7
+ * dışında bir ölçek değeri tabloya giremez.
+ */
+export const lessonReflections = pgTable(
+  "lesson_reflections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    boredom: integer("boredom").notNull(),
+    effort: integer("effort").notNull(),
+    continueIntent: integer("continue_intent").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("lesson_reflections_user_lesson_idx").on(table.userId, table.lessonId),
+    check("lesson_reflections_boredom_check", sql`${table.boredom} between 1 and 7`),
+    check("lesson_reflections_effort_check", sql`${table.effort} between 1 and 7`),
+    check("lesson_reflections_continue_intent_check", sql`${table.continueIntent} between 1 and 7`),
   ],
 );

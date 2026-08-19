@@ -20,21 +20,21 @@ export function PostCard({ post, showBody = false }: { post: SentimentPost; show
     <article className="py-3.5 first:pt-1">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="meta font-medium text-ink-muted">{post.community.name}</span>
-        <span className="text-rule-strong" aria-hidden="true">
+        <span className="text-hairline-strong" aria-hidden="true">
           ·
         </span>
         <time className="meta text-ink-faint" dateTime={post.postedAt}>
           {timeAgo(post.postedAt)}
         </time>
         {post.flair ? (
-          <span className="rounded-[var(--radius-inner)] bg-elevated px-1.5 py-0.5 text-[11px] text-ink-faint">
+          <span className="rounded-[var(--radius-inner)] bg-elevated px-1.5 py-0.5 text-xs text-ink-faint">
             {post.flair}
           </span>
         ) : null}
         {/* Duyarlılık her zaman metinle yazılır — renk tek başına taşımaz. */}
         <span
           className={cn(
-            "ml-auto rounded-[var(--radius-inner)] px-2 py-0.5 text-[11px] font-semibold",
+            "ml-auto rounded-[var(--radius-inner)] px-2 py-0.5 text-xs font-semibold",
             SENTIMENT_STYLE[post.sentiment.label],
           )}
         >
@@ -42,12 +42,12 @@ export function PostCard({ post, showBody = false }: { post: SentimentPost; show
         </span>
       </div>
 
-      <h3 className="mt-2 text-[15.5px] leading-[1.35] font-semibold tracking-[-0.01em] text-ink">
+      <h3 className="mt-2 text-md leading-[1.35] font-semibold tracking-[-0.01em] text-ink">
         {post.title}
       </h3>
 
       {showBody ? (
-        <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-muted">{post.bodyText}</p>
+        <p className="mt-1.5 text-copy leading-relaxed text-ink-muted">{post.bodyText}</p>
       ) : null}
 
       <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1.5">

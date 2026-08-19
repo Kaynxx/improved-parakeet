@@ -80,116 +80,81 @@ sorular:
       - Kararın yatırım ufku, şok senaryosu ve yeniden fiyatlama modeli olmadan verilemeyeceği sonucuna varır.
 ---
 
-## Fiyat, geleceğin bugünkü değeridir
+## Laboratuvar Kurulumu: İskonto Fonksiyonu ve Fiyat Dinamikleri
 
-Bir tahvilin fiyatı gizemli bir piyasa etiketi değil, gelecekteki nakit
-akımlarının bugünkü değeridir. Sürekli bileşik yıllık getiri `y`, nakit akımı
-`CFₜ` ve ödeme zamanı `t` ise:
+Bir tahvilin fiyatı, piyasa mekanizmasının rastgele bir çıktısı değil, gelecekteki nakit akımlarının bugünkü değerini veren deterministik bir iskonto fonksiyonudur. Sürekli bileşik yıllık getiri `y`, nakit akımı `CFₜ` ve ödeme zamanı `t` parametreleri altında temel fiyatlama modeli şu şekilde kurulur:
 
 > P(y) = Σ CFₜ e^(−yt)
 
-Bu yazım iki şeyi berraklaştırır. Birincisi, uzaktaki nakit akımı faiz
-değişimine daha duyarlıdır; üs içindeki `t` bunu büyütür. İkincisi, tahvil
-fiyatı ile getiri arasındaki ilişki doğrusal değildir. Fiyat fonksiyonunun
-eğimi durasyonu, eğriliği konveksiteyi verir.
+Bu modelleme iki temel analitik gerçeği ortaya koyar. Birincisi, zaman parametresi (`t`) üs konumunda yer aldığından, uzak vadeli nakit akımlarının faiz duyarlılığı üstel olarak artar. İkincisi, tahvil fiyatı ile getiri arasındaki ilişki doğrusal olmayan (non-lineer) bir yapıdadır. Fiyat fonksiyonunun birinci türevi durasyonu (eğimi), ikinci türevi ise konveksiteyi (eğriliği) tanımlar.
 
-Ama matematiksel kesinlik ekonomik kesinlik değildir. Tek bir `y` kullanmak,
-getiri eğrisinin bütün vadelerde paralel hareket ettiğini varsayar. 3.3'te
-gördüğümüz gibi kısa faiz beklentisi ile vade primi ayrı ayrı oynar. Dolayısıyla
-durasyon doğru türetilmiş olsa bile yanlış şok için kullanıldığında yanıltır.
+Ancak bu matematiksel kesinlik, ekonomik bir kesinlik anlamına gelmez. Tek bir iskonto oranı (`y`) kullanmak, getiri eğrisinin tüm vadelerde paralel hareket ettiği yönünde kısıtlayıcı bir varsayım içerir. Kısa vadeli faiz beklentileri ile vade priminin bağımsız hareket edebildiği piyasa koşullarında, doğru türetilmiş bir durasyon ölçütü bile yanlış şok senaryosuna uygulandığında analitik sapmalara yol açar.
 
-## Durasyon: fiyat eğrisinin teğeti
+## Birinci Derece Duyarlılık Testi: Durasyon ve Teğet Yaklaşımı
 
-Fiyatı getiriye göre türevleyelim:
+Fiyat fonksiyonunun getiriye göre türevi alınarak birinci derece yerel duyarlılık ölçülür:
 
 > dP/dy = −Σ t · CFₜ e^(−yt)
 
-Türevi fiyata bölüp işareti ters çevirdiğimizde sürekli bileşik altında
-modifiye durasyonu elde ederiz:
+Elde edilen türev fiyata bölünüp işareti ters çevrildiğinde, sürekli bileşik varsayımı altında modifiye durasyon denklemi elde edilir:
 
 > D = −(1/P)(dP/dy) = [Σ t · CFₜ e^(−yt)] / P
 
-Bu aynı zamanda bugünkü değer ağırlıklı ortalama ödeme zamanıdır. Getiri küçük
-bir miktar değiştiğinde:
+Bu formülasyon, aynı zamanda bugünkü değer ağırlıklı ortalama ödeme zamanını ifade eder. Getirideki marjinal değişimler için fiyat tepkisi şu doğrusal yaklaşımla test edilir:
 
 > ΔP/P ≈ −D · Δy
 
-Durasyonu 4,2 olan bir tahvilde getiri 100 baz puan, yani 0,01 yükselirse fiyat
-yaklaşık yüzde 4,2 düşer. Baz puanı yüzde puanla karıştırmak burada pahalı bir
-hatadır: formüle 1 değil 0,01 girilir.
+**İşlem Örneği:** Durasyon parametresi 4,2 olan bir tahvilde getiri 100 baz puan (0,01) yükselirse, model fiyatın yaklaşık yüzde 4,2 düşeceğini öngörür. Hesaplamalarda baz puan ile yüzde puan ayrımına dikkat edilmelidir; denkleme 1 değil, mutlak değer olan 0,01 girilir.
 
-Kesikli bileşikte Macaulay durasyonu ile modifiye durasyon ayrılır. Yılda `m`
-kez bileşik getiri için modifiye durasyon, Macaulay durasyonunun
-`1 + y/m` değerine bölünmesidir. Sürekli bileşikte bu düzeltme kaybolur. Farklı
-kaynaklardaki formüllerin çatışıyor görünmesinin nedeni çoğu kez farklı
-bileşik konvansiyonudur; biri yanlış olmak zorunda değildir.
+Kesikli bileşik faiz modellemesinde Macaulay durasyonu ile modifiye durasyon birbirinden ayrışır. Yılda `m` kez bileşik getiri sunan bir modelde modifiye durasyon, Macaulay durasyonunun `1 + y/m` faktörüne bölünmesiyle elde edilir. Sürekli bileşik modelde ise bu düzeltme çarpanı ortadan kalkar. Literatürdeki formül farklılıkları genellikle bu bileşik konvansiyonu ayrımından kaynaklanır.
 
-## Konveksite: teğetin kaçırdığı eğrilik
+## İkinci Derece Hata Düzeltmesi: Konveksite
 
-İkinci türev pozitiftir:
+Doğrusal teğet yaklaşımı, büyük şoklarda fiyat eğrisinin dışbükey yapısını kaçırır. İkinci türev, bu eğriliği yakalar ve daima pozitiftir:
 
 > d²P/dy² = Σ t² · CFₜ e^(−yt)
 
-Fiyata bölünmüş konveksiteyi `C` ile gösterirsek ikinci derece Taylor yaklaşımı:
+Fiyata normalize edilmiş konveksite parametresi `C` ile gösterildiğinde, ikinci derece Taylor serisi açılımı şu düzeltilmiş modeli sunar:
 
 > ΔP/P ≈ −D · Δy + ½ C(Δy)²
 
-Pozitif konveksite, faiz aynı büyüklükte düştüğünde fiyat kazancının, faiz
-yükseldiğindeki fiyat kaybından daha büyük olmasıdır. Durasyon fiyat-getiri
-eğrisine bir teğet çizer; konveksite teğeti eğriye yaklaştırır. Küçük şokta
-ikinci terim ihmal edilebilir. 200 baz puan gibi büyük bir harekette hata görünür
-hâle gelir.
+Pozitif konveksite, faiz oranlarındaki simetrik değişimlerde asimetrik bir getiri profili yaratır: Faiz düştüğündeki fiyat kazancı, faiz aynı oranda yükseldiğindeki fiyat kaybından daha büyüktür. Küçük şoklarda ikinci terim ihmal edilebilirken, 200 baz puan gibi geniş çaplı hareketlerde konveksite düzeltmesi zorunlu hale gelir.
 
-Örneğin fiyat 100, durasyon 4,2 ve konveksite 22 iken `Δy = 0,02` olsun.
-Durasyon yüzde 8,4 kayıp tahmin eder. Konveksite düzeltmesi
-`0,5 × 22 × 0,02² = 0,0044`, yani yüzde 0,44'tür. Toplam değişim yüzde
-−7,96; tahmini yeni fiyat 92,04'tür. Bu hâlâ tam fiyat değildir, ikinci derece
-yaklaşımdır.
+**İşlem Örneği:** Fiyatı 100, durasyonu 4,2 ve konveksitesi 22 olan bir tahvilde `Δy = 0,02` (200 baz puan) şoku test edilsin. Birinci derece (durasyon) yaklaşımı yüzde 8,4 kayıp öngörür. İkinci derece (konveksite) düzeltmesi `0,5 × 22 × 0,02² = 0,0044` (yüzde 0,44) olarak hesaplanır. Toplam değişim yüzde −7,96 olur ve düzeltilmiş yeni fiyat 92,04 olarak bulunur. Bu değer tam fiyatlama değil, ikinci derece yaklaşımdır.
 
-## Yüksek konveksite bedava değildir
+Aşağıdaki simülasyon modülü, varsayımsal parametreler üzerinden durasyon ve konveksite etkileşimini test etmek için tasarlanmıştır. Bu araç, faiz şoklarının fiyat üzerindeki mekanik etkisini gösterir; ancak getiri eğrisinin paralel hareket edeceği varsayımına dayandığı için gerçek piyasa koşullarındaki asimetrik riskleri veya vade primi değişimlerini KANITLAMAZ.
 
-Aynı getiri ve durasyonda yüksek pozitif konveksite caziptir: faiz oynaklığı
-iki yönde de yatırımcı lehine asimetri yaratır. Fakat piyasa bu özelliği
-fiyatlar. Daha konveks tahvil genellikle daha pahalıdır veya daha düşük başlangıç
-getirisi sunar. “Konveksite iyidir” doğru; “ne kadar pahalı olursa olsun daha
-iyidir” yanlış.
+```etkilesim
+{
+  "tur": "durasyon-konveksite",
+  "baslik": "Fiyat Duyarlılığı ve Şok Simülasyonu",
+  "nominalFiyat": 100,
+  "yillikKuponOrani": 0.05,
+  "vadeYil": 5,
+  "yillikGetiri": 0.04,
+  "faizSokuBazPuan": 200,
+  "yillikOdemeSayisi": 2
+}
+```
 
-Opsiyonlu tahviller tartışmayı keskinleştirir. Faiz düşünce ihraççı tahvili
-erken itfa edebiliyorsa fiyat yükselişi sınırlanır. Çağrılabilir tahvil negatif
-konveksite bölgesine girebilir: tam da korunma beklenen anda nakit akışının
-vadesi kısalır. Sabit nakit akımı varsayımı bozulduğu için basit türevler yeterli
-olmaz; faiz patikası altında opsiyon kullanımını modellemek gerekir.
+## Model Sınırları ve Asimetrik Maliyetler
 
-## Tek sayı neden portföyü korumaz?
+Aynı getiri ve durasyon seviyesinde yüksek pozitif konveksite, faiz oynaklığının her iki yönünde de yatırımcı lehine çalıştığı için caziptir. Ancak piyasa dengesi bu asimetrik avantajı fiyatlar. Daha yüksek konveksiteye sahip tahviller, genellikle daha yüksek bir primle işlem görür veya daha düşük bir başlangıç getirisi sunar. "Konveksite her koşulda iyidir" önermesi, maliyet kısıtı eklendiğinde geçerliliğini yitirir.
 
-Bir portföyün ağırlıklı ortalama durasyonunu hedeflemek, küçük paralel kaymalara
-karşı yararlıdır. Oysa gerçek eğri düzey, eğim ve eğrilik olarak hareket eder.
-TCMB kısa ucu politika faiziyle yükseltirken uzun uç dezenflasyon beklentisiyle
-düşebilir. Toplam durasyonu sıfırlanmış portföy böyle bir burulmada zarar
-edebilir.
+Opsiyonlu tahviller, bu modelin sınırlarını keskin bir şekilde çizer. İhraççıya erken itfa hakkı veren (callable) tahvillerde, faizler düştüğünde fiyat yükselişi itfa fiyatıyla sınırlanır. Bu durum, tahvilin negatif konveksite bölgesine girmesine neden olur. Yatırımcının korunma beklediği anda nakit akışının vadesi kısalır. Sabit nakit akımı varsayımı çöktüğü için basit türevler işlevsiz kalır; opsiyon kullanım olasılıklarının stokastik faiz patikaları altında modellenmesi gerekir.
 
-Bu nedenle pratikte **anahtar faiz durasyonları** kullanılır: portföyün belirli
-vade düğümlerine duyarlılığı ayrı ölçülür. Büyük şoklarda tam yeniden fiyatlama,
-farklı eğri senaryoları ve kredi spreadi şokları gerekir. Kuponlu tahvil için
-yeniden yatırım riski de ayrıca hesaba katılır; fiyat kazancı, kuponların daha
-düşük faizle yeniden yatırılmasıyla kısmen silinebilir.
+## Portföy Düzeyinde Stres Testi ve İmmünizasyon
 
-Durasyon eşleştirmesi bu iki riski belirli bir yatırım ufkunda dengelemeye
-çalışır. Faiz yükseldiğinde tahvilin bugünkü fiyatı düşer, fakat kuponlar daha
-yüksek faizle yeniden yatırılır. Macaulay durasyonu yatırım ufkuna eşitse küçük
-paralel şoklarda iki etki yaklaşık birbirini götürür; buna **immünizasyon**
-denir. Garanti değildir. Zaman geçtikçe durasyon değişir ve portföyün yeniden
-dengelenmesi gerekir; büyük şok, temerrüt, nakit akımı değişikliği ya da paralel
-olmayan hareket eşleşmeyi bozar. Böylece “durasyonu eşitledim” ifadesi riski yok
-etmekten çok hangi şok sınıfına karşı koruma kurulduğunu söyler.
+Bir portföyün ağırlıklı ortalama durasyonunu sıfırlamak, yalnızca küçük ve paralel getiri eğrisi kaymalarına karşı koruma sağlar. Gerçek piyasa dinamiklerinde getiri eğrisi düzey, eğim ve eğrilik şoklarına maruz kalır. Örneğin, merkez bankasının kısa vadeli politika faizini artırdığı, uzun vadeli tahvil getirilerinin ise dezenflasyon beklentisiyle düştüğü bir burulma (twist) senaryosunda, toplam durasyonu sıfırlanmış bir portföy ciddi değer kayıpları yaşayabilir.
 
-Türkiye'de yüksek ve ani faiz hareketleri yerel yaklaşımın sınırını özellikle
-önemli kılar. 500 baz puanlık politika adımını 10 baz puanlık şok için türetilmiş
-doğrusal ölçüyle taşımak hassasiyet değil, sahte kesinlik üretir.
+Bu yapısal riskleri yönetmek için laboratuvar ortamından çıkıp şu profesyonel araçlara başvurulur:
 
-## Bu dersten sonra
+1.  **Anahtar Faiz Durasyonları (Key Rate Durations):** Portföyün belirli vade düğümlerine (örneğin 2, 5, 10 yıl) olan kısmi duyarlılıkları ayrı ayrı ölçülür.
+2.  **Yeniden Yatırım Riski Analizi:** Kuponlu tahvillerde fiyat kazancı, elde edilen kuponların daha düşük faiz oranlarıyla yeniden yatırılması sonucu kısmen nötralize olabilir.
+3.  **İmmünizasyon:** Macaulay durasyonunun yatırım ufkuna eşitlenmesi stratejisidir. Faiz yükseldiğinde yaşanan anlık fiyat kaybı, kuponların daha yüksek faizle yeniden yatırılmasından doğan kazançla dengelenir. Ancak bu denge statik değildir; zaman geçtikçe veya eğri paralel olmayan şekilde hareket ettikçe portföyün yeniden dengelenmesi (rebalancing) gerekir.
 
-3.5'te negatif reel faizin tahvil sahibinin satın alma gücünü nasıl erittiğini
-inceleyeceğiz; durasyon nominal fiyat riskini, Fisher denklemi ise reel getiri
-riskini ayırmamıza yardım edecek. 7.4'te “enflasyondan korunma” iddiasını farklı
-varlıkların nakit akımları ve iskonto oranları üzerinden yeniden sınayacağız.
+Özellikle Türkiye gibi yüksek faiz oynaklığına sahip piyasalarda, yerel yaklaşımın sınırları belirginleşir. 500 baz puanlık bir politika şokunu, 10 baz puanlık marjinal değişimler için türetilmiş doğrusal bir ölçütle analiz etmek, analitik bir hassasiyet değil, sahte bir kesinlik üretir.
+
+## İleri Analiz Gündemi
+
+Nominal iskonto matematiğinin sınırlarını belirledikten sonra, analitik çerçevemizi reel getiri dinamiklerine genişletmemiz gerekir. Takip eden aşamalarda, negatif reel faizin tahvil sahibinin satın alma gücü üzerindeki erozyon etkisi Fisher denklemi üzerinden modellenecek; durasyonun ölçtüğü nominal fiyat riski ile enflasyonun yarattığı reel getiri riski ayrıştırılacaktır. Ayrıca, çeşitli varlık sınıflarının nakit akımları ve iskonto oranları üzerinden "enflasyondan korunma" kapasiteleri ampirik olarak yeniden sınanacaktır.

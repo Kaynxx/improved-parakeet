@@ -58,11 +58,9 @@ export default async function AkademiPage() {
                 <div className="flex flex-col gap-5">
                   <div className="flex items-center gap-4">
                     <ProgressRing completed={track.completedSteps} total={track.totalSteps} />
-                    <p className="text-[13.5px] leading-relaxed text-ink-muted">
-                      {track.description}
-                    </p>
+                    <p className="text-copy leading-relaxed text-ink-muted">{track.description}</p>
                   </div>
-                  <ol className="flex flex-col border-t border-rule pt-5">
+                  <ol className="flex flex-col border-t border-hairline pt-5">
                     {track.steps.map((step, index) => (
                       <RoadmapNode
                         key={step.id}

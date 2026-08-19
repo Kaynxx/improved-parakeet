@@ -49,7 +49,7 @@ export function ProgressRing({ completed, total, size = 56, className }: Progres
         />
       </svg>
       <span
-        className="figure absolute inset-0 flex items-center justify-center text-[12px] font-semibold text-ink"
+        className="figure absolute inset-0 flex items-center justify-center text-sm font-semibold text-ink"
         aria-hidden="true"
       >
         %{percent}

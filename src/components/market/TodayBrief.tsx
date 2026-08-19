@@ -68,17 +68,17 @@ export function TodayBrief({ quotes }: { quotes: MarketQuote[] }) {
 
         {/* Günün okuması. Bu cümle veriden türüyor — sabit bir slogan değil,
             her yüklemede o anki genişliği anlatıyor. */}
-        <p className="max-w-[34ch] text-[26px] leading-[1.15] font-semibold tracking-[-0.03em] text-balance text-ink sm:max-w-[42ch] sm:text-[34px]">
+        <p className="max-w-[34ch] text-heading leading-[1.15] font-semibold tracking-[-0.03em] text-balance text-ink sm:max-w-[42ch]">
           {readOfTheDay(advancing, declining, quotes.length)}
         </p>
 
         <div className="flex flex-wrap items-end gap-x-10 gap-y-5">
           <div>
             <p className="meta text-ink-faint">{lead.name}</p>
-            <p className="figure mt-1 text-[30px] leading-none font-semibold text-ink">
+            <p className="figure mt-1 text-display leading-none font-semibold text-ink">
               {formatPrice(lead.price, digits)}
             </p>
-            <p className={cn("figure mt-1.5 text-[13px] font-medium", TONE[direction])}>
+            <p className={cn("figure mt-1.5 text-copy font-medium", TONE[direction])}>
               {formatSigned(lead.change, digits)} · {formatPercent(lead.changePercent)}
             </p>
           </div>
@@ -145,9 +145,9 @@ function Stat({ label, value, suffix }: { label: string; value: string; suffix: 
   return (
     <div>
       <dt className="label">{label}</dt>
-      <dd className="figure mt-1.5 text-[15px] font-semibold text-ink">
+      <dd className="figure mt-1.5 text-md font-semibold text-ink">
         {value}
-        <span className="ml-1 text-[12px] font-normal text-ink-faint">{suffix}</span>
+        <span className="ml-1 text-sm font-normal text-ink-faint">{suffix}</span>
       </dd>
     </div>
   );

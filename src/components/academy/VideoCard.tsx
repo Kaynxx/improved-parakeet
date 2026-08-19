@@ -12,7 +12,7 @@ const LEVEL_LABEL: Record<SourceLevel, string> = {
 const LEVEL_STYLE: Record<SourceLevel, string> = {
   orta: "bg-elevated text-ink-muted",
   ileri: "bg-accent-soft text-accent",
-  uzman: "bg-ink text-paper",
+  uzman: "bg-ink text-on-ink",
 };
 
 /**
@@ -44,12 +44,12 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
           />
           <span className="absolute inset-0 bg-ink/25 transition-colors duration-200 group-hover/vid:bg-ink/15" />
           <span className="absolute inset-0 flex items-center justify-center">
-            <span className="flex size-12 items-center justify-center rounded-full bg-ink/95 text-paper shadow-[var(--shadow-lift)]">
+            <span className="flex size-12 items-center justify-center rounded-full bg-ink/95 text-on-ink shadow-[var(--shadow-lift)]">
               <Play className="size-5 translate-x-[1px]" fill="currentColor" aria-hidden="true" />
             </span>
           </span>
           {video.durationLabel ? (
-            <span className="meta absolute right-2 bottom-2 rounded-[var(--radius-inner)] bg-ink/85 px-1.5 py-0.5 text-paper">
+            <span className="meta absolute right-2 bottom-2 rounded-[var(--radius-inner)] bg-ink/85 px-1.5 py-0.5 text-on-ink">
               {video.durationLabel}
             </span>
           ) : null}
@@ -59,7 +59,7 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span
               className={cn(
-                "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-[10px] font-semibold",
+                "shrink-0 rounded-[var(--radius-inner)] px-1.5 py-0.5 text-2xs font-semibold",
                 LEVEL_STYLE[video.level],
               )}
             >
@@ -70,15 +70,15 @@ export function VideoCard({ video }: { video: VideoSuggestion }) {
             ) : null}
           </div>
 
-          <p className="mt-1.5 line-clamp-2 text-[14.5px] leading-snug font-semibold tracking-[-0.01em] text-ink group-hover/vid:text-accent">
+          <p className="mt-1.5 line-clamp-2 text-md leading-snug font-semibold tracking-[-0.01em] text-ink group-hover/vid:text-accent">
             {video.title}
           </p>
-          <p className="mt-1 line-clamp-2 text-[12.5px] leading-relaxed text-ink-muted">
+          <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-ink-muted">
             {video.summary}
           </p>
         </div>
 
-        <p className="rounded-[var(--radius-inner)] bg-elevated px-3.5 py-2.5 text-[12.5px] text-ink-muted">
+        <p className="rounded-[var(--radius-inner)] bg-elevated px-3.5 py-2.5 text-sm text-ink-muted">
           <span className="text-ink-faint">Şu ders için:</span>{" "}
           <span className="font-semibold text-ink">{video.lessonTitle}</span>
         </p>

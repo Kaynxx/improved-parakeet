@@ -82,111 +82,75 @@ sorular:
       - Stablecoin akımlarının banka mevduatı, sermaye hareketleri ve resmî döviz istatistiklerinin görünürlüğünü değiştirebileceğini açıklar.
 ---
 
-## Dijital olan para değil, erişim biçimi
+## Politika Kararı: Dijital Para, CBDC ve Stablecoin Mimarisi
 
-Banka mevduatı zaten dijitaldir. Maaş hesaba yatar, kartla harcanır ve mobil
-uygulamada görünür. CBDC'yi yeni yapan ekranda sayı olması değil, bu sayının
-kimin yükümlülüğü olduğudur. Mevduat ticari bankanın; nakit ve merkez bankası
-rezervi merkez bankasının borcudur. Perakende CBDC, hanehalkına dijital biçimde
-merkez bankası yükümlülüğü tutma imkânı verir.
+**Karar Tarihi:** [Dönem Sonu Değerlendirmesi]
+**Konu:** Dijital ödeme arayüzlerinin yükümlülük mimarisine etkileri, banka aracılığının geleceği ve kripto dolarizasyon riskleri.
 
-Stablecoin ise özel ihraççının belirli bir para birimine karşı sabit değer
-vaadidir. Bir token bir dolar değerinde kalıyorsa bu, kodun matematiksel
-garantisi değildir. İhraççının rezerv varlıklarının kalitesine, saklamaya,
-hukuki ayrıştırmaya ve talep geldiğinde itfaya bağlıdır. CBDC ile stablecoin'i
-“ikisi de blokzincirde” diye aynı sınıfa koymak, devlet parasıyla para piyasası
-fonu payını aynı saymaktır.
+### 1. Temel Tespitler: Dijital Olan Para Değil, Erişim Biçimidir
 
-## Üç katmanlı para sistemi
+Banka mevduatının halihazırda dijital bir formda (maaş hesapları, kartlı ödemeler, mobil uygulamalar) işlediği sabittir. Merkez Bankası Dijital Parası'nı (CBDC) yenilikçi kılan unsur, ekrandaki sayısal temsil değil, bu temsilin işaret ettiği yükümlülük yapısıdır. Mevduat ticari bankanın borcu iken; nakit ve merkez bankası rezervi doğrudan merkez bankasının yükümlülüğüdür. Perakende CBDC, hanehalkına merkez bankası yükümlülüğünü dijital biçimde tutma imkânı tanıyan yapısal bir politika değişikliğidir.
 
-Modern sistemde merkez bankası nihai takas varlığını, ticari bankalar krediyle
-mevduatı, ödeme şirketleri ise kullanıcı arayüzünü sağlar. 1.2'de gördüğümüz
-gibi banka kredisi yeni mevduat yaratır. 1.5'te bankalar arası ödeme rezervle
-sonuçlanır. Bu katmanlaşma kredi değerlendirmesini dağıtırken nihai hesabı
-kamusal bir paraya bağlar.
+Öte yandan stablecoin'ler, özel ihraççıların belirli bir itibari paraya karşı sunduğu sabit değer vaatleridir. Bir token'ın değerini koruması, salt yazılım kodunun matematiksel garantisiyle değil; ihraççının rezerv varlık kalitesine, saklama koşullarına, hukuki ayrıştırmaya ve talep anındaki itfa kapasitesine bağlıdır. CBDC ile stablecoin'i salt "blokzincir tabanlı" olmaları gerekçesiyle aynı kategoride değerlendirmek, egemen devlet parası ile özel para piyasası fonu payını eşdeğer tutmak anlamına gelir ve analitik bir hatadır.
 
-Perakende CBDC tasarımı bu sınırı hareket ettirir. Kullanıcı doğrudan merkez
-bankası hesabı tutarsa merkez bankası kimlik, müşteri hizmeti ve işlem
-verisini üstlenebilir. Aracılı modelde banka veya ödeme kuruluşu cüzdanı sunar,
-fakat alttaki yükümlülük merkez bankasına aittir. Teknoloji tercihi kurumsal
-tercihi gizlememelidir: kim hesap açar, kim veriyi görür, kim hatalı ödemeyi
-geri alır ve kim yaptırım uygular?
+### 2. Yapısal Dönüşüm: Üç Katmanlı Para Sisteminin Yeniden Tasarımı
 
-## Daha güvenli para, daha kırılgan banka mı?
+Modern para sistemindeki mevcut iş bölümü (Madde 1.2 ve 1.5 bulguları) şu şekildedir: Merkez bankası nihai takas varlığını sağlar, ticari bankalar kredi mekanizmasıyla mevduat yaratır, ödeme kuruluşları ise kullanıcı arayüzünü sunar. Bu katmanlı yapı, kredi risk değerlendirmesini dağıtırken nihai mutabakatı kamusal paraya bağlar.
 
-Hanehalkı mevduatı CBDC'ye çevirirse bankanın bilançosunda rezerv azalır,
-mevduat yükümlülüğü kapanır; merkez bankasının CBDC yükümlülüğü artar. Otuz
-milyon kişinin ortalama 4.000 TL taşıması 120 milyar TL fonlama çıkışıdır.
-Banka bu kaybı tahvil, toptan fonlama veya merkez bankası kredisiyle ikame
-eder. Bunlar genellikle daha pahalı ya da daha oynaktır; kredi faizi artabilir.
+Perakende CBDC tasarımı, bu kurumsal sınırları doğrudan etkiler.
 
-Normal zamanda yönetilebilir akış, stres anında farklıdır. Banka şubesinde
-kuyruk yerine telefonda birkaç dokunuşla risksiz merkez bankası parasına kaçış
-mümkünse 6.3'teki banka hücumu hızlanır. CBDC likidite riskini ortadan
-kaldırmaz; güvenli varlığa geçişin sürtünmesini azaltır.
+> **Politika İlkesi I:** Teknoloji tercihi, kurumsal yönetişim tercihini perdelememelidir. Kullanıcının doğrudan merkez bankasında hesap tutması; kimlik doğrulama, müşteri hizmetleri, veri mahremiyeti ve hatalı işlem iptali gibi operasyonel yüklerin kamuya geçmesi demektir.
 
-Merkez bankası tutma limiti koyabilir, belirli eşiğin üzerindeki bakiyeye daha
-düşük faiz uygulayabilir, cüzdanları bankalar üzerinden dağıtabilir veya kriz
-anında dönüşüm hızını sınırlayabilir. Her çözüm amaçla çatışır. Sert limit
-CBDC'nin kullanımını azaltır; negatif kademeli faiz anlaşılmayı zorlaştırır;
-dönüşüm sınırı “risksiz ve her an ödenebilir” vaadini zedeler. Merkez bankası
-bankalara kayıp fonu geri verirse de kredi tahsisinde kamu bilançosunun rolü
-büyür.
+Aracılı modelde cüzdan hizmeti bankalar veya ödeme kuruluşlarınca sunulsa dahi, altyapıdaki yükümlülük merkez bankasına aittir.
 
-## Programlanabilirlik ve mahremiyet
+### 3. Finansal İstikrar Analizi: Güvenli Para ve Banka Kırılganlığı İkilemi
 
-Programlanabilir ödeme, belirli koşul gerçekleşince transferin otomatik
-olmasıdır. Menkul kıymet teslimiyle ödemenin eşzamanlı yapılması veya çevrimdışı
-küçük ödemenin sonra mutabakata girmesi verimlilik sağlayabilir. Fakat
-**programlanabilir ödeme** ile **programlanabilir para** aynı değildir. İlki
-kullanıcının talimatını uygular; ikincisi paranın nerede ve ne zaman
-harcanabileceğini ihraççı düzeyinde kısıtlayabilir.
+Hanehalkının mevduatlarını CBDC'ye dönüştürmesi, banka bilançolarında rezerv azalışına ve mevduat yükümlülüğünün kapanmasına yol açarken, merkez bankasının CBDC yükümlülüğünü artırır.
 
-Bu ayrım mahremiyet tartışmasını belirler. Nakit çevrimdışı ve iz bırakmadan
-devredilebilir. Tam izlenebilir CBDC suçla mücadeleyi kolaylaştırırken devletin
-işlem verisi gücünü büyütür. Tam anonim tasarım ise kara para ve yaptırım
-uygulamasını zorlaştırır. Çevrimdışı küçük limit, katmanlı kimlik ve veri
-minimizasyonu teknik seçeneklerdir; ne kadar mahremiyet gerektiği teknik değil
-siyasal bir karardır.
+**Senaryo Analizi (Fonlama Çıkışı):**
+*   **Hedef Kitle:** 30 milyon yetişkin
+*   **Ortalama CBDC Bakiyesi:** 4.000 TL
+*   **Sistemden Çıkacak Tahmini Mevduat:** 120 Milyar TL
 
-TCMB'nin ikinci faz çalışmaları bu yüzden yalnız altyapı deneyi olarak
-okunmamalıdır. Programlanabilir ve çevrimdışı kullanım ile banka ve ödeme
-kuruluşu katılımı, gelecekteki iş bölümünün prototipidir. Pilotun çalışması,
-hangi yönetişim modelinin doğru olduğunu tek başına kanıtlamaz.
+Bu 120 milyar TL'lik fonlama kaybı, bankaları tahvil ihracı, toptan fonlama veya merkez bankası kredisi gibi daha maliyetli ve oynak kaynaklara yöneltecek, nihayetinde kredi faizlerinde artışa neden olabilecektir.
 
-## Stablecoin: özel para ve kripto dolarizasyonu
+Daha kritik olan husus, stres anlarındaki likidite dinamiğidir. Banka şubelerindeki fiziki kuyrukların yerini, mobil cihazlar üzerinden saniyeler içinde risksiz merkez bankası parasına kaçışın alması, banka hücumlarını (Madde 6.3) eşi görülmemiş ölçüde hızlandıracaktır. CBDC likidite riskini yok etmez; yalnızca güvenli varlığa geçişin sürtünme maliyetini sıfırlar.
 
-Dolar stablecoin'i Türkiye'deki kullanıcıya banka döviz hesabı dışında,
-sınır ötesi ve günün her saati devredilebilen bir dolar benzeri araç sunar.
-8.4'teki dolarizasyon histerezisi burada dijital biçim kazanır. Yerli CBDC
-kusursuz çalışsa bile lira cinsindendir; kullanıcı kuyruk riskine ve satın alma
-gücüne karşı dolar istiyorsa ödeme kalitesi para birimi tercihini değiştirmez.
+**Önerilen Karşı Önlemler ve Politika Ödünleri:**
+1.  **Tutma Limiti:** Sert limitler CBDC'nin benimsenmesini sınırlar.
+2.  **Kademeli Faiz:** Belirli bir eşik üzeri bakiyeye negatif faiz uygulanması, kamuoyunda anlaşılabilirliği zedeler.
+3.  **Dönüşüm Sınırı:** Kriz anında hızı sınırlamak, "risksiz ve her an ödenebilir" para vaadiyle çelişir.
+4.  **Yeniden Finansman:** Merkez bankasının kayıp fonu bankalara geri sağlaması, kredi tahsisinde kamu bilançosunun rolünü aşırı büyütür.
 
-Stablecoin'in üstün görünen erişimi yeni risk taşır. Rezervde uzun vadeli ya
-da riskli varlık varsa toplu itfa fiyatı bozabilir. İhraççı hesap dondurabilir,
-saklama anahtarı kaybolabilir ve yabancı düzenleme erişimi kesebilir. Ayrıca
-stablecoin'e kayan tasarruf banka mevduatını ve yerli kredi fonlamasını azaltır;
-resmî döviz istatistikleri zincir üstündeki bütün pozisyonu göremeyebilir.
-Sermaye hareketi denetimi ile ödeme gözetimi arasındaki sınır bulanıklaşır.
+### 4. Tasarım Parametreleri: Programlanabilirlik ve Mahremiyet
 
-## Rekabet mi, iş bölümü mü?
+Komite, **programlanabilir ödeme** (kullanıcı talimatına bağlı otomatik transfer, menkul kıymet teslimiyle eşzamanlı mutabakat) ile **programlanabilir para** (ihraççı düzeyinde paranın nerede ve ne zaman harcanabileceğine dair kısıtlamalar) arasındaki ayrımın altını çizer.
 
-Bir görüş CBDC'nin güvenli kamu parasını verimli arayüzle birleştirip özel
-stablecoin'i gereksiz kılacağını savunur. Karşı görüş, devlet altyapısının
-yenilik, mahremiyet ve sınır ötesi uyumlulukta özel ağlarla yarışamayacağını;
-aşırı güçlü CBDC'nin de banka aracılığını zayıflatacağını söyler. İki görüş de
-tasarımı veri olarak değil sonuç olarak ele aldığında hata yapar.
+Mahremiyet ekseninde tam izlenebilir bir CBDC suçla mücadeleyi kolaylaştırsa da devletin veri gücünü orantısız büyütür. Tam anonim tasarım ise yaptırım uygulamalarını imkânsız kılar. Çevrimdışı küçük işlem limitleri, katmanlı kimlik doğrulama ve veri minimizasyonu teknik seçeneklerdir; ancak nihai mahremiyet seviyesi teknik değil, siyasal bir karardır. TCMB'nin İkinci Faz çalışmaları, salt bir altyapı deneyi değil, gelecekteki finansal iş bölümünün ve yönetişim modelinin prototipidir.
 
-Olası denge üçlüdür: merkez bankası nihai güvenli varlığı ve standartları
-sağlar; bankalar kredi üretir ve müşteri ilişkisini taşır; düzenlenmiş özel
-tokenlar belirli kullanım alanlarında birlikte çalışabilirlik sunar. Bu denge
-kendiliğinden oluşmaz. İtfa hakkı, rezerv şeffaflığı, birlikte çalışabilirlik,
-veri erişimi ve batış rejimi açıkça tasarlanmalıdır.
+### 5. Dışsal Risk Değerlendirmesi: Stablecoin ve Kripto Dolarizasyonu
 
-## Programın kapanışı
+Dolar stablecoin'leri, yerel kullanıcılara banka sistemi dışında, 7/24 sınır ötesi devredilebilen bir sentetik dolar aracı sunmaktadır. Dolarizasyon histerezisi (Madde 8.4), bu araçlarla dijital bir form kazanmaktadır. Yerli CBDC teknolojik olarak kusursuz çalışsa dahi, kullanıcı kuyruk riskine ve enflasyona karşı yabancı para talep ediyorsa, ödeme sisteminin verimliliği para birimi tercihini değiştirmeyecektir.
 
-Sekiz hafta önce “para nedir?” diye başladık. Dijital para aynı soruyu yeni
-arayüz altında geri getiriyor: para bir nesne değil, kabul edilen bir
-yükümlülük ve kurumlar arası hiyerarşidir. CBDC, stablecoin ve banka mevduatı
-arasındaki yarışın sonucu en hızlı teknolojiyle değil; hangi sözün kriz anında
-hangi bilanço tarafından tutulduğuyla belirlenecek.
+| Stablecoin Risk Faktörleri | Makroekonomik Etkileri |
+| :--- | :--- |
+| **Rezerv Kalitesi** | Uzun vadeli/riskli varlık tutulması halinde toplu itfa taleplerinin fiyatları bozması. |
+| **Operasyonel Riskler** | Hesap dondurma, saklama anahtarı kaybı ve yabancı otorite düzenlemeleriyle erişim kesintisi. |
+| **Makro-Finansal Görünürlük** | Tasarrufların zincir üstüne kaymasıyla yerli kredi fonlamasının daralması ve resmî döviz istatistiklerinin körleşmesi. |
+
+### 6. Stratejik Yönelim: Rekabet Yerine İş Bölümü
+
+CBDC'nin özel stablecoin'leri tamamen tasfiye edeceği yönündeki iddialar ile devlet altyapısının özel ağlarla rekabet edemeyeceği yönündeki karşıt görüşler, tasarımı bir "sonuç" yerine "veri" olarak ele alma hatasına düşmektedir.
+
+Sürdürülebilir politika dengesi üçlü bir yapı gerektirir:
+*   **Merkez Bankası:** Nihai güvenli varlığı ve sistem standartlarını sağlar.
+*   **Ticari Bankalar:** Kredi üretimi ve müşteri ilişkileri yönetimini sürdürür.
+*   **Düzenlenmiş Özel Token'lar:** Belirli kullanım alanlarında (sınır ötesi, akıllı kontratlar) birlikte çalışabilirlik sunar.
+
+Bu dengenin tesisi; itfa hakkı, rezerv şeffaflığı, veri erişimi ve batış rejiminin yasal çerçeveye bağlanmasına tabidir.
+
+### 7. Nihai Hüküm ve Kapanış
+
+Sekiz haftalık politika inceleme sürecimizin temel sorunsalı olan "Para nedir?" sorusu, dijitalleşme evresinde yeni bir arayüzle yeniden karşımıza çıkmaktadır. Kurulun nihai tespiti şudur: Para fiziksel bir nesne değil, toplumsal kabul gören bir yükümlülük ve kurumlar arası hiyerarşidir.
+
+CBDC, stablecoin ve banka mevduatı arasındaki kurumsal rekabetin galibini, işlemleri en hızlı onaylayan teknolojik altyapı belirlemeyecektir. Sistemin geleceği; kriz anlarında hangi taahhüdün, hangi bilanço kapasitesi tarafından eksiksiz yerine getirilebildiğiyle şekillenecektir. İşbu değerlendirme, para politikasının dijital çağdaki aktarım mekanizmalarına temel teşkil etmek üzere kayıt altına alınmıştır.

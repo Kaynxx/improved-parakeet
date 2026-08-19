@@ -55,12 +55,12 @@ export function VideoPlayer({ youtubeId, title, provider, durationLabel }: Video
             />
             <span className="absolute inset-0 bg-ink/25 transition-colors duration-200 group-hover:bg-ink/15" />
             <span className="absolute inset-0 flex items-center justify-center">
-              <span className="press flex size-14 items-center justify-center rounded-full bg-ink/95 text-paper shadow-[var(--shadow-lift)]">
+              <span className="press flex size-14 items-center justify-center rounded-full bg-ink/95 text-on-ink shadow-[var(--shadow-lift)]">
                 <Play className="size-6 translate-x-[2px]" fill="currentColor" aria-hidden="true" />
               </span>
             </span>
             {durationLabel ? (
-              <span className="meta absolute right-2.5 bottom-2.5 rounded-[var(--radius-inner)] bg-ink/85 px-1.5 py-0.5 text-paper">
+              <span className="meta absolute right-2.5 bottom-2.5 rounded-[var(--radius-inner)] bg-ink/85 px-1.5 py-0.5 text-on-ink">
                 {durationLabel}
               </span>
             ) : null}
@@ -70,8 +70,8 @@ export function VideoPlayer({ youtubeId, title, provider, durationLabel }: Video
 
       <figcaption className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[13.5px] leading-snug font-semibold text-ink">{title}</p>
-          {provider ? <p className="mt-0.5 text-[12px] text-ink-faint">{provider}</p> : null}
+          <p className="text-copy leading-snug font-semibold text-ink">{title}</p>
+          {provider ? <p className="mt-0.5 text-sm text-ink-faint">{provider}</p> : null}
         </div>
         {/* Kaçış kapısı: tam ekran, altyazı ayarı ya da kaydetmek isteyen
             kullanıcı YouTube'a gidebilmeli. */}

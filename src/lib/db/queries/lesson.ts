@@ -222,6 +222,10 @@ export async function upsertLessonAnswer(
     })
     .returning({ id: lessonAnswers.id });
 
+  if (!answer) {
+    throw new Error(`Cevap yazılamadı: prompt=${promptId}`);
+  }
+
   return answer.id;
 }
 

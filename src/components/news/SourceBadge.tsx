@@ -14,11 +14,11 @@ export function SourceBadge({ source, className }: { source: Source; className?:
     <span className={cn("inline-flex items-center gap-1.5", className)}>
       <span
         aria-hidden="true"
-        className="flex size-[17px] shrink-0 items-center justify-center rounded-[var(--radius-inner)] bg-ink text-[10px] font-semibold text-paper"
+        className="flex size-[17px] shrink-0 items-center justify-center rounded-[var(--radius-inner)] bg-ink text-2xs font-semibold text-on-ink"
       >
         {source.name.charAt(0)}
       </span>
-      <span className="text-[12.5px] font-medium text-ink-muted">{source.name}</span>
+      <span className="text-sm font-medium text-ink-muted">{source.name}</span>
       <span className="sr-only">, {CATEGORY_LABEL[source.category]} kategorisi</span>
     </span>
   );

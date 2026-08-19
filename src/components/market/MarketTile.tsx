@@ -49,7 +49,7 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="meta font-medium text-ink">{quote.symbol}</p>
-          <p className="mt-0.5 truncate text-[12px] text-ink-faint">
+          <p className="mt-0.5 truncate text-sm text-ink-faint">
             {/* Vekil sembolde neyin izlendiği yazılmazsa kart yalan söyler:
                 fiyat endeksin değil ETF'in fiyatı ve ölçekleri farklı. */}
             {quote.proxyFor ? `${quote.name} · ${quote.proxyFor} yerine` : quote.name}
@@ -57,7 +57,7 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
         </div>
         <span
           className={cn(
-            "figure flex shrink-0 items-center gap-0.5 rounded-[var(--radius-inner)] px-1.5 py-1 text-[11px] font-semibold",
+            "figure flex shrink-0 items-center gap-0.5 rounded-[var(--radius-inner)] px-1.5 py-1 text-xs font-semibold",
             CHIP[direction],
           )}
         >
@@ -67,10 +67,10 @@ export function MarketTile({ quote }: { quote: MarketQuote }) {
       </div>
 
       <div>
-        <p className="figure text-[19px] leading-none font-semibold text-ink">
+        <p className="figure text-lg leading-none font-semibold text-ink">
           {formatPrice(quote.price, digits)}
         </p>
-        <p className={cn("figure mt-1 text-[12px]", TONE[direction])}>
+        <p className={cn("figure mt-1 text-sm", TONE[direction])}>
           {formatSigned(quote.change, digits)}
         </p>
       </div>

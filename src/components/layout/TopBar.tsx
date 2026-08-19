@@ -24,7 +24,7 @@ export function TopBar({ user }: { user: SessionUser }) {
         <input
           type="search"
           placeholder="Başlık veya sembol ara"
-          className="inset-panel h-10 w-full pr-3 pl-9 text-[14px] text-ink placeholder:text-ink-faint"
+          className="inset-panel h-10 w-full pr-3 pl-9 text-md text-ink placeholder:text-ink-faint"
         />
       </label>
 

@@ -31,7 +31,7 @@ function MoreLink({
   return (
     <Link
       href={href}
-      className="press inline-flex items-center gap-1 text-[12.5px] font-medium text-ink-muted hover:text-accent"
+      className="press inline-flex items-center gap-1 text-sm font-medium text-ink-muted hover:text-accent"
     >
       {children}
       <ArrowRight className="size-3.5" strokeWidth={2} aria-hidden="true" />

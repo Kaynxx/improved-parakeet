@@ -11,6 +11,7 @@
 
 import { findStepContent, findTrackBySlug, findTracks } from "@/lib/db/queries/academy";
 import { findLessonPrompts, findLessonSources } from "@/lib/db/queries/lesson";
+import { type YansimaKaydi, yansimaGetir } from "@/lib/db/queries/lesson-reflection";
 import type { LessonSource, PromptWithAnswer, RoadmapStep, Track } from "@/types";
 
 export function getTracks(userId: string): Promise<Track[]> {
@@ -32,6 +33,7 @@ export interface LessonView {
   contentMd: string | null;
   sources: LessonSource[];
   prompts: PromptWithAnswer[];
+  yansima: YansimaKaydi | null;
 }
 
 export async function getStep(
@@ -43,11 +45,12 @@ export async function getStep(
   const step = track?.steps.find((item) => item.slug === lessonSlug);
   if (!track || !step) return null;
 
-  const [content, sources, prompts] = await Promise.all([
+  const [content, sources, prompts, yansima] = await Promise.all([
     findStepContent(weekSlug, lessonSlug),
     findLessonSources(step.id),
     findLessonPrompts(step.id, userId),
+    yansimaGetir(userId, step.id),
   ]);
 
-  return { track, step, contentMd: content?.contentMd ?? null, sources, prompts };
+  return { track, step, contentMd: content?.contentMd ?? null, sources, prompts, yansima };
 }

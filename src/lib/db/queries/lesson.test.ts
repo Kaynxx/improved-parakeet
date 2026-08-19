@@ -2,11 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { type GeriBildirimSatiri, enYeniGeriBildirimiSec } from "./lesson";
 
-function satir(
-  answerId: string,
-  createdAt: string,
-  score: number,
-): GeriBildirimSatiri {
+function satir(answerId: string, createdAt: string, score: number): GeriBildirimSatiri {
   return {
     answerId,
     model: "claude-opus-5",
@@ -21,10 +17,7 @@ function satir(
 
 test("cevap başına en yeni değerlendirmeyi seçer", () => {
   const harita = enYeniGeriBildirimiSec(
-    [
-      satir("cevap-1", "2026-08-02T00:00:00Z", 90),
-      satir("cevap-1", "2026-08-01T00:00:00Z", 40),
-    ],
+    [satir("cevap-1", "2026-08-02T00:00:00Z", 90), satir("cevap-1", "2026-08-01T00:00:00Z", 40)],
     ["cevap-1"],
   );
 

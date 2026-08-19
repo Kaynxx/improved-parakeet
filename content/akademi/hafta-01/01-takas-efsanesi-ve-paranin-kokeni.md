@@ -80,104 +80,52 @@ sorular:
       - Emtia ve kredi anlatılarının zorunlu olarak birbirini dışlamadığını; bir nesnenin teminat, hesap birimi veya borç kapatma aracı olarak rol alabileceğini belirtir.
 ---
 
-## Yanlış başlayan soru
+## İddianame: "Para Neden İcat Edildi?" Sorusunun Yargılanması
 
-“Para neden icat edildi?” sorusu tek bir mucit, tek bir tarih ve tek bir ihtiyaç
-varmış gibi konuşur. Oysa para en az üç ayrı işi aynı anda yapar: hesap birimi,
-ödeme aracı ve değer saklama aracı. Bu işlevlerin aynı nesnede birleşmesi
-zorunlu değildir. Bir köy borçları arpa cinsinden kaydedebilir, ödemeyi gümüşle
-yapabilir, serveti toprakta tutabilir. Dolayısıyla paranın kökeni üzerine her
-anlatı önce hangi işlevin kökenini açıkladığını söylemek zorundadır.
+“Para neden icat edildi?” sorusu, iktisat teorisi mahkemesinde sıklıkla tek bir mucit, tek bir tarih ve tek bir ihtiyaç varmış gibi sunulur. Oysa bu iddianame baştan kusurludur; zira para en az üç ayrı işlevi aynı anda yerine getirir: hesap birimi, ödeme aracı ve değer saklama aracı. Bu işlevlerin aynı nesnede birleşmesi zorunlu değildir. Bir topluluk borçları arpa cinsinden kaydedebilir, ödemeyi gümüşle yapabilir, serveti toprakta tutabilir. Dolayısıyla paranın kökenine dair her teorik savunma, önce hangi işlevin kökenini açıkladığını beyan etmek zorundadır.
 
-Standart ders kitabı hikâyesi bunu söylemeden başlar. Uzmanlaşma vardır fakat
-takas, **çift taraflı ihtiyaç çakışması** ister: ayakkabıcı ekmek ararken
-fırıncının da tam o anda ayakkabı istemesi gerekir. İnsanlar daha kolay satılan
-bir malı yalnız tüketmek için değil, sonra başkasına vermek için kabul etmeye
-başlar. Böylece dolaylı mübadele doğar; en satılabilir mal para olur. Menger'in
-gücü, merkezi tasarım gerektirmeyen bu seçilim mekanizmasındadır. Para, piyasa
-katılımcılarının ayrı ayrı kararlarından doğan bir kurumdur.
+Standart ders kitabı anlatısı, bu ayrımı yapmadan doğrudan mübadele sorununa odaklanır. Uzmanlaşmanın yarattığı **çift taraflı ihtiyaç çakışması** (ayakkabıcı ekmek ararken fırıncının da tam o anda ayakkabı istemesi zorunluluğu) takası kilitler. Menger'in savunmasına göre, rasyonel aktörler daha kolay satılan bir malı, yalnızca tüketmek için değil, ileride başkasına devretmek üzere kabul etmeye başlar. Dolaylı mübadele doğar ve en satılabilir mal paraya dönüşür. Menger'in teorik gücü, merkezi bir tasarım gerektirmeyen bu piyasa seçilim mekanizmasındadır.
 
-Fakat zarif bir mekanizma, tarihsel kayıt değildir.
+Fakat zarif bir mantıksal mekanizma, tarihsel bir kanıt mıdır?
 
-## Graeber'in itirazı neyi yıkar?
+## Birinci Duruşma: Menger'in Mekanizmasına Karşı Graeber'in Antropolojik İtirazı
 
-Graeber'in antropolojik itirazı “hiç kimse hiçbir zaman takas yapmadı” değildir.
-İtiraz daha dardır ve daha etkilidir: Paranın olmadığı sıkı topluluklarda günlük
-değişim çoğu kez spot takasla değil, açık hesapla, armağanla ve ertelenmiş
-yükümlülükle yürür. “Bugün eti al, hasatta karşılığını ver” işlemi için kasada
-ortak bir meta bulunması gerekmez. Kim kime ne borçlu, toplumsal hafıza veya
-kayıt bunu taşır.
+Graeber'in antropolojik bulguları kürsüye çağrıldığında, itirazın “hiç kimse hiçbir zaman takas yapmadı” gibi kaba bir reddiye olmadığı görülür. İtiraz daha dar ve yıkıcıdır: Paranın olmadığı sıkı dokulu topluluklarda günlük değişim, spot takasla değil; açık hesap, armağan ve ertelenmiş yükümlülüklerle yürütülür. “Bugün eti al, hasatta karşılığını ver” işlemi için kasada ortak bir meta bulunması gerekmez; toplumsal hafıza veya kayıt sistemi kimin kime ne borçlu olduğunu tutar.
 
-Bu bulgu, ders kitaplarının evrensel kronolojisini sarsar:
+Bu bulgu, ders kitaplarının evrensel kronolojisini çapraz sorguya alır:
 
-> takas → emtia para → madeni para → kredi
+| Geleneksel Evrim Şeması (Ders Kitabı) | Antropolojik/Tarihsel Şema (Graeber) |
+| :--- | :--- |
+| 1. Takas (Barter) | 1. Borç ve Hesap Kayıtları |
+| 2. Emtia Para | 2. Standart Ödeme Araçları |
+| 3. Madeni Para | 3. Madeni Para |
+| 4. Kredi Sistemleri | 4. Spot Takas (Genellikle kriz anlarında) |
 
-Kredi kayıtları madeni paradan önceyse tarihsel sıra tersine dönebilir:
+Kredi kayıtları madeni paradan önce geliyorsa, tarihsel sıra tersine dönmüş demektir. Ancak Selgin'in itirazı burada devreye girer ve Menger'i savunur: Menger'in açıklamak istediği ortam, birbirini tanıyan köylülerin ahlaki hesabından ziyade, güven ilişkisi kurmamış yabancılar arasındaki parasal değişimdir. Yakın çevrede kredi, uzak ticarette peşin mal değişimi aynı anda var olabilir.
 
-> borç ve hesap → standart ödeme araçları → madeni para
+> **Ara Karar:** Köken anlatısı ile mekanizma anlatısı aynı doğruluk testine tabi tutulamaz. İlki tarihsel kanıt (arkeoloji, etnografi) ister; ikincisi belirli koşullar altında (yabancılar arası ticaret, güven eksikliği) davranışsal ve kurumsal bir sonuç üretir. Arkeolojik bir borç tableti, işlemlerin ortak bir hesap birimiyle kaydedildiğini kanıtlar, ancak o tabletin gündelik alışverişte devredildiğini veya madeni paranın ilk ödeme aracı olduğunu kanıtlamaz.
 
-Ama buradan “Menger kesinlikle yanlıştır” sonucu çıkmaz. Selgin'in itirazı tam
-buradadır. Menger'in açıklamak istediği ortam, birbirini tanıyan köylülerin
-ahlaki hesabından çok, güven ilişkisi kurmamış taraflar arasındaki parasal
-değişim olabilir. Yakın çevrede kredi, uzak ticarette peşin mal değişimi aynı
-anda bulunabilir. Arkeolojide borç tabletinin önce gelmesi, malların farklı
-satılabilirliğinin yabancılar arası ticarette para seçimini yönlendiremeyeceğini
-kanıtlamaz.
+## İkinci Duruşma: Innes ve Bilanço İlişkisi Olarak Para
 
-Tartışmanın düğümü şudur: **köken anlatısı ile mekanizma anlatısı aynı doğruluk
-testine tabi değildir.** İlki tarihsel kanıt ister; ikincisi belirli koşullar
-altında davranışsal ve kurumsal bir sonuç üretir.
+Duruşmanın seyrini değiştiren radikal hamle Innes'ten gelir. Innes, parayı değişimde kullanılan değerli bir nesne (emtia) olarak değil, bir bilanço ilişkisi olarak tanımlar. Bir banknot, ihraç edenin borcu; onu tutanın alacağıdır. Değeri kâğıdın fiziksel niteliğinden değil, ihraççının o yükümlülüğü ne karşılığında kabul edeceğinden doğar. Ödeme, bir nesnenin el değiştirmesinden çok, karşılıklı alacakların mahsup edilerek kapatılmasıdır.
 
-Kanıt standardı da buna göre değişir. Borç tableti bulmak, işlemlerin ortak bir
-hesap birimiyle kaydedildiğini gösterebilir; tabletin üzerindeki borcun gündelik
-alışverişte devredildiğini göstermez. Madeni para bulmak da o paranın ekonomideki
-ilk veya baskın ödeme aracı olduğunu kanıtlamaz. Arkeolojik nesne, hukuk metni
-ve etnografik gözlem farklı kesimleri görünür kılar. Büyük köken hükmü, tek bir
-bulgu türüne yaslandığında kendi kayıt teknolojisinin sınırlarını tarih sanır.
+Bu tezin ispatı için üç kişilik bir hesap ağı incelenebilir:
+1. **A**, **B**'ye 120 lira borçludur.
+2. **B**, **C**'ye 80 lira borçludur.
+3. **C**, **A**'ya 50 lira borçludur.
 
-## Innes: para bir şey değil, ilişkidir
+Brüt alacaklar toplamı 250 liradır. Ancak tüm alacaklar aynı anda mahsup edildiğinde; A net 70 borçlu, B net 40 alacaklı, C net 30 alacaklı konumuna gelir. Sistemin ekonomik yükümlülüğü 250 liralık fiziksel para taşımayı değil, yalnızca 70 liralık nihai ödemeyi gerektirir. Para, bu borç ağını ölçen ve kapatan bir protokoldür.
 
-Innes daha radikal bir hamle yapar. Parayı değişimde kullanılan değerli nesne
-olarak değil, bir bilanço ilişkisi olarak tanımlar. Bir banknot, ihraç edenin
-borcu; onu tutanın alacağıdır. Değeri kâğıdın fiziksel niteliğinden değil,
-ihraççının o yükümlülüğü ne karşılığında kabul edeceğinden gelir. Borçlu kendi
-IOU'sunu geri aldığında borç söner: ödeme, bir nesnenin el değiştirmesinden çok
-karşılıklı alacakların kapatılmasıdır.
+Bu görüş modern banka parasını kusursuz açıklar; zira mevduatın büyük kısmı fiziksel bir nesne değil, bankanın müşteriye borcudur (IOU). Ancak kredi teorisinin zayıf karnı şudur: *Her IOU para mıdır?* Senin bana yazdığın borç senedi markette neden kabul edilsin? Kredi teorisi, bir özel borcun genel kabul gören paraya dönüşmesi için gereken kurumsal tamamlayıcıları (ortak hesap birimi, ihraççının güvenilirliği, hukuk sistemi, devredilebilirlik, vergi ödeme gücü ve nihai mutabakat kurumu) açıklamak zorundadır.
 
-Üç kişilik basit ağ bunu gösterir. A, B'ye 120; B, C'ye 80; C de A'ya 50 lira
-borçluysa brüt alacaklar 250 liradır. Mahsuptan sonra A net 70 borçlu, B net 40
-alacaklı, C net 30 alacaklıdır. Sistemin ekonomik yükümlülüğü 250 liralık para
-taşımayı değil, 70 liralık nihai ödemeyi gerektirir. Para burada borç ağını
-ölçen ve kapatan bir protokoldür.
+## Karar Aşaması: Hiyerarşi ve Uzlaşma
 
-Bu görüşün güçlü yanı modern banka parasını doğrudan açıklamasıdır. Mevduatın
-büyük kısmı fiziksel bir nesne değil, bankanın müşteriye borcudur. Zayıf yanı
-ise “her IOU paradır” sonucuna kolayca kayabilmesidir. Senin bana yazdığın borç
-senedi, markette neden kabul edilsin? Kredi teorisi kabul hiyerarşisini ayrıca
-açıklamak zorundadır: ortak hesap birimi, ihraççının güvenilirliği, hukuk,
-devredilebilirlik, vergi ödeme gücü ve nihai mutabakat kurumu.
+Emtia ve kredi teorileri birbirini tümüyle dışlayan hasımlar olmak zorunda değildir. Altın, bir dönemde piyasanın en satılabilir malı (Menger) olabilirken, aynı anda borç sözleşmelerinin hesap birimi ve nihai ifa aracı (Innes) olarak da işlev görebilir. İktisadi analizde kritik soru “Para emtia mı, yoksa kredi mi?” değil, **“Hangi yükümlülük, hangi yükümlülüğü kapatır?”** sorusudur.
 
-## Para hiyerarşisi uzlaştırıcı mı?
+Parasal sistem bir katmanlar hiyerarşisidir: Bir şirket senedi banka mevduatıyla, banka mevduatı ise merkez bankası rezerviyle kapatılır. Katmanlar arası asimetri esastır. Türkiye'de “Liranın arkasında ne var?” sorusuna merkez bankası kasasında duran fiziki bir meta aramak bu nedenle yanıltıcıdır. Liranın kurumsal gücü; vergilerin lira ile hesaplanması, sözleşmelerin lira cinsinden kurulması, bankaların lira mevduat yaratması ve TCMB'nin bankalar arası nihai ödemeyi lira rezervle kapatmasıyla tesis edilir. Güven kaybı bu kurumsal ağı zayıflatabilir; fakat bu, kâğıdın "karşılıksız" olmasıyla aynı ontolojik iddia değildir.
 
-Emtia ve kredi teorileri birbirini tümüyle dışlamak zorunda değildir. Altın bir
-dönemde en satılabilir mal olabilir; aynı anda borç sözleşmelerinin hesap birimi
-ve nihai ifa aracı olarak kullanılabilir. Kritik soru “para emtia mı, kredi mi?”
-değil, **hangi yükümlülüğün hangi yükümlülüğü kapattığıdır.** Bir şirket senedi
-banka mevduatıyla, banka mevduatı merkez bankası rezerviyle kapatılır. Katmanlar
-eşit değildir.
+## Hüküm ve İleri Tetkik
 
-Türkiye'de “liranın arkasında ne var?” sorusuna kasada duran bir meta aramak bu
-nedenle yanıltıcıdır. Liranın işleyişi; vergilerin lira ile hesaplanması,
-sözleşmelerin lira cinsinden kurulması, bankaların lira mevduat yaratması ve
-TCMB'nin bankalar arası nihai ödemeyi lira rezervle kapatmasıyla açıklanır.
-Güven kaybı bu kurumsal ağı zayıflatabilir; fakat kâğıdın karşılıksız olmasıyla
-aynı iddia değildir.
+Kavram duruşmasının sonucunda tek bir mutlak köken hükmü tesis edilmemiştir. Bunun yerine, analitik olarak çok daha işlevsel bir ayrım karara bağlanmıştır: Tarihsel öncelik, piyasa seçilimi ve kurumsal kabul birbirinden bağımsız araştırma sahalarıdır.
 
-## Bu dersten sonra
-
-Bu ders tek bir köken hükmü vermiyor. Daha kullanışlı bir ayrım veriyor:
-tarihsel öncelik, piyasa seçilimi ve kurumsal kabul ayrı sorulardır. 1.2'de bu
-ayrımı modern bankaya taşıyacağız. “Mevduat nereden gelir?” sorusuna, kasaya
-önce para girdiği için değil bankanın aynı anda bir alacak ve bir borç yazdığı
-için yanıt vereceğiz. 1.3'te ise bu borç hiyerarşisinin tepesindeki merkez
-bankası bilançosunu okuyacağız.
+Bu hükmün ışığında, bir sonraki celsede modern bankacılık sisteminin işleyişi tetkik edilecektir. “Mevduat nereden gelir?” sorusuna, kasaya önce para girdiği için değil, bankanın bilançosunda aynı anda bir alacak ve bir borç yarattığı için yanıt verilecek; ardından bu borç hiyerarşisinin zirvesinde yer alan merkez bankası bilançosunun anatomisi incelenecektir.

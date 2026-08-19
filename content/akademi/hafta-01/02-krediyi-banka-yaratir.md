@@ -79,102 +79,49 @@ sorular:
       - Politika faizinin rezerv ve fonlama maliyetini, düzenlemenin de sermaye ve likidite sınırlarını etkilediğini; rezerv önkoşul değil diye etkisiz olmadıklarını belirtir.
 ---
 
-## Yanlış çizilen banka
+## Gözlem 1: Aracı Kurum Yanılgısı ve Bilanço Mekaniği
 
-Popüler şemada banka bir su deposudur. Hane 100 lira yatırır, banka bunun 10
-lirasını rezerv tutar, 90 lirasını ödünç verir; 90 başka bankaya yatırılır,
-oradan 81 lira kredi çıkar. Dizi sonunda 100 liralık rezerv tabanı 1.000 lira
-mevduata “dönüşür”. Bu anlatının sezgisi kuvvetlidir, çünkü bankayı tasarruf
-sahibiyle yatırımcı arasında duran bir aracı gibi resmeder.
+Popüler ders kitapları bankayı bir "su deposu" veya salt aracı olarak modeller: Tasarruf sahibi mevduat yatırır, banka zorunlu karşılığı ayırır ve kalanı ödünç verir. Bu modelde rezerv, kredinin önkoşuludur ve tasarruf, yatırıma mekanik bir çarpan dizisiyle aktarılır.
 
-Modern bir bankanın ilk kredi kaydı böyle değildir. Banka 1 milyon liralık
-kredi sözleşmesini onayladığında bilançosuna iki kayıt düşer:
+Modern para teorisi ve muhasebe pratiği ise bu nedenselliği reddeder. Bir banka kredi sözleşmesini onayladığında, bilançosunda eşzamanlı bir genişleme yaratır. Başka bir deyişle, banka kendi borcunu (mevduat) ihraç ederek müşterinin gelecekteki ödeme taahhüdünü (kredi) satın alır. Kredi açılışında başka bir müşterinin hesabından para eksilmez veya kasadan rezerv çıkmaz. Innes'in kredi teorisi dili, burada soyut bir kavram değil, doğrudan çift kayıtlı muhasebenin kendisidir.
 
-> Varlıklar: Krediler +1.000.000  
-> Yükümlülükler: Müşteri mevduatı +1.000.000
+Aşağıdaki etkileşimli T-hesap tablosu, bu eşzamanlı yaratım sürecini ve ardından gelen ödeme akışını göstermektedir. Bu tablo, kredinin anında mevduat yarattığı muhasebe gerçeğini kanıtlar; ancak bankaların hiçbir kısıta tabi olmadan sonsuz kredi açabileceğini KANITLAMAZ. Tablodaki değerler tamamen varsayımsaldır.
 
-Başka bir müşterinin hesabından 1 milyon eksilmemiştir. Kasadan rezerv de
-çıkmamıştır. Banka kendi borcunu — mevduatı — yaratmış, karşılığında müşterinin
-gelecekte ödeme taahhüdünü varlık yazmıştır. 1.1'deki Innes dili burada soyut
-teori değil, muhasebe kaydıdır.
+```etkilesim
+{"tur":"t-hesap","baslik":"Kredi Yaratımı ve Rezerv Kaybı (Varsayımsal Değerler)","baslangic":{"varliklar":500000,"yukumlulukler":400000,"ozkaynak":100000},"adimlar":[{"etiket":"Kredi Sözleşmesi (Varlık: Kredi, Yükümlülük: Mevduat)","varlikDegisimi":1000000,"yukumlulukDegisimi":1000000,"ozkaynakDegisimi":0},{"etiket":"Başka Bankaya Ödeme (Varlık: Rezerv Çıkışı, Yükümlülük: Mevduat Çıkışı)","varlikDegisimi":-800000,"yukumlulukDegisimi":-800000,"ozkaynakDegisimi":0}]}
+```
 
-## Rezerv önce değilse ne zaman gerekir?
+## Gözlem 2: İşlem Sırası ve Rezerv Kısıtının Doğası
 
-Kredi açılışı ile ödeme iki farklı olaydır. Borçlu yeni mevduatı aynı bankadaki
-bir satıcıya aktarırsa yalnız bankanın iki müşterisi arasındaki kayıt değişir;
-toplam mevduat ve rezerv aynı kalır. Satıcı başka bankadaysa gönderen banka,
-alıcının bankasına merkez bankası rezervi göndermek zorundadır. Kredi mevduatı
-yaratır; **mevduatın bankalar arası hareketi rezerv talebi yaratır.**
+Kredi açılışı ile ödemenin takası (settlement) analitik olarak iki ayrı evredir. Borçlu, yaratılan yeni mevduatı aynı bankadaki bir satıcıya aktarırsa, banka içi bir virman gerçekleşir; toplam mevduat ve rezerv değişmez. Ancak satıcı başka bir bankadaysa, gönderen banka alıcının bankasına merkez bankası rezervi transfer etmek zorundadır.
 
-Örnekte yeni kredi 1 milyon, dışarı giden ödeme 800 bin ve kullanılabilir fazla
-rezerv 250 bin liraysa banka 550 bin liralık rezerv bulmalıdır. Bunu bankalar
-arası piyasadan borçlanarak, bir varlık satarak, yeni fonlama çekerek veya
-merkez bankası imkânına başvurarak yapabilir. Her yolun fiyatı vardır. “Rezerv
-krediden sonra gelir” demek “rezerv önemsizdir” demek değildir; zaman sırasını
-ve kısıtın biçimini doğru söylemektir.
+> **Mekanizma Kuralı:** Kredi mevduatı yaratır; mevduatın bankalar arası hareketi ise rezerv talebi yaratır.
 
-Merkez bankası da pasif bir veznedar değildir. Rezervi hangi faizle sağladığı,
-hangi teminatı kabul ettiği ve gün sonunda hangi açığı cezalandırdığı bankanın
-kredi fiyatına girer. Fakat merkez bankası rezerv miktarını katı biçimde sabit
-tutup ödeme sisteminin kilitlenmesini ve gecelik faizin hedeften kopmasını
-izleyemez. Faiz hedefleyen bir sistemde rezerv arzı, ödeme ve rezerv talebine
-önemli ölçüde uyum sağlar.
+Örneğin, 1.000.000 liralık yeni kredi açan bir bankadan 800.000 liralık dışarı ödeme çıkarsa ve bankanın kullanılabilir fazla rezervi yalnızca 250.000 lira ise, banka takası tamamlamak için 550.000 liralık ek rezerv bulmak zorundadır. Bu rezerv bankalar arası piyasadan borçlanarak, varlık satarak, yeni fonlama çekerek veya merkez bankası imkânlarına başvurarak temin edilir. Rezervin krediden *sonra* gelmesi, rezervin önemsiz olduğu anlamına gelmez; kısıtın zamanlamasını ve maliyet yapısını tanımlar.
 
-## Çarpan neden nedenselliği ters çevirir?
+Merkez bankası da pasif bir veznedar değildir. Rezervi hangi faizle sağladığı ve gün sonu açıklarını nasıl cezalandırdığı bankanın kredi fiyatlamasına doğrudan girer. Ancak faiz hedefleyen bir sistemde merkez bankası, rezerv miktarını katı biçimde sabit tutup ödeme sisteminin kilitlenmesini izleyemez; rezerv arzı, rezerv talebine büyük ölçüde uyum sağlar.
 
-Zorunlu karşılık oranı `r` ve mevduat `D` ise gerekli rezerv için şu ilişki
-yazılabilir:
+## Gözlem 3: Çarpan Modelinin Nedensellik Hatası
 
-> R = r × D
+Geleneksel modeldeki $R = r \times D$ (Rezerv = Zorunlu Karşılık Oranı $\times$ Mevduat) denklemi, cebirsel olarak $D = R/r$ biçiminde yazılabilir. Bu matematiksel dönüşüm doğrudur, ancak cebir nedensellik vermez. Dönem sonunda mevduatın rezerve oranının 10 olması, merkez bankasının önce $R$ miktarını belirlediği ve bankaların mekanik olarak on kat mevduat ürettiğini kanıtlamaz.
 
-Buradan cebirle `D = R/r` çıkar. Bu dönüşüm doğrudur; ama cebir nedensellik
-vermez. Dönem sonunda `D/R = 10` gözlemek, merkez bankasının önce `R` miktarını
-seçtiğini ve bankaların mekanik olarak on kat mevduat ürettiğini kanıtlamaz.
-Bankalar kârlı buldukları kredileri açmış, ödemeler rezerv ihtiyacı doğurmuş,
-merkez bankası ve para piyasası bu ihtiyacın fiyatını belirlemiş olabilir.
+Bank of England'ın (BoE) 2014 tarihli bülteninde vurguladığı hedef tam olarak budur: Bankalar mevcut mevduatı ödünç vermez; verdikleri kredi mevduatı yaratır. Üstelik süreç simetriktir; müşteri anapara ödemesi yaptığında, banka bilançosunun her iki tarafı da küçülür ve para yok olur. Kredi stokundaki brüt açılışlar kadar geri ödemeler de geniş para büyümesini belirler.
 
-BoE'nin 2014 tashihinin hedefi tam budur. Bankalar “mevcut mevduatı ödünç
-vermez”; verdikleri kredi mevduatı yaratır. Üstelik geri ödeme simetrik biçimde
-para yok eder. Müşteri anaparadan 100 bin lira ödediğinde banka varlığındaki
-kredi ve yükümlülüğündeki mevduat 100 bin azalır. Faiz ödemesi ise ayrı bir
-gelir ve özkaynak etkisi taşır. Kredi stokundaki brüt açılışlar kadar geri
-ödemeler de geniş para büyümesini belirler.
+Simon Wren-Lewis'in tartışmaya getirdiği kritik nokta şudur: Bu durum uygulamacı merkez bankacıları için yeni bir sır veya devrim değildir. Şaşırtıcı olan, ders kitaplarının basit çarpan modelini açıklama kolaylığı uğruna nedensel bir gerçeklik gibi sunmaya devam etmesidir. Çarpan tümüyle yararsız değildir; belirli bir anda taban para ile mevduat arasındaki oranı betimleyebilir. Ancak betimleme (ex-post özdeşlik) ile davranış modeli (ex-ante karar) birbirine karıştırılmamalıdır.
 
-Wren-Lewis'in tartışmaya eklediği sert nokta şudur: Bu, 2014'te keşfedilmiş bir
-sır değildir. Uygulamacı merkez bankacılığı zaten faiz hedefi, rezerv piyasası
-ve bankaların bilanço kararlarıyla çalışıyordu. Şaşırtıcı olan tashih değil,
-ders kitaplarının basit modelini açıklama kolaylığı uğruna nedensel gerçeklik
-gibi sunmasıdır. Yine de çarpan tümüyle yararsız değildir: belirli bir anda
-taban para ile mevduat arasındaki oranı betimleyebilir. Betimleme ile davranış
-modeli karıştırılmamalıdır.
+## Gözlem 4: Optimizasyon ve Sınırlar: Banka Neden Sonsuz Kredi Açmaz?
 
-## Bankalar neden sonsuz kredi açmaz?
+Muhasebe kaydı ucuz, kötü kredi ise pahalıdır. Yeni kredi ilk anda varlık ve yükümlülüğü eşit büyütür, ancak özkaynak yaratmaz. Bankanın para yaratma kapasitesi muhasebesel olarak esnek olsa da, fiilî kredi arzı katı ekonomik ve düzenleyici kısıtlara tabidir:
 
-Muhasebe kaydı ucuzdur; kötü kredi pahalıdır. Yeni kredi ilk anda varlık ve
-yükümlülüğü eşit büyütür, özkaynak yaratmaz. Risk ağırlıklı varlık büyüdükçe
-sermaye yeterliliği bağlayabilir. Mevduat rakip bankaya çıkarsa rezerv ve
-fonlama maliyeti yükselir. Borçlunun temerrüdü beklenen zararı, takip giderini
-ve karşılık ihtiyacını artırır. Ayrıca krediye, bankanın istediği faizle borç
-ödeyebilecek talep bulunmalıdır.
+1.  **Sermaye Yeterliliği:** Risk ağırlıklı varlıklar büyüdükçe, düzenleyici sermaye rasyoları bağlayıcı hâle gelir ve kredi büyümesini sınırlar.
+2.  **Likidite ve Fonlama Maliyeti:** Yaratılan mevduat rakip bankaya transfer edildiğinde, banka rezerv kaybeder. Bu durum, özellikle politika faizinin yüksek olduğu ortamlarda marjinal fonlama maliyetini artırır.
+3.  **Kredi Riski ve Karlılık:** Borçlunun temerrüt olasılığı beklenen zararı, takip giderlerini ve karşılık ihtiyacını artırır.
+4.  **Kredi Talebi:** Bankanın talep ettiği faiz oranından borçlanabilecek ve geri ödeme kapasitesine sahip makroekonomik bir talep bulunmalıdır.
 
-Türkiye'de kredi büyümesini yalnız zorunlu karşılık oranından okumak bu yüzden
-eksiktir. TCMB'nin fonlama maliyeti, BDDK'nın sermaye ve likidite kuralları,
-kur korumalı veya makroihtiyati düzenlemeler, mevduat rekabeti ve kredi riski
-aynı bilançoya farklı yerlerden basar. Rezerv miktarı tek musluk değildir;
-fakat rezervin fiyatı bütün bu kararların iskonto oranlarından biridir.
+Bilgi asimetrisi ve teşvik sorunları nedeniyle kredi piyasası her zaman fiyatla (faizle) temizlenmez. Banka, riski fiyatlamak için faizi artırdığında güvenli borçlular piyasadan çekilebilir (ters seçim) ve yüksek faiz temerrüt olasılığını bizzat büyütebilir. Bu nedenle bankalar, kredi miktarını rasyonlayabilir, teminat şartlarını ağırlaştırabilir veya belirli sektörleri dışlayabilir. Banka parası, bu özel risk seçim sürecinin bir yan ürünüdür.
 
-Kredi fiyatı da piyasayı her zaman temizlemez. Banka riski yükseldiğinde faizi
-artırırsa güvenli borçlular çekilebilir, daha riskli projeler kalabilir; yüksek
-faiz temerrüt olasılığını bizzat büyütebilir. Bu nedenle banka yalnız fiyatı
-yükseltmek yerine kredi miktarını kısabilir, teminat isteyebilir veya bazı
-sektörleri tümüyle dışlayabilir. Para yaratma kapasitesinin muhasebenin izin
-verdiği kadar geniş, fiilî kredi arzının ise bilgi ve teşvik sorunları yüzünden
-dar olması çelişki değildir. Banka parası, özel bir risk seçiminin yan ürünüdür.
+## Laboratuvar Çıktıları ve İleri Analiz Gündemi
 
-## Bu dersten sonra
+Bu modelleme süreci, kredi yaratımının dışsal bir rezerv tabanına dayalı mekanik bir çarpan süreci olmadığını; aksine, banka bilançolarındaki eşzamanlı kayıtlarla işleyen içsel bir mekanizma olduğunu göstermiştir. Rezerv, kredi yaratımının önkoşulu değil, ödeme sisteminin takas aracı ve merkez bankasının faiz politikasının aktarım kanalıdır.
 
-Kredi yaratımını anladığında iki yeni soru doğar. Bankaların birbirine olan
-ödemesini kapatan rezerv tam olarak kimin borcudur? 1.3'te merkez bankası
-bilançosunun yükümlülük tarafını okuyarak bunu yanıtlayacağız. Kredi kararlarının
-ardından M1 ve M2 neden hareket eder, merkez bankası bu toplamları ne ölçüde
-seçebilir? 1.4'te çarpan eleştirisini para arzının içselliğine bağlayacağız.
+Bir sonraki analiz aşamasında, bankalar arası takası sağlayan bu rezervlerin merkez bankası bilançosunun neresinde yer aldığı incelenecek ve ticari bankaların kredi kararlarının M1 ve M2 para arzı büyüklüklerini nasıl şekillendirdiği, içsel para teorisinin makroekonomik dinamikleriyle birlikte modellenecektir.
