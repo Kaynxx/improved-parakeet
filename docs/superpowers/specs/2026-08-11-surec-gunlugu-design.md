@@ -56,11 +56,10 @@ karar olarak işaretlenecek.
 
 ## Bilgi kaynakları ve güncelleme kuralı
 
-İlk içerik Git geçmişi, `CLAUDE.md`, `memory-bank/` belgeleri ve çalışma ağacının
-mevcut durumundan derlenecek. Gelecek fazlar özellikle `CLAUDE.md`,
-`memory-bank/projectbrief.md`, `memory-bank/progress.md`,
-`memory-bank/activeContext.md` ve `memory-bank/decisionLog.md` birlikte okunarak
-çıkarılacak. Çelişki halinde güncel Git geçmişi ve çalışma ağacındaki
+İlk içerik Git geçmişi, `CLAUDE.md`, `memory-bank/INDEX.md`, `memory-bank/now.md`
+ve çalışma ağacının mevcut durumundan derlenecek. Gelecek fazlar özellikle
+`CLAUDE.md`, ilgili kanonik bellek dosyası ve
+`memory-bank/decisionLog.md` birlikte okunarak çıkarılacak. Çelişki halinde güncel Git geçmişi ve çalışma ağacındaki
 doğrulanabilir durum esas alınacak; eski bilgiler güncel gerçekmiş gibi
 aktarılmayacak.
 

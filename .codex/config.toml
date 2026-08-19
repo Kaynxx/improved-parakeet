@@ -1,0 +1,6 @@
+[mcp_servers.memory-bank]
+command = "node"
+args = ['C:\Users\Kaynxx\.claude\mcp-servers\cline-mcp-memory-bank\build\index.js']
+
+[mcp_servers.memory-bank.env]
+PROJECT_PATH = 'c:\Users\Kaynxx\Desktop\Finans Program'
