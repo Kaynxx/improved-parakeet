@@ -1,0 +1,21 @@
+# Otomatik satır sonu normalleştirmesi: metin dosyaları depoda LF,
+# checkout'ta platforma göre (Windows'ta CRLF) çıkar.
+* text=auto eol=lf
+
+# Windows shell script'ler çalışması için CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Bu dosyalar metin olarak işaretlenmesin
+package-lock.json -diff
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# Diff'leri her zaman Git'in core.autocrlf'ine rağmen tam metin olarak üret
+*.ts diff=ts
+*.tsx diff=tsx
+*.md diff=markdown

@@ -18,3 +18,5 @@ Thumbs.db
 .postgres/
 
 drizzle/meta/_journal.json.bak
+
+.worktrees/
